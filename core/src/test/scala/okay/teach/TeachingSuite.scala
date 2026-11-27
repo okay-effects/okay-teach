@@ -17,6 +17,7 @@ class TeachingSuite extends munit.FunSuite:
         case Lesson.Ask(n) => Asked(Ref("cases"), 25 * 4 * n, 3)
         case Lesson.Train(_, _) => Ref("adapter")
         case Lesson.Measure(_, a, c) => if a.isEmpty then m("u", if c then 30 else 16, 70) else m("t", 150, 8)
+        case Lesson.Baseline(_, _) => m("b", 100, 100)
         case Lesson.Release(a, _) => Ref(s"released ${a.id}")
         case Lesson.Uncovered(_) => ())))
 
@@ -27,12 +28,12 @@ class TeachingSuite extends munit.FunSuite:
     assert(!TeacherSpace.allowed(start).contains(Action.Measure(true, false)), "no taught measure untrained")
     assertEquals(TeacherSpace.allowed(start.copy(budget = 0)), Vector(Action.Stop))
 
-  test("the fixed policy: ask, train, four measures, release, stop — the trace in Σ"):
+  test("the fixed policy: ask, train, four measures, the baseline, release, stop — the trace in Σ"):
     val s = run(Teaching.standard[Lesson])
-    assertEquals(s.history.size, 8)
+    assertEquals(s.history.size, 9)
     assertEquals(s.released, Some(Ref("released adapter")))
     assertEquals(s.measures.map(_.what), Vector("untaught, plain", "untaught, calibrated", "taught, plain",
-      "taught, calibrated"))
+      "taught, calibrated", Teaching.baselineWhat))
 
   test("a chooser that asks for what the laws do not allow is stopped, not obeyed"):
     val s = run(_ => pure(Action.Release))

@@ -45,7 +45,7 @@ object Teacher:
   def parse(reply: String): Vector[String] =
     reply.linesIterator.map(_.trim
       .replaceAll("""^(\d+[.)]|[-*•])\s*""", "")
-      .replaceAll("""^(?i)(en|pl|ru|uk|english|polish|russian|ukrainian)\s*:\s*""", "")
+      .replaceAll("""(?i)^(en|pl|ru|uk|english|polish|russian|ukrainian)\s*:\s*""", "")
       .stripPrefix("\"").stripSuffix("\"").trim).filter(_.nonEmpty).toVector.distinct
 
   def write[D, T, R[_]](domain: Domain[D, T], data: D, meant: T, n: Int, about: String, seed: Long = 0)(

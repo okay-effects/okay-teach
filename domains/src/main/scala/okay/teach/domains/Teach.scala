@@ -43,8 +43,22 @@ object Teach:
     if file.toString.endsWith(".tsv") then lines.map(_.split('\t')).map(a => Case(a(1), a(2), t.read(a(0))))
     else lines.map(Json.fromText).map(j => Case(j("language").string, j("text").string, t.read(j("meant").string)))
 
+  val usage: String =
+    """Teach <step> …  (skills/teach-a-model/SKILL.md says when to use which)
+      |  check <spec.json> <file.tsv>                       a spec and a question file checked: no GPU
+      |  lesson <domain|spec.json> <n> <epochs> <sealed.tsv> [out]
+      |  drive <domain|spec.json> <sealed.tsv> [standard|model] [out]
+      |  write <domain|spec.json> <n> <out.jsonl>
+      |  train <domain|spec.json> <cases.jsonl> <out dir> [epochs] [model]
+      |  read <domain|spec.json> <cases> <adapter|-> <plain|calibrated> [epsilon] [model]
+      |  calibrate <domain|spec.json> <adapter> <calibration.tsv> <report.tsv> [epsilon]
+      |  all <domain|spec.json> <n> <epochs> <held-out> [out]
+      |  rules [train] [rounds] <out>      laws [rounds] [out]""".stripMargin
+
   def main(args: Array[String]): Unit =
-    if args(0) == "laws" then laws(args.lift(1).fold(4)(_.toInt), Path.of(args.lift(2).getOrElse("runs/kinematics")))
+    if args.length < 2 then println(usage)
+    else if args(0) == "laws" then
+      laws(args.lift(1).fold(4)(_.toInt), Path.of(args.lift(2).getOrElse("runs/kinematics")))
     else if args(0) == "rules" then
       rules(args.lift(1).fold(10)(_.toInt), args.lift(2).fold(4)(_.toInt), Path.of(args(3)))
     else main1(args)
@@ -67,20 +81,21 @@ object Teach:
     val t: Taught[?, ?] = if args(1).endsWith(".json") then fromSpec(Path.of(args(1)))
       else domains.getOrElse(args(1), sys.error(s"no domain ${args(1)}; known: ${domains.keys.mkString(", ")}"))
     args(0) match
-      case "write" => write(t, args(2).toInt, Path.of(args(3)))
+      case "check" => check(t, Path.of(args(2)))
+      case "write" => val _ = write(t, args(2).toInt, Path.of(args(3)))
       case "train" => OnGpu.train(t.domain, t.data, cases(t, Path.of(args(2))), args.lift(5).getOrElse(model),
         Path.of(args(3)), args.lift(4).fold(2)(_.toInt))
       case "read" => read(t, Path.of(args(2)), args(3), args(4), args.lift(5).fold(0.05)(_.toDouble),
         args.lift(6).getOrElse(model))
       case "lesson" =>
         val out = Path.of(args.lift(5).getOrElse(s"runs/${args(1)}"))
-        val o = LessonOnGpu(t, args(1), out, Map("held" -> Path.of(args(4)))).run(
+        val o = LessonOnGpu(t, name(args(1)), out, Map("held" -> Path.of(args(4)))).run(
           Lesson.standard[Lesson](Sealed("held"), args(2).toInt, args(3).toInt))
         println(s"released: ${o.released.fold("none (the gate did not pass)")(_.id)}")
       case "drive" =>
         val out = Path.of(args.lift(4).getOrElse(s"runs/${args(1)}-driven"))
-        val gpu = LessonOnGpu(t, args(1), out, Map("held" -> Path.of(args(2))))
-        val start = okay.teach.Sigma(args(1), Sealed("held"))
+        val gpu = LessonOnGpu(t, name(args(1)), out, Map("held" -> Path.of(args(2))))
+        val start = okay.teach.Sigma(name(args(1)), Sealed("held"))
         val end = if args.lift(3).contains("model") then
           val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
             env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
@@ -206,3 +221,26 @@ object Teach:
         val answered = rep.filter(_.margin >= b.bar)
         println(f"report: right ${rep.count(_.right)} of ${rep.size}; at the bar ${b.bar}%.3f answered " +
           s"${answered.size} of ${rep.size}, wrong ${answered.count(!_.right)}")
+
+  /** a domain's name: a spec's own name (not its path), else the registered one */
+  def name(arg: String): String =
+    if arg.endsWith(".json") then
+      DomainSpec.fromJson(Json.fromText(Files.readString(Path.of(arg)))).fold(_ => arg, _.name)
+    else arg
+
+  /**
+   * `check <spec.json> <file.tsv>` — before any lesson, no GPU: every row's meaning read in the spec's words (an
+   * option's key or its shown text), and each question checked to reach its meaning (the spec offers what the meaning
+   * needs, e.g. the numbers it writes). Counts only, and the first rows that fail — never use it to read a SEALED
+   * file's texts (theory L1): check the spec on rows you write for the purpose
+   */
+  def check[D, T](t: Taught[D, T], file: Path): Unit =
+    val rows = Files.readAllLines(file).asScala.toVector.filterNot(l => l.isBlank || l.startsWith("#"))
+      .map(_.split('\t'))
+    val read = rows.map(a => a -> scala.util.Try(t.read(a(0))).toOption)
+    val unread = read.collect { case (a, None) => a(0) }
+    val unreached = read.collect { case (a, Some(m)) if okay.frames.Laws.reach(t.domain.space)(t.data, a(2), m)
+      .nonEmpty => a(0) }
+    println(s"${rows.size} rows: ${rows.size - unread.size - unreached.size} fine, ${unread.size} meanings not read, " +
+      s"${unreached.size} not reached")
+    (unread.take(3) ++ unreached.take(3)).foreach(m => println(s"  $m"))

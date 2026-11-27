@@ -26,6 +26,7 @@ enum Action:
   case Ask(n: Int)
   case Train(epochs: Int)
   case Measure(taught: Boolean, calibrated: Boolean)
+  case MeasureBaseline
   case Release
   case Stop
 
@@ -35,6 +36,7 @@ object Action:
     case Train(e) => s"train an adapter on the questions, $e epochs"
     case Measure(t, c) => s"measure the ${if t then "taught" else "untaught"} reader, ${if c then "calibrated" else
       "plain"}, on the sealed set"
+    case MeasureBaseline => "measure the baseline (a word search learned from the training questions) on the sealed set"
     case Release => "release the best taught reader (if it passes the gate)"
     case Stop => "stop: the lesson is done or cannot do better"
   def what(taught: Boolean, calibrated: Boolean): String =
@@ -57,14 +59,17 @@ object TeacherSpace extends Space[Sigma, Action]:
         else Vector.empty
       val measure = for t <- Vector(false, true) if !t || s.adapter.nonEmpty; c <- Vector(false, true)
         if s.measured(Action.what(t, c)).isEmpty yield Action.Measure(t, c)
+      val baseline = Option.when(s.asked.exists(_.kept > 0) && s.measured(Teaching.baselineWhat).isEmpty)(
+        Action.MeasureBaseline).toVector
       val release = Option.when(best(s).nonEmpty)(Action.Release).toVector
-      ask ++ train ++ measure ++ release :+ Action.Stop
+      ask ++ train ++ measure ++ baseline ++ release :+ Action.Stop
 
-  /** the best taught measure that passes the gate against the best untaught (theory L4) */
+  /** the best taught measure that passes the gate against the best untaught (L4) and the baseline (L7) */
   def best(s: Sigma): Option[Measured] =
     val taught = s.measures.filter(_.what.startsWith("taught"))
     val untaught = s.measures.filter(_.what.startsWith("untaught"))
-    for t <- taught.maxByOption(_.right); u <- untaught.maxByOption(_.right) if Lesson.passes(t, u) yield t
+    for t <- taught.maxByOption(_.right); u <- untaught.maxByOption(_.right); b <- s.measured(Teaching.baselineWhat)
+      if Lesson.passes(t, u) && Lesson.passes(t, b) yield t
 
   def next(s: Sigma, text: String, chosen: Vector[Choice]): Option[Hole] =
     Option.when(chosen.isEmpty)(Hole("action", allowed(s).map(Action.said)))
@@ -82,6 +87,7 @@ object TeacherSpace extends Space[Sigma, Action]:
  */
 object Teaching:
   type Chooser[R[_]] = Sigma => Action ! R
+  val baselineWhat = "baseline (words)"
 
   def drive[R[_]](start: Sigma, choose: Chooser[R])(using In[Lesson, R]): Sigma ! R =
     def step(s: Sigma): Sigma ! R =
@@ -96,6 +102,9 @@ object Teaching:
           case Action.Measure(t, c) =>
             Lesson.measure(s.sealedSet, if t then s.adapter else None, c).flatMap(m =>
               step(spent.copy(measures = spent.measures :+ m.copy(what = Action.what(t, c)))))
+          case Action.MeasureBaseline =>
+            Lesson.baseline(s.sealedSet, s.asked.get.cases).flatMap(m =>
+              step(spent.copy(measures = spent.measures :+ m.copy(what = baselineWhat))))
           case Action.Release =>
             Lesson.release(s.adapter.get, TeacherSpace.best(s).get).flatMap(x => step(spent.copy(released = Some(x))))
       }
@@ -104,7 +113,7 @@ object Teaching:
   /** the fixed policy: the standard lesson's order (ask 8, train 2, the four measures, release, stop) */
   def standard[R[_]]: Chooser[R] = s =>
     val order = Vector(Action.Ask(8), Action.Train(2), Action.Measure(false, false), Action.Measure(false, true),
-      Action.Measure(true, false), Action.Measure(true, true), Action.Release, Action.Stop)
+      Action.Measure(true, false), Action.Measure(true, true), Action.MeasureBaseline, Action.Release, Action.Stop)
     pure(order.find(TeacherSpace.allowed(s).contains).getOrElse(Action.Stop))
 
   val task: String =

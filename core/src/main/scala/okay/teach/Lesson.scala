@@ -33,6 +33,8 @@ enum Lesson[X]:
   case Train(cases: Ref, epochs: Int) extends Lesson[Ref]
   /** the reader (an adapter or none; plain or calibrated) on the sealed set: aggregates only */
   case Measure(on: Sealed, adapter: Option[Ref], calibrated: Boolean) extends Lesson[Measured]
+  /** the baseline (theory L7): a word search learned from the training cases, measured on the sealed set */
+  case Baseline(on: Sealed, cases: Ref) extends Lesson[Measured]
   /** the competence released: the adapter and the measure it was released on */
   case Release(adapter: Ref, measured: Measured) extends Lesson[Ref]
   /** no engine of the catalog covers the domain, and what is missing */
@@ -43,6 +45,7 @@ object Lesson:
   def train[R[_]](cases: Ref, epochs: Int)(using In[Lesson, R]): Ref ! R = perform[Lesson](Train(cases, epochs))
   def measure[R[_]](on: Sealed, adapter: Option[Ref], calibrated: Boolean)(using In[Lesson, R]): Measured ! R =
     perform[Lesson](Measure(on, adapter, calibrated))
+  def baseline[R[_]](on: Sealed, cases: Ref)(using In[Lesson, R]): Measured ! R = perform[Lesson](Baseline(on, cases))
   def release[R[_]](adapter: Ref, m: Measured)(using In[Lesson, R]): Ref ! R = perform[Lesson](Release(adapter, m))
   def uncovered[R[_]](why: String)(using In[Lesson, R]): Unit ! R = perform[Lesson](Uncovered(why))
 
@@ -59,7 +62,8 @@ object Lesson:
 
   /**
    * THE STANDARD LESSON (theory §2; `Teach all`): ask, train, measure the reader four ways — untaught and taught,
-   * plain and calibrated — and release the best taught one if it passes the gate against the best untaught
+   * plain and calibrated — and the baseline; release the best taught one if it passes the gate against the best
+   * untaught AND the baseline (L7)
    */
   def standard[R[_]](on: Sealed, n: Int, epochs: Int)(using In[Lesson, R]): Outcome ! R =
     val ways = Vector(false, true)
@@ -70,7 +74,9 @@ object Lesson:
       adapter <- train(asked.cases, epochs)
       untaught <- each(ways)(c => measure(on, None, c))
       taught <- each(ways)(c => measure(on, Some(adapter), c))
+      words <- baseline(on, asked.cases)
       best = taught.maxBy(_.right)
-      released <- if passes(best, untaught.maxBy(_.right)) then release(adapter, best).map(Some(_))
+      released <-
+        if passes(best, untaught.maxBy(_.right)) && passes(best, words) then release(adapter, best).map(Some(_))
         else pure[Option[Ref], R](None)
-    yield Outcome(asked, untaught ++ taught, released)
+    yield Outcome(asked, untaught ++ taught :+ words, released)
