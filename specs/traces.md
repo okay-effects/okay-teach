@@ -27,7 +27,7 @@ the teacher model learns which operation tended to help in which state.
 |---|---|---|
 | `okay-invest-goal.jsonl` | okay-invest's goal reader: v1, the misses read, v2 with templates aimed at them | okay-invest specs/invest.md §14.2, §19.1 |
 | `okay-tax-rules.jsonl` | okay-tax's rules: the word search, untaught readers, the search narrowing for the model, agreement | okay-tax specs/tax.md §6.1, §6.2 |
+| `okay-desk-frames.jsonl` | okay-desk: the canonical reader and the looped student (both hurt), a second domain added, the reverse reading (too dear), self-play rounds and the gate, the page's pair by agreement | okay-desk specs/frames.md §5.15–5.17 |
 
-To write next: okay-desk's frames (self-play rounds and their gate; the pair chosen by agreement; the negative
-results — canonical reader, looped, semantic links), okay-study (Carroll: the 35B 0/16 writing freely, Claude
+To write next: okay-study (Carroll: the 35B 0/16 writing freely, Claude
 16/16; CUKR 48/48), okay-tax's T1 (this repository's first lesson, from its `trace.jsonl`).
