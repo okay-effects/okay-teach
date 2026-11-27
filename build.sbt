@@ -26,7 +26,7 @@ val munit = Def.setting("org.scalameta" %%% "munit" % "1.2.3" % Test)
 
 /** THE TOOLS, no device: domains, the reading (calibrated), the teacher's questions and their filter, the bar,
  * the rule space and its teacher — programs over okay-llm's effects (`Read`, `Llm`); the JVM and Scala.js */
-lazy val core = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Pure).in(file("core"))
+lazy val core = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Pure).in(file("core")).dependsOn(equations)
   .settings(name := "okay-teach",
     libraryDependencies ++= Seq("io.github.okay-effects" %%% "okay-frames" % "0.1.0",
       "io.github.okay-effects" %%% "okay-datalog" % "0.1.0",
