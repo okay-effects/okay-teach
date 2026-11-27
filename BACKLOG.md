@@ -16,8 +16,6 @@ Can-wait work, each with why and what would promote it to the SPRINT.
 - **One base for all domains** — one reader with several adapters vs one adapter trained on many domains (okay-desk
   showed domains add without hurting each other). Decide after two or three lessons.
 
-- **Spread with other seeds**: runs e and f are identical (fixed teacher and training seeds, greedy driver). Run the
-  book loop with `seed` varied (Teach.write's seed, OnGpu.train's seed) 3 times to know the spread of 74/98.
 - **The bar's start**: the fixed sequence begins at ⌈1/ε⌉ answered; on 98 questions one early error stops it (the 40
   surest have 1 wrong, yet no bar at 5%). A larger calibration set apart (the teacher's questions held out?) or a
   stated ε of 10% for books.

@@ -190,3 +190,21 @@ pinned worktree): the 35B drove the loop again on the 98 whole questions. It cho
 untaught 24, ask 4 a passage = 176, train 2 epochs, baseline 57, measure taught **74**, in two 87, release). Every
 number equals run e's adapter re-measured: the loop is reproducible end to end (the teacher's seeds, the training
 seed, a greedy driver). Run-to-run spread therefore needs other seeds on purpose (BACKLOG).
+
+### 7.7 The spread over seeds (2026-11-27, commit 42a1809)
+
+`OKAY_TEACH_SEED=<n> okay-teach book books/openstax-cp2e-ch2.txt runs/openstax-ch2-s<n> model` (pinned worktree; the
+seed changes the teacher's questions and the LoRA's start). The 35B chose the same operations every time (ask 4 a
+passage = 176, train 2 epochs, release). On the 98 whole questions:
+
+| seed | taught first | taught in two | baseline first | baseline in two | bar at ε 5% |
+|---|---|---|---|---|---|
+| 0 (run f) | 74 | 87 | 57 | 72 | none |
+| 1 | 72 | 85 | 50 | 70 | one at 0.378: 23 answered, 0 wrong (pair: +11 in two, 0 wrong) |
+| 2 | 68 | 86 | 45 | 64 | none |
+| 3 | 72 | 89 | 57 | 74 | pair only: 43 answered with two, 1 wrong |
+| **mean** | **71.5 (73%)** | **86.8 (89%)** | 52.3 | 70 | |
+
+The taught reader beats the baseline by 15 to 23 on every seed, and the in-two count barely moves (85–89): it is the
+number to rely on. The first-answer count moves by ±3. The bar is the unstable part: on two seeds of four it holds
+nothing at 5%. One answer with a guarantee needs a bigger calibration set than 98 (BACKLOG, the bar's start).
