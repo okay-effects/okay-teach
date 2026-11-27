@@ -20,6 +20,9 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **Resume**: the run lives in `../okay-teach-run` (a worktree pinned to a commit, so edits here do not leak into a
   run that compiles when the lock frees); `runs/wait.log` there says where it stands; rerunning the same command
   there resumes (finished steps are skipped).
+- **Seen while it runs**: the kept count a rule varies (4 for scale.health, zus; 28–32 for others) — T1's run
+  predates the raw replies being kept, so its cause (a truncated reply? another line format?) is checked by a
+  rerun of `write` for those rules now that `<cases>.replies.txt` records each reply and whether it was cut.
 - **Gotchas**: the 35B (okay-mlx on :8090) and the LoRA share the Mac's GPU with other sessions — check `ps` for
   other GPU jobs first; the teacher must never see `heldout.tsv` (it is only an argument of `read`) — L1 of the
   theory; okay-tax's held-out also includes a rule added later (`loss`), so its 192 cover 24 rules.
