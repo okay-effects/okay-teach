@@ -22,6 +22,8 @@ final case class Taught[D, T](domain: Domain[D, T], data: D, meanings: Vector[T]
  *  - `train <domain> <cases.jsonl> <out dir> [epochs] [model]` — a LoRA on the cases (Qwen3-0.6B by default)
  *  - `lesson <domain> <n> <epochs> <sealed.tsv> [out]` — the standard Lesson (an effect, theory §2): the same line,
  *    the sealed set measured by aggregates only, the gate, a released competence, the trace in `<out>/trace.jsonl`
+ *  - `drive <domain> <sealed.tsv> [standard|model] [out]` — the lesson driven by a teacher choosing each operation
+ *    among those the laws allow (theory §7): the fixed policy, or the teacher model (TEACHER_URL); Σ in `sigma.txt`
  *  - `all <domain> <n> <epochs> <held-out> [out]` — the whole line, written, trained and read (below)
  *  - `read <domain> <cases> <adapter|-> <plain|calibrated> [epsilon] [model]` — the reader on cases (a jsonl of
  *    `write`, or a tsv of meaning, language, text): right by language, and the bar epsilon allows
@@ -56,6 +58,17 @@ object Teach:
         val o = LessonOnGpu(t, args(1), out, Map("held" -> Path.of(args(4)))).run(
           Lesson.standard[Lesson](Sealed("held"), args(2).toInt, args(3).toInt))
         println(s"released: ${o.released.fold("none (the gate did not pass)")(_.id)}")
+      case "drive" =>
+        val out = Path.of(args.lift(4).getOrElse(s"runs/${args(1)}-driven"))
+        val gpu = LessonOnGpu(t, args(1), out, Map("held" -> Path.of(args(2))))
+        val start = okay.teach.Sigma(args(1), Sealed("held"))
+        val end = if args.lift(3).contains("model") then
+          val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
+            env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
+          run(Llm.on(teacher)(gpu.on(okay.teach.Teaching.drive[Lesson + Llm](start, okay.teach.Teaching.byModel))))
+        else gpu.run(okay.teach.Teaching.drive[Lesson](start, okay.teach.Teaching.standard))
+        Files.writeString(out.resolve("sigma.txt"), end.said + "\n\nhistory:\n" + end.history.mkString("\n"))
+        println(end.said)
       case "all" => all(t, args(2).toInt, args(3).toInt, Path.of(args(4)),
         Path.of(args.lift(5).getOrElse(s"runs/${args(1)}")))
       case other => sys.error(s"no step $other")

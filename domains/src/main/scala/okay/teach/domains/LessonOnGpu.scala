@@ -65,3 +65,7 @@ final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFi
 
   def run[A](p: A ! Lesson): A =
     okay.scala3.run(handle(p, Handler.tail[Lesson, Pure, A, A](pure)([X] => (op: Lesson[X]) => answer(op))))
+
+  /** the Lesson handled inside a program of other effects too (a teacher model's `Llm`) */
+  def on[R[_], Rest[_], A](p: A ! R)(using Split[Lesson, R, Rest]): A ! Rest =
+    handle(p, Handler.tail[Lesson, Rest, A, A](pure)([X] => (op: Lesson[X]) => answer(op)))
