@@ -58,8 +58,8 @@ laws: every reference rule is reached by choosing, and the judge passes the refe
 page's), with an adapter or none; `train`, a LoRA on a domain's cases (rank 16, every projection, lr 2e-4, the
 prompt not learned), saved for mlx-scala and for the page; `read`, the measure and its bar.
 
-X
-one hole, a line "rule: <English title>").
+`Teach` (module `domains`): `write`, `train`, `read` over a named domain — the first `tax-rules` (okay-tax's rules,
+one hole, a line "rule: <English title>"); and `rules <train> <rounds> <out>` for Carroll's rules.
 
 ## 7. Not yet measured
 
