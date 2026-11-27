@@ -20,6 +20,7 @@ final case class Taught[D, T](domain: Domain[D, T], data: D, meanings: Vector[T]
  *  - `write <domain> <n> <out.jsonl>` — the teacher (TEACHER_URL, TEACHER_MODEL; the local 35B by default) writes n
  *    questions a language for each meaning; the kept (reached by the space) written as cases, the refused counted
  *  - `train <domain> <cases.jsonl> <out dir> [epochs] [model]` — a LoRA on the cases (Qwen3-0.6B by default)
+ *  - `all <domain> <n> <epochs> <held-out> [out]` — the whole line, written, trained and read (below)
  *  - `read <domain> <cases> <adapter|-> <plain|calibrated> [epsilon] [model]` — the reader on cases (a jsonl of
  *    `write`, or a tsv of meaning, language, text): right by language, and the bar epsilon allows
  */
@@ -48,6 +49,8 @@ object Teach:
         Path.of(args(3)), args.lift(4).fold(2)(_.toInt))
       case "read" => read(t, Path.of(args(2)), args(3), args(4), args.lift(5).fold(0.05)(_.toDouble),
         args.lift(6).getOrElse(model))
+      case "all" => all(t, args(2).toInt, args(3).toInt, Path.of(args(4)),
+        Path.of(args.lift(5).getOrElse(s"runs/${args(1)}")))
       case other => sys.error(s"no step $other")
 
   private val model = "mlx-community/Qwen3-0.6B-4bit"
@@ -98,3 +101,18 @@ object Teach:
       Files.writeString(out.resolve("best.dl"), p.toString)
       println(s"the best on the held out: ${CarrollRules.scored(p, held).said}") }
     println(f"${(System.nanoTime() - t0) / 1e9}%.0f s")
+
+  /**
+   * `all <domain> <n> <epochs> <held-out> [out]` — the whole line: the teacher's questions (`<out>/cases.jsonl`), a
+   * LoRA on them (`<out>/adapter`), then the held out read four ways — untaught and taught, plain and calibrated
+   */
+  def all[D, T](t: Taught[D, T], n: Int, epochs: Int, held: Path, out: Path): Unit =
+    Files.createDirectories(out)
+    val cases = out.resolve("cases.jsonl")
+    if !Files.exists(cases) then write(t, n, cases)
+    val adapter = out.resolve("adapter")
+    if !Files.exists(adapter.resolve("reader.adapter.safetensors")) then
+      OnGpu.train(t.domain, t.data, Teach.cases(t, cases), model, adapter, epochs)
+    for a <- Vector("-", adapter.resolve("reader.adapter.safetensors").toString); s <- Vector("plain", "calibrated") do
+      println(s"== ${if a == "-" then "untaught" else "taught"}, $s")
+      read(t, held, a, s, 0.05, model)
