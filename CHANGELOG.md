@@ -2,6 +2,7 @@
 
 Newest first.
 
+- 2026-11-27 — T2/T3: the Lesson effect, its GPU handler with the trace, the sealed set by id (c57e260).
 - 2026-11-27 — the theory (`specs/theory.md`: seven orthogonal factors, the Lesson as an effect, the laws of the
   process, diagnosis by factor, the domain as data, the catalog of engines, recursion L0/L1), the board
   (`SPRINT.md` T1–T8, `BACKLOG.md`), `GUIDE.md`.

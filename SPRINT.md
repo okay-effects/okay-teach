@@ -26,7 +26,15 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **Done when**: the four numbers and the bar are in `specs/teach.md` §7 with the run's date; the cases'
   kept/refused counts recorded; the result, good or bad, stated plainly.
 
-## T2 — the Lesson effect  `[ ]`
+## T2 — the Lesson effect  `[x]`
+
+- **Outcome** (c57e260): `core/Lesson.scala` — `Lesson[X]` (Ask, Train, Measure, Release, Uncovered), `Sealed`, `Asked`,
+  `Measured`, the gate `Lesson.passes` (L4), `Lesson.standard` (ask → train → four measures → release if the gate
+  passes); `LessonSuite` on fakes (the order, the gate refusing more silent wrong). `domains/LessonOnGpu.scala` —
+  the handler on this Mac, every op and result appended to `<out>/trace.jsonl`, `Release` writes the competence
+  directory (theory §8). `Teach lesson <domain> <n> <epochs> <sealed.tsv> [out]`. Not yet: Describe, Ground,
+  Theorize, Diagnose, Repair as operations (they come with T4, T5); `Teach all` kept as it was (T1 runs it).
+
 
 - **What**: `Lesson` as an effect (theory §2): the operations as an enum over Σ, handlers wrapping today's tools
   (`Teacher.write`, `OnGpu.train`, `OnGpu.read`, `Bar.choose`, `RuleTeacher`); a lesson is a program, run in one
@@ -36,7 +44,13 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   okay-scala (as okay-llm's `Llm`, `Read`).
 - **Done when**: `Teach all` is a Lesson program with the same output as T1; a test runs a lesson on fakes.
 
-## T3 — sealed as a capability  `[ ]`
+## T3 — sealed as a capability  `[x]`
+
+- **Outcome** (c57e260): a lesson program holds only `Sealed(id)`; the handler alone maps it to a file, `Measure`
+  returns `Measured` (counts by language, the bar) — no texts reach a lesson. `Teach read` (a person's tool)
+  prints misread texts only with `SHOW_TEXTS=1`. T1's run predates this and prints them to its log: a person's
+  log, never a teacher's input.
+
 
 - **What**: theory L1 in code: the sealed corpus is an opaque handle (`Sealed`), only the `Measure` handler opens
   it, and it returns aggregates (counts by language and hole), never texts.
