@@ -5,6 +5,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 | task | state | notes |
 |---|---|---|
+| T14 three-doors | in progress | MCP tools for a model, an okay-teach command, the skill |
 | T13 book-loop | in progress | a local model teaches a micro-model a book's topic, closed loop (specs/book-loop.md) |
 | T7 the-teacher-taught | next | traces of 6 lessons, the 35B as teacher (T5), then a local model trained on the good steps |
 | T9 teaching-skill | in progress | the whole process as a skill any model can follow: a domain as a JSON spec in the command, SKILL.md, then MCP tools |
@@ -236,3 +237,15 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   first loop on chapter 2, driven by the 35B, in ../okay-teach-run2 (a second pinned worktree: ../okay-teach-run
   holds the residence-driven-2 lesson), log runs/book-ch2.log, out runs/openstax-ch2.
 - **Done when**: specs/book-loop.md's done-when.
+
+## T14 — one tool, three doors: a model's (MCP), the command line's, an agent's (the skill)  `[~]`
+
+- **What** (the operator, 2026-11-27): the toolkit is a tool for a MODEL (MCP tools it calls), for the COMMAND LINE
+  (a real `okay-teach` command, not `sbt "domains/runMain …"`) and a SKILL for an agent — the same operations, the
+  same laws, enforced by the tool in all three.
+- **How**: (1) `bin/okay-teach`: runs `okay.teach.domains.Teach` on a classpath exported once from sbt (rebuilt
+  when the sources change), the MLX flags set; linkable into `~/.local/bin`. (2) an MCP server (`okay-teach mcp`,
+  stdio) on okay-mcp: tools `teach_check`, `teach_lesson`, `teach_book`, `teach_status`, `teach_result` — a long
+  operation starts in the background and returns a run id, `teach_status` follows it; sealed sets by path only,
+  results as counts (theory L1). (3) the skill and GUIDE point at both doors.
+- **Done when**: a model with only the MCP tools runs a lesson; the command line runs one with `okay-teach lesson …`.
