@@ -78,6 +78,12 @@ class TeachSuite extends munit.FunSuite:
     assertEquals(read("I want gamma", Reader.Scoring.ContentFree()), Some("gamma"))
     assertEquals(read("beta please", Reader.Scoring.ContentFree()), Some("beta"))
 
+  test("two readings: the runner-up at the least sure choice (SPRINT T16)"):
+    val two = fake(Reader.readTwo[Unit, String, Read](PickDomain, (), "I want gamma", Reader.Scoring.Plain))
+    assertEquals(two.first.meaning, Some("alpha"))
+    assertEquals(two.second.flatMap(_.meaning), Some("gamma"))
+    assertEquals(two.meanings, Vector("alpha", "gamma"))
+
   test("the lines a meaning is written in"):
     assertEquals(Reader.lines(PickDomain, (), "gamma", "gamma"), Vector("gamma"))
     assertEquals(RuleSpace.say(v, rule("anc(A, B) :- parent(A, B)."), "en"), "anc(X, Y) :- parent(X, Y).")

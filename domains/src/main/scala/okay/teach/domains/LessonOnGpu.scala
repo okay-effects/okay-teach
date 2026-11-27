@@ -58,15 +58,18 @@ final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFi
           reads.groupBy(_.c.language).map((l, rs) => l -> (rs.count(_.right), rs.size)),
           Bar.choose(reads.map(r => (r.margin, r.right)), epsilon),
           reads.filterNot(_.right).groupBy(r => (t.show(r.c.meant), r.meaning.fold("nothing")(t.show)))
-            .map((k, rs) => k -> rs.size))
+            .map((k, rs) => k -> rs.size),
+          inTwo = Some(reads.count(_.inTwo)))
       case Lesson.Baseline(on, cases) =>
         // the word search learned from the training cases alone, read on the sealed set: counts only (L1, L7)
         val file = sealedFiles.getOrElse(on.id, sys.error(s"no sealed set ${on.id}"))
-        val read = okay.teach.Baseline.words(Teach.cases(t, Path.of(cases.id)))
+        val ranked = okay.teach.Baseline.ranked(Teach.cases(t, Path.of(cases.id)))
         val sealedCases = Teach.cases(t, file)
-        val right = sealedCases.map(c => c -> read(c.text).contains(c.meant))
+        val firsts = sealedCases.map(c => c -> ranked(c.text).take(2))
+        val right = firsts.map((c, r) => c -> r.headOption.contains(c.meant))
         Measured("baseline (words)", right.count(_._2), right.size,
-          right.groupBy(_._1.language).map((l, rs) => l -> (rs.count(_._2), rs.size)), None)
+          right.groupBy(_._1.language).map((l, rs) => l -> (rs.count(_._2), rs.size)), None,
+          inTwo = Some(firsts.count((c, r) => r.contains(c.meant))))
       case Lesson.Release(adapter, measured) =>
         val dir = out.resolve("competence")
         Files.createDirectories(dir.resolve("adapter"))

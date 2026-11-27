@@ -16,6 +16,11 @@ object Baseline:
 
   /** the search learned from the cases: a text to its meaning, none when it shares no stem with any */
   def words[T](cases: Vector[Case[T]]): String => Option[T] =
+    val r = ranked(cases); text => r(text).headOption
+
+  /** the meanings the search ranks for a text, the best first (those sharing a stem only) — its first two are what
+   * a taught reader's two readings are compared with (SPRINT T16) */
+  def ranked[T](cases: Vector[Case[T]]): String => Vector[T] =
     val bags: Map[T, Set[String]] = cases.groupBy(_.meant).map((m, cs) => m -> cs.flatMap(c => stems(c.text)).toSet)
     val df: Map[String, Int] = bags.values.toVector.flatten.groupBy(identity).map((w, ws) => w -> ws.size)
     val n = bags.size.toDouble
@@ -23,4 +28,4 @@ object Baseline:
     text =>
       val q = stems(text).toSet
       val scored = order.map(m => m -> q.toVector.map(w => if bags(m)(w) then math.log(1 + n / df(w)) else 0.0).sum)
-      scored.filter(_._2 > 0).maxByOption(_._2).map(_._1)
+      scored.filter(_._2 > 0).sortBy(-_._2).map(_._1)

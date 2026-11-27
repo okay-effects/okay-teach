@@ -3,7 +3,7 @@ package okay.teach.domains
 import okay.effects.json.Json
 import okay.llm.{HttpBackend, Llm}
 import okay.scala3.*
-import okay.teach.{Case, Domain, DomainSpec, Lesson, Meanings, Reader, Sealed, Teacher}
+import okay.teach.{Case, Domain, DomainSpec, Lesson, Meanings, Reader, Ref, Sealed, Teacher}
 import okay.teach.mlx.OnGpu
 
 import java.nio.file.{Files, Path}
@@ -47,6 +47,7 @@ object Teach:
     """okay-teach <step> …  (bin/okay-teach; paths from the checkout's root; skills/teach-a-model says when)
       |  mcp                                                the model's door: these steps as MCP tools over stdio
       |  book <book.txt> [out] [model|standard]               the book loop: sections → a lesson the model drives
+      |  measure <book.txt|domain|spec.json> <sealed.tsv|-> <adapter|-> <cases.jsonl> [out]  right first + in two
       |  check <spec.json> <file.tsv>                       a spec and a question file checked: no GPU
       |  lesson <domain|spec.json> <n> <epochs> <sealed.tsv> [out]
       |  drive <domain|spec.json> <sealed.tsv> [standard|model] [out]
@@ -60,6 +61,7 @@ object Teach:
   def main(args: Array[String]): Unit =
     if args.isEmpty || args.length < 2 && args(0) != "mcp" then println(usage)
     else if args(0) == "mcp" then McpDoor.serve()
+    else if args(0) == "measure" then measure(args(1), args(2), args(3), Path.of(args(4)), args.lift(5))
     else if args(0) == "book" then book(Path.of(args(1)), args.lift(2), args.lift(3).getOrElse("model"))
     else if args(0) == "laws" then
       laws(args.lift(1).fold(4)(_.toInt), Path.of(args.lift(2).getOrElse("runs/kinematics")))
@@ -269,3 +271,21 @@ object Teach:
     else gpu.run(okay.teach.Teaching.drive[Lesson](start, okay.teach.Teaching.standard))
     Files.writeString(dir.resolve("sigma.txt"), end.said + "\n\nhistory:\n" + end.history.mkString("\n"))
     println(end.said)
+
+  /**
+   * `measure <book.txt|domain|spec.json> <sealed.tsv|-> <adapter|-> <cases.jsonl> [out]` — A MEASURE ALONE (SPRINT
+   * T16): an adapter already made, read plain on the sealed set (`-` for a book's own), and the baseline learned from
+   * its cases: counts only, right first and right among the first two; a line each in `out`'s trace
+   */
+  def measure(what: String, sealedArg: String, adapter: String, casesFile: Path, out: Option[String]): Unit =
+    val (t, sealedFile) =
+      if what.endsWith(".txt") then BookLoop.load(Path.of(what))
+      else ((if what.endsWith(".json") then fromSpec(Path.of(what)) else domains(what)), Path.of(sealedArg))
+    val held = if sealedArg == "-" then sealedFile else Path.of(sealedArg)
+    val gpu = LessonOnGpu(t, name(what), Path.of(out.getOrElse("runs/measure")), Map("held" -> held))
+    val on = Sealed("held")
+    val program = for
+      taught <- Lesson.measure[Lesson](on, Option.when(adapter != "-")(Ref(adapter)), false)
+      words <- Lesson.baseline[Lesson](on, Ref(casesFile.toString))
+    yield Vector(taught, words)
+    gpu.run(program).foreach(m => println(m.said))

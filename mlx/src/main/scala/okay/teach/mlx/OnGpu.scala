@@ -5,7 +5,6 @@ import okay.effects.json.Json
 import okay.llm.compute.OnMlx
 import okay.llm.qwen.{Qwen3Compute, Qwen3Config, Safetensors, Tokenizer}
 import okay.llm.read.{Adapted, OnQwen, Read, Reading}
-import okay.frames.Reading as FramesReading
 import okay.scala3.*
 import okay.teach.{Bar, Case, Domain, Reader}
 
@@ -39,16 +38,18 @@ object OnGpu:
     def close(): Unit = on.close()
 
   /** one case read: the reading's meaning and margin, and whether it is the meant */
-  final case class Read1[T](c: Case[T], meaning: Option[T], margin: Double):
+  final case class Read1[T](c: Case[T], meaning: Option[T], margin: Double, second: Option[T] = None):
     def right: Boolean = meaning.contains(c.meant)
+    /** the meant among the first two readings (SPRINT T16) */
+    def inTwo: Boolean = right || second.contains(c.meant)
 
   def read[D, T](domain: Domain[D, T], data: D, cases: Vector[Case[T]], gpu: Reading,
       scoring: Reader.Scoring = Reader.Scoring.Plain): Vector[Read1[T]] =
     cases.map { c =>
       // (isolated: a measure runs inside a lesson's handler — okay-scala's NestedRun otherwise)
-      val r = okay.scala3.runIsolated(handle(Reader.read[D, T, Read](domain, data, c.text, scoring),
-        Read.sync[Pure, FramesReading[D, T]](gpu)))
-      Read1(c, r.meaning, r.margin) }
+      val r = okay.scala3.runIsolated(handle(Reader.readTwo[D, T, Read](domain, data, c.text, scoring),
+        Read.sync[Pure, Reader.Two[D, T]](gpu)))
+      Read1(c, r.first.meaning, r.first.margin, r.second.flatMap(_.meaning)) }
 
   /** the counts of a measure, by language, and the bar `epsilon` allows on these readings */
   def said[T](reads: Vector[Read1[T]], epsilon: Double): String =

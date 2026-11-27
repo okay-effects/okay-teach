@@ -90,6 +90,9 @@ To let a model choose the operations itself instead: `Teach drive <domain>.json 
 ### 4. read — the numbers
 
 Each measure: `right R of N (by language)` and the bar `answered A, wrong W`; the baseline's line `baseline (words)`.
+It also says `right among the first two`: the meant is the best reading or the runner-up (overlapping meanings —
+then show both). `okay-teach measure <book.txt|domain|spec.json> <sealed|-> <adapter> <cases.jsonl>` measures an
+adapter already made, with no lesson.
 A reader that does not beat the baseline is not released. Look at the counts the teacher kept per meaning in the
 log: a meaning with few kept questions is a corpus gap. The bar the lesson prints is chosen on the set it is
 reported on — to trust it, calibrate on one half and report on the other:
