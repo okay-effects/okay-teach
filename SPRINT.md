@@ -74,7 +74,15 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   okay-invest's goal slots; each port checked by the laws and by reading the same as the code domain did.
 - **Done when**: TaxRules from JSON reads identically to the Scala one on the 192; the laws hold for pay and goal.
 
-## T5 — the teacher's space and the 35B as the first teacher  `[ ]`
+## T5 — the teacher's space and the 35B as the first teacher  `[~]`
+
+- **Progress**: `core/Teaching.scala` — `Sigma` (Σ, said in words), `Action`, `TeacherSpace` (the actions Σ allows:
+  the laws as preconditions; release only past the gate), `Teaching.drive` (a chooser → the Lesson → Σ, history =
+  the trace), `Teaching.standard` (the fixed policy), `Teaching.byModel` (any `Llm` by `Choose`); `TeachingSuite`
+  (17 core laws in all, incl. a chooser asking for what is not allowed is stopped). `Teach drive <domain>
+  <sealed.tsv> [standard|model] [out]`. Left: the run with the 35B (after T1 frees the GPU: T1's cases and
+  adapter can be copied into the drive's out dir so it starts from them), and Ask's arguments beyond n.
+
 
 - **What**: the L1 space (theory §7): given Σ, the next Lesson operation and its arguments as holes; the 35B reads
   it by `Choose`; each run writes its trace (Σ, operation, outcome).
