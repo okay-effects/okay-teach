@@ -3,7 +3,7 @@ package okay.teach.domains
 import okay.effects.json.Json
 import okay.llm.{HttpBackend, Llm}
 import okay.scala3.*
-import okay.teach.{Case, Domain, Lesson, Reader, Sealed, Teacher}
+import okay.teach.{Case, Domain, DomainSpec, Lesson, Meanings, Reader, Sealed, Teacher}
 import okay.teach.mlx.OnGpu
 
 import java.nio.file.{Files, Path}
@@ -47,8 +47,23 @@ object Teach:
       rules(args.lift(1).fold(10)(_.toInt), args.lift(2).fold(4)(_.toInt), Path.of(args(3)))
     else main1(args)
 
+  /**
+   * A DOMAIN AS A JSON SPEC (specs/domain-spec.md): `<name>.json`, its meanings from `<name>.meanings.txt` (one a
+   * line, in the spec's words) or enumerated when every hole is an enum; a sealed set's first column is a meaning's
+   * words. What a model teaching by the skill uses: no Scala
+   */
+  def fromSpec(file: Path): Taught[DomainSpec.Data, DomainSpec.Meaning] =
+    val spec = DomainSpec.fromJson(Json.fromText(Files.readString(file))).fold(e => sys.error(s"$file: $e"), identity)
+    val listed = Path.of(file.toString.stripSuffix(".json") + ".meanings.txt")
+    val meanings = (if Files.exists(listed) then Meanings.listed(spec, Files.readAllLines(listed).asScala.toVector)
+      else Meanings.enumerated(spec)).fold(e => sys.error(e), identity)
+    val space = spec.domain.space
+    Taught(spec.domain, Map.empty, meanings, spec.system, m => space.say(Map.empty, m, "en"),
+      w => space.parse(Map.empty, w, "en").getOrElse(sys.error(s"not a meaning of ${spec.name}: $w")))
+
   private def main1(args: Array[String]): Unit =
-    val t = domains.getOrElse(args(1), sys.error(s"no domain ${args(1)}; known: ${domains.keys.mkString(", ")}"))
+    val t: Taught[?, ?] = if args(1).endsWith(".json") then fromSpec(Path.of(args(1)))
+      else domains.getOrElse(args(1), sys.error(s"no domain ${args(1)}; known: ${domains.keys.mkString(", ")}"))
     args(0) match
       case "write" => write(t, args(2).toInt, Path.of(args(3)))
       case "train" => OnGpu.train(t.domain, t.data, cases(t, Path.of(args(2))), args.lift(5).getOrElse(model),

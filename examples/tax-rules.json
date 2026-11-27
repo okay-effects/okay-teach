@@ -1,0 +1,68 @@
+{
+  "name": "tax-rules",
+  "system": "You read a question about Polish tax law into the one rule it asks about, a line: rule: TITLE.\nrule: The tax scale: 12% and 32%\nrule: The tax-free amount of 30 000 zł\nrule: Employee's deductible costs\nrule: Filing jointly with a spouse\nrule: Joint filing and the linear tax or ryczałt\nrule: A single parent\nrule: The children's relief\nrule: The unused children's relief paid back\nrule: The linear tax of 19%\nrule: The health contribution on the linear tax 4.9%\nrule: Ryczałt rates\nrule: The health contribution on ryczałt\nrule: The health contribution on the scale 9%\nrule: ZUS contributions in 2026\nrule: The relief for the young under 26\nrule: The relief for coming back\nrule: The relief for families of four children or more\nrule: The relief for working seniors\nrule: The joint cap on the exemptions 85 528 zł\nrule: The internet relief\nrule: Deducting donations\nrule: The thermal modernisation relief\nrule: The deadline for the annual return\nrule: Rounding the tax to full złoty",
+  "languages": [
+    "en",
+    "pl",
+    "ru",
+    "uk"
+  ],
+  "holes": [
+    {
+      "key": "rule",
+      "kind": "enum",
+      "options": [
+        "scale",
+        "free",
+        "employee.costs",
+        "joint",
+        "halves.excluded",
+        "single.parent",
+        "children",
+        "children.back",
+        "linear",
+        "linear.health",
+        "lump.rates",
+        "lump.health",
+        "scale.health",
+        "zus",
+        "young",
+        "return.relief",
+        "family4",
+        "senior",
+        "exempt.cap",
+        "internet",
+        "donations",
+        "thermo",
+        "deadline",
+        "rounding"
+      ],
+      "shown": {
+        "children": "The children's relief",
+        "children.back": "The unused children's relief paid back",
+        "deadline": "The deadline for the annual return",
+        "donations": "Deducting donations",
+        "employee.costs": "Employee's deductible costs",
+        "exempt.cap": "The joint cap on the exemptions 85 528 zł",
+        "family4": "The relief for families of four children or more",
+        "free": "The tax-free amount of 30 000 zł",
+        "halves.excluded": "Joint filing and the linear tax or ryczałt",
+        "internet": "The internet relief",
+        "joint": "Filing jointly with a spouse",
+        "linear": "The linear tax of 19%",
+        "linear.health": "The health contribution on the linear tax 4.9%",
+        "lump.health": "The health contribution on ryczałt",
+        "lump.rates": "Ryczałt rates",
+        "return.relief": "The relief for coming back",
+        "rounding": "Rounding the tax to full złoty",
+        "scale": "The tax scale: 12% and 32%",
+        "scale.health": "The health contribution on the scale 9%",
+        "senior": "The relief for working seniors",
+        "single.parent": "A single parent",
+        "thermo": "The thermal modernisation relief",
+        "young": "The relief for the young under 26",
+        "zus": "ZUS contributions in 2026"
+      }
+    }
+  ]
+}

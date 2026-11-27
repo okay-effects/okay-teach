@@ -174,3 +174,26 @@ object DomainSpec:
         acc.flatMap(done => h.map(done :+ _)))
     yield DomainSpec(name, system, hs, Option(strings(j, "languages")).filter(_.nonEmpty)
       .getOrElse(Vector("en", "pl", "ru", "uk")), j.field("end").contains(Json.Bool(true)))
+
+/** THE MEANINGS OF A SPEC A TEACHER WRITES FOR: listed (one meaning's words a line), or, when every hole it reaches is
+ * an `enum`, all of them enumerated (at most `cap`) */
+object Meanings:
+  def listed(spec: DomainSpec, lines: Vector[String]): Either[String, Vector[DomainSpec.Meaning]] =
+    val space = spec.domain.space
+    lines.map(_.trim).filter(l => l.nonEmpty && !l.startsWith("#")).foldLeft[Either[String,
+      Vector[DomainSpec.Meaning]]](Right(Vector.empty))((acc, l) =>
+      acc.flatMap(done => space.parse(Map.empty, l, "en").toRight(s"not a meaning of ${spec.name}: $l").map(done :+ _)))
+
+  def enumerated(spec: DomainSpec, cap: Int = 1000): Either[String, Vector[DomainSpec.Meaning]] =
+    def go(chosen: Vector[okay.frames.Choice]): Either[String, Vector[DomainSpec.Meaning]] =
+      DomainSpec.nextHole(spec, chosen) match
+        case None => Right(Vector(chosen.map(c => c.hole -> c.option)))
+        case Some(h) if h.key == DomainSpec.endLine => Right(Vector(chosen.map(c => c.hole -> c.option)))
+        case Some(h) => h.kind match
+          case HoleKind.Enum(os, _) =>
+            (if h.notSaid then DomainSpec.notSaid +: os else os).foldLeft[Either[String,
+              Vector[DomainSpec.Meaning]]](Right(Vector.empty)) { (acc, o) =>
+              acc.flatMap(done => if done.size > cap then Left(s"more than $cap meanings: list them")
+                else go(chosen :+ okay.frames.Choice(h.key, o)).map(done ++ _)) }
+          case _ => Left(s"the hole ${h.key} is not an enum: list the meanings (one a line, in the spec's words)")
+    go(Vector.empty)

@@ -21,3 +21,9 @@ class TaxRulesSpecSuite extends munit.FunSuite:
       val b = d.space.next(Map.empty, t, Vector.empty).get
       assertEquals(b.options, a.options)
       assertEquals(b.options.map(o => d.line(b, o)), a.options.map(o => TaxRules.line(Hole("rule", a.options), o)))
+
+  test("the example spec file: read by the command as a domain, its 25 meanings enumerated, each said and read back"):
+    val t = Teach.fromSpec(java.nio.file.Path.of("examples/tax-rules.json"))
+    assertEquals(t.meanings.size, okay.tax.Rules.all.size)
+    for m <- t.meanings do assertEquals(t.read(t.show(m)), m)
+    assertEquals(t.domain.system(Map.empty), TaxRules.system(()))

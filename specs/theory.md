@@ -169,3 +169,18 @@ A competence is released as a directory: `spec.json` (the DomainSpec), the engin
 catalog), `theory/` (rules, equations — data), `adapter/reader.adapter.safetensors`, `bar.json` (ε, the bar, the
 calibration's counts), `provenance.json` (each part's producer, run and numbers), `README.md` (what it answers,
 what it does not). A page loads the base model, the adapter and the theory, and answers by `Reader` + the engine.
+
+## 9. The process as a skill
+
+The lesson is carried three ways, one procedure and one set of laws in each:
+
+| Carrier | Who runs it | Where | The laws held by |
+|---|---|---|---|
+| the skill | any agent with a shell (Claude, opencode, a local model) | `skills/teach-a-model/SKILL.md` (Agent Skills format, linked into `~/.agents/skills`, `~/.claude/skills`) | the agent's reading of it, and the tools below |
+| the tools | the skill's agent, the teacher model | `Teach` (`lesson`, `drive`, `write`, `train`, `read`, `rules`, `laws`), a domain as a JSON spec; later the same as MCP tools | the tools themselves: sealed by id, aggregates only, the gate, reach before training |
+| the teacher model | itself | weights trained on traces (T7) | the space of operations it chooses in (§7: it cannot choose an operation out of order) |
+
+The recursion closes here: a lesson run by any carrier writes a trace; traces teach the teacher model; the teacher
+model, given the same skill and tools, runs lessons and writes traces. What makes it safe to hand to any model is that
+the laws live in the tools, not in the model's good behaviour: a careless agent can choose badly — the trace shows it
+and the gate refuses its reader — but it cannot see the sealed set or release a worse reader.
