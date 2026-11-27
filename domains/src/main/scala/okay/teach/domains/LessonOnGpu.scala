@@ -32,7 +32,8 @@ final class LessonOnGpu[D, T](t0: Taught[D, T], name: String, out: Path, sealedF
   private var t = t0
   private var sealedNow = sealedFiles
   private var casesFile = out.resolve("cases.jsonl")
-  private val validFile = out.resolve("valid.jsonl")
+  // the questions apart, relabelled to `valid.m<k>.jsonl` by each merge (the first one kept as written)
+  private var validFile = out.resolve("valid.jsonl")
   private var generation = 0
 
   private def note(op: String, result: String): Unit =
@@ -124,7 +125,10 @@ final class LessonOnGpu[D, T](t0: Taught[D, T], name: String, out: Path, sealedF
         generation += 1
         val next = out.resolve(s"cases.m$generation.jsonl")
         relabel(casesFile, next, words)
-        if Files.exists(validFile) then relabel(validFile, validFile, words)
+        if Files.exists(validFile) then
+          val v = out.resolve(s"valid.m$generation.jsonl")
+          relabel(validFile, v, words)
+          validFile = v
         t = merged
         sealedNow = sealedNow.map((id, _) => id -> sealedMerged)
         casesFile = next
