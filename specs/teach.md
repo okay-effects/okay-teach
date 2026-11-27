@@ -1,4 +1,4 @@
-# okay-teach — a small model taught a domain, and a big one made to write by choosing
+# okay-teach — the tools (the theory they serve: specs/theory.md)
 
 The problems it answers (okay-tax specs/tax.md §6, okay-study specs/study.md §4, okay-desk specs/frames.md):
 

@@ -11,4 +11,5 @@ Teach a small model a domain, and make a big model write formal rules by choosin
   by a book's exercises.
 - `OnGpu` — the reader and the LoRA training on Apple's GPU (MLX); `Teach` — the command.
 
-See `specs/teach.md`. Built on [okay-effects](https://github.com/okay-effects).
+The aim — models teaching models, recursively — and its formal model: `specs/theory.md`. How to use it: `GUIDE.md`.
+The tools: `specs/teach.md`. The work: `SPRINT.md`. Built on [okay-effects](https://github.com/okay-effects).

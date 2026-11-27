@@ -1,0 +1,74 @@
+# SPRINT — okay-teach
+
+The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` next. Read `specs/theory.md` first
+(the contract), `specs/teach.md` (the tools), `GUIDE.md` (how to run them). Can-wait work is in `BACKLOG.md`.
+
+| task | state | notes |
+|---|---|---|
+| T1 first-run | in progress | the first real lesson on okay-tax's rules |
+
+## T1 — first-run: the first real lesson, okay-tax's rules  `[~]`
+
+- **What**: `Teach all tax-rules` end to end — the 35B writes training questions, a LoRA on Qwen3-0.6B, okay-tax's
+  192 held-out questions read four ways (untaught / taught × plain / calibrated), the bar at ε 0.05.
+- **Why**: the tools were built and their laws pass, but no real run yet; the teacher model (T5–T7) needs at least
+  one real lesson and its trace. Baselines to beat: the word search 134 of 192 first; Qwen3-0.6B untaught 16; 4B 89
+  (okay-tax specs/tax.md §6.2).
+- **How**: `sbt "domains/runMain okay.teach.domains.Teach all tax-rules 8 2 ../okay-tax/data/heldout.tsv runs/tax-rules"`
+  (8 questions a language a rule: 25 rules × 4 × 8 = 800 asked); with nohup, log to `runs/tax-rules/all.log`. Steps
+  are skipped when their output exists (`cases.jsonl`, `adapter/`), so a rerun resumes.
+- **Gotchas**: the 35B (okay-mlx on :8090) and the LoRA share the Mac's GPU with other sessions — check `ps` for
+  other GPU jobs first; the teacher must never see `heldout.tsv` (it is only an argument of `read`) — L1 of the
+  theory; okay-tax's held-out also includes a rule added later (`loss`), so its 192 cover 24 rules.
+- **Done when**: the four numbers and the bar are in `specs/teach.md` §7 with the run's date; the cases'
+  kept/refused counts recorded; the result, good or bad, stated plainly.
+
+## T2 — the Lesson effect  `[ ]`
+
+- **What**: `Lesson` as an effect (theory §2): the operations as an enum over Σ, handlers wrapping today's tools
+  (`Teacher.write`, `OnGpu.train`, `OnGpu.read`, `Bar.choose`, `RuleTeacher`); a lesson is a program, run in one
+  line with its handlers.
+- **How**: core: `Lesson[X]` enum (Describe, Ground, Theorize, Ask, Train, Measure, Calibrate, Diagnose, Repair,
+  Release, Uncovered), `Sigma` (the state, as data), programs `Lesson.run`; mlx/domains: the handler. Effects on
+  okay-scala (as okay-llm's `Llm`, `Read`).
+- **Done when**: `Teach all` is a Lesson program with the same output as T1; a test runs a lesson on fakes.
+
+## T3 — sealed as a capability  `[ ]`
+
+- **What**: theory L1 in code: the sealed corpus is an opaque handle (`Sealed`), only the `Measure` handler opens
+  it, and it returns aggregates (counts by language and hole), never texts.
+- **Done when**: no API outside `Measure` can read sealed texts (a test: a lesson program cannot); `Teach read` on
+  sealed goes through it.
+
+## T4 — the domain as data  `[ ]`
+
+- **What**: `DomainSpec` (theory §5) as JSON and its interpreter to a `Space` + `Domain`; hole kinds Enum,
+  FromText, FromData, Derived (a closed set of named functions), Lines; the words `key: value` with an exact parser.
+- **How**: port `TaxRules` first (one Enum hole), then okay-desk's pay lines (FromText numbers, Enum forms), then
+  okay-invest's goal slots; each port checked by the laws and by reading the same as the code domain did.
+- **Done when**: TaxRules from JSON reads identically to the Scala one on the 192; the laws hold for pay and goal.
+
+## T5 — the teacher's space and the 35B as the first teacher  `[ ]`
+
+- **What**: the L1 space (theory §7): given Σ, the next Lesson operation and its arguments as holes; the 35B reads
+  it by `Choose`; each run writes its trace (Σ, operation, outcome).
+- **Done when**: a lesson on tax-rules driven by the 35B alone reaches a released competence or stops on its budget
+  with its trace written.
+
+## T6 — the traces of past lessons  `[ ]`
+
+- **What**: lessons already run by people and Claude written as traces (data): okay-desk (frames, self-play, the
+  domains), okay-invest (goal reader v1→v2), okay-tax (§6: search vs models), okay-study (Carroll, CUKR).
+- **Done when**: `data/traces/*.jsonl`, each step Σ → operation → measured outcome, with its source commit.
+
+## T7 — the teacher taught  `[ ]`
+
+- **What**: a local model (Qwen3-1.7B or 4B + LoRA) trained on the traces' good steps; measured on held-out domains
+  (theory §7: CUKR from okay-migrant first) — alone, does it get a reader past the baseline, or say `Uncovered`?
+
+## T8 — the equations engine  `[ ]`
+
+- **What**: the catalog's missing engine (theory §6): quantities with dimensions, equations as data, a solver that
+  chains them to the unknown with exact arithmetic and checks dimensions; then a physics chapter (OpenStax,
+  CC BY) as its first theory, written by `Theorize` and judged by the chapter's worked examples.
+- **How**: spec first (`specs/equations.md`); reuse okay-proof's exact arithmetic and okay-desk's units.
