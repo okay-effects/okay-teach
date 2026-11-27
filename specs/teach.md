@@ -121,3 +121,20 @@ adapter, `Teach calibrate`:
 Above the bar the reader answered 30 of the 96 questions it had never been calibrated on, all right; below it, it
 asks. 30 is few: "0 wrong of 30" bounds the true rate only loosely (one-sided 95%: under ~10%); more sealed questions
 tighten it. The method holds: the bar is the calibration's, the number the report's.
+
+### 7.4 The skill's check, and the baseline every lesson now beats (T12, 2026-11-27)
+
+A fresh agent given only `skills/teach-a-model/SKILL.md` and a new domain (which Polish residence or work document a
+question is about, 7 meanings) wrote the spec and 56 sealed questions and ran the lesson end to end in ~3 minutes
+(`examples/residence.*`, `data/traces/residence.jsonl`): 224 teacher questions (32 each), untaught 19, taught 49 of
+56, the bar answering 24 with 0 wrong, released. Its eleven findings were repaired in the tools and the skill
+(SPRINT T12); the largest: the gate had no baseline. Both lessons re-measured with the baseline (L7: a word search
+learned from the teacher's training questions, never seeing the sealed set):
+
+| domain | untaught | baseline (words) | taught | released |
+|---|---|---|---|---|
+| residence documents (56) | 19 | 22 | **49** | yes |
+| okay-tax's rules (192) | 14 | 115 | **141** | yes |
+
+(okay-tax's hand-written search scored 134; the agent's own word search 54 of 56 was written from memory of the
+sealed questions — tuned on them, worth nothing: why law 6 forbids it.)

@@ -5,7 +5,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 | task | state | notes |
 |---|---|---|
-| T9 check | in progress (a fresh agent, 14:06) | a fresh agent given only the skill runs a lesson on a new domain (the skill's done-when) |
+| T7 the-teacher-taught | next | traces of 6 lessons, the 35B as teacher (T5), then a local model trained on the good steps |
 | T9 teaching-skill | in progress | the whole process as a skill any model can follow: a domain as a JSON spec in the command, SKILL.md, then MCP tools |
 
 ## T1 — first-run: the first real lesson, okay-tax's rules  `[x]`
@@ -143,7 +143,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **Progress** (166851e): `Teach` takes `<domain>.json` (`Teach.fromSpec`; meanings from `<domain>.meanings.txt` or
   enumerated when every hole is an enum — `Meanings`), `examples/tax-rules.json` (made by `SpecExport`, read back
   by a test), `skills/teach-a-model/SKILL.md` linked into `~/.agents/skills` and `~/.claude/skills`, theory §9.
-  Left: the done-when check — RUNNING since 2026-11-27 14:06: a fresh agent given only the skill and a new domain
+  DONE 2026-11-27 (T12): the done-when check passed — a fresh agent given only the skill and a new domain
   (which Polish residence or work document a question is about, 7 meanings) writes examples/residence.json and its
   sealed set, runs the lesson in the main checkout (do not edit code there until its run has compiled), writes
   data/traces/residence.jsonl, reports where the skill was unclear; then the MCP tools.
@@ -192,7 +192,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   realised wrong at it. Record both numbers.
 - **Done when**: specs/teach.md §7.3 — the bar from calibration, its answered / wrong on the report half.
 
-## T12 — the skill's check, its findings repaired  `[~]`
+## T12 — the skill's check, its findings repaired  `[x]`
+
+- **Outcome** (9f97768, 2bca9cd; specs/teach.md §7.4): all eleven findings repaired; the baseline in every lesson
+  and the gate (L7); re-measured: residence taught 49 vs baseline 22, tax rules taught 141 vs baseline 115 — both
+  released.
 
 - **The check** (2026-11-27 14:06–14:15, a fresh agent given only the skill; its files: examples/residence.json,
   examples/residence.sealed.tsv, data/traces/residence.jsonl, runs/residence/): the lesson ran end to end in ~3 min
