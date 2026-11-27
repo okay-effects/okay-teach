@@ -1,0 +1,96 @@
+scale	pl	Zarabiam 150 tysięcy rocznie, jaka stawka mnie dotyczy powyżej progu?
+scale	en	I earn 150k a year, what rate applies above the threshold?
+scale	ru	Зарабатываю 150 тысяч в год, какая ставка после порога?
+scale	uk	Заробляю 150 тисяч на рік, яка ставка після порогу?
+free	pl	Po co pracodawcy oświadczenie PIT-2?
+free	en	Why does my employer want a PIT-2 form?
+free	ru	Зачем работодатель просит заполнить PIT-2?
+free	uk	Навіщо роботодавець просить заповнити PIT-2?
+employee.costs	pl	Pracuję na dwóch etatach, ile kosztów mogę odliczyć?
+employee.costs	en	I have two jobs at once, how much in costs can I deduct?
+employee.costs	ru	Работаю на двух работах по umowa o pracę, сколько расходов можно учесть?
+employee.costs	uk	Працюю на двох роботах за umowa o pracę, скільки витрат можна врахувати?
+joint	pl	Wzięliśmy ślub w czerwcu, czy możemy złożyć zeznanie razem?
+joint	en	We got married in June, can we file one return as a couple?
+joint	ru	Мы поженились в июне, можно ли нам декларироваться вместе?
+joint	uk	Ми одружилися в червні, чи можна нам декларуватися разом?
+halves.excluded	pl	Jestem na podatku liniowym i sama wychowuję córkę, czy przysługuje mi rozliczenie z dzieckiem?
+halves.excluded	en	I am on the flat 19% tax and raise my son alone, can I file as a single parent?
+halves.excluded	ru	Я на линейном налоге и одна воспитываю дочь, можно ли рассчитаться с ребёнком?
+halves.excluded	uk	Я на лінійному податку і сама виховую доньку, чи можна розрахуватися з дитиною?
+single.parent	pl	Czy wdowiec wychowujący dziecko może liczyć podatek od połowy dochodów?
+single.parent	en	Can a widower raising a child halve his income for the tax?
+single.parent	ru	Может ли вдовец с ребёнком считать налог с половины дохода?
+single.parent	uk	Чи може вдівець з дитиною рахувати податок з половини доходу?
+children	pl	Czy przy jednym dziecku jest jakiś limit zarobków do ulgi?
+children	en	Is there an income limit for the tax credit with one child?
+children	ru	Есть ли ограничение по доходу для вычета на одного ребёнка?
+children	uk	Чи є обмеження за доходом для вирахування на одну дитину?
+children.back	pl	Podatek wyszedł mniejszy niż ulga na dzieci, co z resztą?
+children.back	en	I earn little and could not use the whole child relief, is the remainder refunded?
+children.back	ru	Зарабатываю мало и не использовала всю льготу на детей, доплатит ли налоговая?
+children.back	uk	Заробляю мало і не використала всю пільгу на дітей, чи доплатить податкова?
+linear	pl	Czy na liniówce mogę odliczyć ulgę na dzieci?
+linear	en	Can I use the child relief if my business pays the flat tax?
+linear	ru	Можно ли на линейке получить льготу на детей?
+linear	uk	Чи можна на лінійці отримати пільгу на дітей?
+linear.health	pl	Jaki procent dochodu idzie na NFZ przy podatku liniowym?
+linear.health	en	What percent of income goes to NFZ health insurance on the 19% tax?
+linear.health	ru	Какой процент дохода идёт в NFZ на линейном налоге?
+linear.health	uk	Який відсоток доходу йде в NFZ на лінійному податку?
+lump.rates	pl	Do jakiego przychodu w euro mogę być na ryczałcie?
+lump.rates	en	Up to what turnover in euro can I stay on the lump sum tax?
+lump.rates	ru	До какой выручки в евро можно оставаться на ryczałt?
+lump.rates	uk	До якої виручки в євро можна залишатися на ryczałt?
+lump.health	pl	Czy na ryczałcie mogę odliczyć składkę zdrowotną?
+lump.health	en	Can I deduct the health insurance when I pay the lump sum tax?
+lump.health	ru	Можно ли на ryczałt вычесть взнос на здоровье?
+lump.health	uk	Чи можна на ryczałt вирахувати внесок на здоров'я?
+scale.health	pl	Jak liczona jest składka na NFZ z mojej pensji?
+scale.health	en	How is the NFZ health contribution taken from my salary calculated?
+scale.health	ru	Как считается взнос в NFZ с моей зарплаты?
+scale.health	uk	Як рахується внесок до NFZ з моєї зарплати?
+zus	pl	Do jakiej kwoty rocznie płaci się składki emerytalne?
+zus	en	Up to what yearly amount are pension contributions paid?
+zus	ru	До какой суммы в год платятся пенсионные взносы?
+zus	uk	До якої суми на рік сплачуються пенсійні внески?
+young	pl	Student na zleceniu przed 26 rokiem życia — jest zwolnienie?
+young	en	Is a student under 26 on a contract of mandate exempt from tax?
+young	ru	Студент до 26 лет на umowa zlecenie освобождён от налога?
+young	uk	Студент до 26 років на umowa zlecenie звільнений від податку?
+return.relief	pl	Przeprowadziłem się do Polski w zeszłym roku, czy przez kilka lat nie płacę PIT?
+return.relief	en	I relocated to Poland last year, am I exempt from PIT for some years?
+return.relief	ru	Вернулся в Польшу после работы за границей, не плачу PIT несколько лет?
+return.relief	uk	Повернувся до Польщі після роботи за кордоном, не плачу PIT кілька років?
+family4	pl	Jaka ulga dla matki czwórki dzieci?
+family4	en	What relief is there for a mother of four?
+family4	ru	Какая льгота для матери четверых детей?
+family4	uk	Яка пільга для матері чотирьох дітей?
+senior	pl	Kobieta po sześćdziesiątce odłożyła emeryturę i dalej pracuje — jakie zwolnienie?
+senior	en	A woman over 60 keeps working and postponed her pension, is she exempt?
+senior	ru	Женщина после 60 работает и отложила пенсию, есть ли освобождение?
+senior	uk	Жінка після 60 працює і відклала пенсію, чи є звільнення?
+exempt.cap	pl	Wróciłam do Polski przed 26. urodzinami, czy dostanę dwa razy po 85 tysięcy?
+exempt.cap	en	Can I combine the youth and the returnee exemptions for twice the limit?
+exempt.cap	ru	Можно ли совместить освобождение для молодых и для вернувшихся и получить двойной лимит?
+exempt.cap	uk	Чи можна поєднати звільнення для молоді й для тих, хто повернувся, і отримати подвійний ліміт?
+internet	pl	Ile można odliczyć za abonament internetowy?
+internet	en	How much can I deduct for my internet subscription?
+internet	ru	Сколько можно вычесть за абонемент интернета?
+internet	uk	Скільки можна вирахувати за абонемент інтернету?
+donations	pl	Ile maksymalnie mogę odliczyć z darowizn na kościół?
+donations	en	What is the maximum I can deduct for gifts to a church?
+donations	ru	Сколько максимум можно вычесть из пожертвований на церковь?
+donations	uk	Скільки максимум можна вирахувати з пожертв на церкву?
+thermo	pl	Ile mogę odliczyć za pompę ciepła w domu jednorodzinnym?
+thermo	en	How much can I deduct for a heat pump in my family house?
+thermo	ru	Сколько можно вычесть за тепловой насос в частном доме?
+thermo	uk	Скільки можна вирахувати за тепловий насос у приватному будинку?
+deadline	pl	Od kiedy można wysłać zeznanie roczne?
+deadline	en	From what date can I send my annual return?
+deadline	ru	С какого числа можно отправить годовую декларацию?
+deadline	uk	З якого числа можна надіслати річну декларацію?
+rounding	pl	Wyszło mi 1234 zł i 49 gr podatku, ile wpisać?
+rounding	en	My tax came to 1234.49 zł, what number goes in the form?
+rounding	ru	У меня вышло 1234 злотых 49 грошей налога, что вписать?
+rounding	uk	У мене вийшло 1234 злотих 49 грошів податку, що вписати?

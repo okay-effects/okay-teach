@@ -25,6 +25,8 @@ final case class Taught[D, T](domain: Domain[D, T], data: D, meanings: Vector[T]
  *  - `drive <domain> <sealed.tsv> [standard|model] [out]` — the lesson driven by a teacher choosing each operation
  *    among those the laws allow (theory §7): the fixed policy, or the teacher model (TEACHER_URL); Σ in `sigma.txt`
  *  - `laws [rounds] [out]` — kinematics' laws written by choosing (OpenStax §2.5), judged, the held out measured
+ *  - `calibrate <domain> <adapter> <calibration.tsv> <report.tsv> [epsilon]` — the bar chosen on one set, its
+ *    answered and wrong reported on another (theory L2)
  *  - `all <domain> <n> <epochs> <held-out> [out]` — the whole line, written, trained and read (below)
  *  - `read <domain> <cases> <adapter|-> <plain|calibrated> [epsilon] [model]` — the reader on cases (a jsonl of
  *    `write`, or a tsv of meaning, language, text): right by language, and the bar epsilon allows
@@ -86,6 +88,8 @@ object Teach:
         else gpu.run(okay.teach.Teaching.drive[Lesson](start, okay.teach.Teaching.standard))
         Files.writeString(out.resolve("sigma.txt"), end.said + "\n\nhistory:\n" + end.history.mkString("\n"))
         println(end.said)
+      case "calibrate" =>
+        calibrate(t, Path.of(args(2)), Path.of(args(3)), Path.of(args(4)), args.lift(5).fold(0.05)(_.toDouble))
       case "all" => all(t, args(2).toInt, args(3).toInt, Path.of(args(4)),
         Path.of(args.lift(5).getOrElse(s"runs/${args(1)}")))
       case other => sys.error(s"no step $other")
@@ -185,3 +189,20 @@ object Teach:
       val v = okay.teach.LawTeacher.judge(theory, Kinematics.held)
       println(s"the best on the held out: ${v.passed} of ${v.of}") }
     println(f"${(System.nanoTime() - t0) / 1e9}%.0f s")
+
+  /**
+   * `calibrate <domain> <adapter> <calibration.tsv> <report.tsv> [epsilon]` — the bar chosen on one set and reported
+   * on another (theory L2: calibration and sealed disjoint): on the report set, how many the reader answers above the
+   * bar and how many of those are wrong. Only counts are printed
+   */
+  def calibrate[D, T](t: Taught[D, T], adapter: Path, calibration: Path, report: Path, epsilon: Double): Unit =
+    val gpu = OnGpu.Gpu(model, Some(adapter))
+    val (cal, rep) = try (OnGpu.read(t.domain, t.data, cases(t, calibration), gpu),
+      OnGpu.read(t.domain, t.data, cases(t, report), gpu)) finally gpu.close()
+    println(s"calibration: ${OnGpu.said(cal, epsilon)}")
+    okay.teach.Bar.choose(cal.map(r => (r.margin, r.right)), epsilon) match
+      case None => println("no bar holds on the calibration set")
+      case Some(b) =>
+        val answered = rep.filter(_.margin >= b.bar)
+        println(f"report: right ${rep.count(_.right)} of ${rep.size}; at the bar ${b.bar}%.3f answered " +
+          s"${answered.size} of ${rep.size}, wrong ${answered.count(!_.right)}")

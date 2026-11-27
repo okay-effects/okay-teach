@@ -1,0 +1,96 @@
+scale	pl	Od jakiej kwoty płacę 32 procent podatku?
+scale	en	At what income does the 32 percent rate start in Poland?
+scale	ru	С какой суммы в Польше начинается налог 32 процента?
+scale	uk	З якої суми в Польщі починається податок 32 відсотки?
+free	pl	Ile mogę zarobić bez płacenia podatku?
+free	en	How much can I earn without paying any income tax?
+free	ru	Сколько можно заработать без налога в Польше?
+free	uk	Скільки можна заробити без податку в Польщі?
+employee.costs	pl	Mieszkam w innym mieście niż firma, czy mam wyższe koszty?
+employee.costs	en	I commute from another town to work, are my deductible costs higher?
+employee.costs	ru	Я езжу на работу из другого города, у меня больше вычет расходов?
+employee.costs	uk	Я їжджу на роботу з іншого міста, у мене більший вирахування витрат?
+joint	pl	Czy opłaca się wspólny PIT z mężem, który nie pracuje?
+joint	en	My wife does not work, can we file our taxes together?
+joint	ru	Жена не работает, можем ли мы подать одну декларацию на двоих?
+joint	uk	Дружина не працює, чи можемо ми подати одну декларацію на двох?
+halves.excluded	pl	Mam firmę na ryczałcie, a żona etat — czy możemy rozliczyć się wspólnie?
+halves.excluded	en	I pay ryczałt and my husband is employed, may we still file jointly?
+halves.excluded	ru	У меня ryczałt, муж на трудовом договоре — можем ли подать совместно?
+halves.excluded	uk	У мене ryczałt, чоловік на трудовому договорі — чи можемо подати спільно?
+single.parent	pl	Jestem rozwódką z synem, jak mam się rozliczyć?
+single.parent	en	I am divorced and my daughter lives with me, is there a special way to file?
+single.parent	ru	Я в разводе, сын живёт со мной, как мне подавать декларацию?
+single.parent	uk	Я розлучена, син живе зі мною, як мені подавати декларацію?
+children	pl	Mam troje dzieci, ile odliczę od podatku?
+children	en	I have three kids, how much comes off my tax?
+children	ru	У меня трое детей, сколько вычтут из налога?
+children	uk	У мене троє дітей, скільки віднімуть з податку?
+children.back	pl	Zarabiam mało i nie wykorzystałam całej ulgi na dzieci, czy urząd mi dopłaci?
+children.back	en	My tax is smaller than the child credit, do I get the rest as cash?
+children.back	ru	Налог меньше льготы на детей, вернут ли остаток деньгами?
+children.back	uk	Податок менший за пільгу на дітей, чи повернуть залишок грошима?
+linear	pl	Do kiedy muszę zgłosić wybór 19 procent?
+linear	en	By when do I have to tell the tax office I want the flat 19%?
+linear	ru	До какого числа нужно сообщить о выборе налога 19 процентов?
+linear	uk	До якого числа треба повідомити про вибір податку 19 відсотків?
+linear.health	pl	Ile składki zdrowotnej odliczę na liniowym w tym roku?
+linear.health	en	How much of the health insurance can I deduct on the flat tax this year?
+linear.health	ru	Сколько медицинской страховки можно вычесть на линейном в этом году?
+linear.health	uk	Скільки медичного страхування можна вирахувати на лінійному цього року?
+lump.rates	pl	Jestem programistą na B2B, jaką stawkę ryczałtu wybrać?
+lump.rates	en	I am a software developer on B2B, which ryczałt rate do I pay?
+lump.rates	ru	Я программист на B2B, какая у меня ставка ryczałt?
+lump.rates	uk	Я програміст на B2B, яка в мене ставка ryczałt?
+lump.health	pl	Ile wynosi zdrowotna na ryczałcie przy 200 tysiącach przychodu?
+lump.health	en	How much health contribution do I pay on ryczałt with 200k revenue?
+lump.health	ru	Сколько платить за здоровье на ryczałt при выручке 200 тысяч?
+lump.health	uk	Скільки платити за здоров'я на ryczałt при виручці 200 тисяч?
+scale.health	pl	Ile wynosi najniższa składka zdrowotna dla firmy na skali?
+scale.health	en	What is the lowest health contribution a business on the scale pays?
+scale.health	ru	Какой минимальный взнос на здоровье у фирмы на шкале?
+scale.health	uk	Який мінімальний внесок на здоров'я у фірми за шкалою?
+zus	pl	Ile zapłacę ZUS miesięcznie po skończeniu preferencyjnego?
+zus	en	How much ZUS do I pay a month once the preferential period ends?
+zus	ru	Сколько платить ZUS в месяц после окончания льготного?
+zus	uk	Скільки платити ZUS на місяць після закінчення пільгового?
+young	pl	Mam 24 lata i pracuję na umowie o pracę, czy płacę PIT?
+young	en	I am 24 and employed, do I pay income tax at all?
+young	ru	Мне 24 года, работаю по трудовому договору, плачу ли я PIT?
+young	uk	Мені 24 роки, працюю за трудовим договором, чи плачу я PIT?
+return.relief	pl	Wróciłem z Anglii po latach, czy mam jakąś ulgę podatkową?
+return.relief	en	I moved back to Poland from the UK, is there a tax break for returnees?
+return.relief	ru	Я переехал в Польшу в прошлом году, есть ли налоговая льгота для переехавших?
+return.relief	uk	Я переїхав до Польщі минулого року, чи є податкова пільга для тих, хто переїхав?
+family4	pl	Mamy piątkę dzieci, czy nie płacę podatku?
+family4	en	We have five children, is my income tax free?
+family4	ru	У нас пятеро детей, освобождён ли я от налога?
+family4	uk	У нас п'ятеро дітей, чи звільнений я від податку?
+senior	pl	Mam 67 lat, pracuję i nie pobieram emerytury, czy płacę podatek?
+senior	en	I am 67, still working and not drawing my pension, do I pay tax?
+senior	ru	Мне 67, работаю и не получаю пенсию, плачу ли налог?
+senior	uk	Мені 67, працюю і не отримую пенсію, чи плачу податок?
+exempt.cap	pl	Mam 25 lat i czworo dzieci, czy zwolnienia się sumują?
+exempt.cap	en	I am 25 and moved back to Poland, do the two exemptions add up?
+exempt.cap	ru	Мне 25 и я вернулся в Польшу, складываются ли два освобождения?
+exempt.cap	uk	Мені 25 і я повернувся до Польщі, чи додаються два звільнення?
+internet	pl	Czy rachunek za światłowód mogę wpisać w PIT?
+internet	en	Can I put my broadband bill on my tax return?
+internet	ru	Можно ли вычесть счёт за интернет в декларации?
+internet	uk	Чи можна вирахувати рахунок за інтернет у декларації?
+donations	pl	Przekazałem pieniądze na fundację, czy odliczę to od dochodu?
+donations	en	I gave money to a charity, can I deduct it from income?
+donations	ru	Я перевёл деньги в фонд, можно ли вычесть это из дохода?
+donations	uk	Я переказав гроші у фонд, чи можна вирахувати це з доходу?
+thermo	pl	Wymieniłem okna i ociepliłem dom, czy jest na to ulga?
+thermo	en	I replaced the windows and insulated my house, is there a tax relief?
+thermo	ru	Я поменял окна и утеплил дом, есть ли на это льгота?
+thermo	uk	Я замінив вікна і утеплив будинок, чи є на це пільга?
+deadline	pl	Kiedy najpóźniej trzeba złożyć PIT za 2026?
+deadline	en	What is the last day to file my 2026 tax return?
+deadline	ru	Когда крайний срок подачи PIT за 2026 год?
+deadline	uk	Коли останній термін подання PIT за 2026 рік?
+rounding	pl	Czy podatek w zeznaniu podaje się z groszami?
+rounding	en	Do I write the tax with grosze or in whole złoty?
+rounding	ru	Налог в декларации пишется с грошами или в целых злотых?
+rounding	uk	Податок у декларації пишеться з грошами чи в цілих злотих?
