@@ -108,7 +108,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   domains), okay-invest (goal reader v1→v2), okay-tax (§6: search vs models), okay-study (Carroll, CUKR).
 - **Done when**: `data/traces/*.jsonl`, each step Σ → operation → measured outcome, with its source commit.
 
-## T7 — the teacher taught  `[ ]`
+## T7 — the teacher taught  `[~]`
+
+- **Step 1 running** (2026-11-27 ~14:25): the 35B drives a lesson itself — `Teach drive examples/residence.json
+  examples/residence.sealed.tsv model runs/residence-driven` in ../okay-teach-run (gpu.zsh); its Σ and choices in
+  `runs/residence-driven/sigma.txt` and `trace.jsonl`. Compare with the fixed policy's lesson (49 taught, released).
 
 - **What**: a local model (Qwen3-1.7B or 4B + LoRA) trained on the traces' good steps; measured on held-out domains
   (theory §7: CUKR from okay-migrant first) — alone, does it get a reader past the baseline, or say `Uncovered`?
