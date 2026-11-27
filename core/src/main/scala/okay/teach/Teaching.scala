@@ -9,13 +9,13 @@ import okay.scala3.*
  */
 final case class Sigma(domain: String, sealedSet: Sealed, asked: Option[Asked] = None, adapter: Option[Ref] = None,
     measures: Vector[Measured] = Vector.empty, released: Option[Ref] = None, budget: Int = 12,
-    history: Vector[String] = Vector.empty):
+    history: Vector[String] = Vector.empty, trainedOn: Int = 0):
   def measured(what: String): Option[Measured] = measures.find(_.what == what)
   /** the state in words, for a teacher model */
   def said: String =
     Vector(s"Domain: $domain.",
       asked.fold("No training questions yet.")(a => s"Training questions: ${a.kept} kept, ${a.refused} refused."),
-      adapter.fold("No adapter trained yet.")(_ => "An adapter is trained."),
+      adapter.fold("No adapter trained yet.")(_ => s"An adapter is trained, on $trainedOn of the questions."),
       if measures.isEmpty then "Nothing measured yet." else "Measured on the sealed set:\n" +
         measures.map("  " + _.said).mkString("\n"),
       released.fold("Nothing released. " + Sigma.toRelease(this))(_ => "A competence is released."),
@@ -54,9 +54,13 @@ object TeacherSpace extends Space[Sigma, Action]:
   def allowed(s: Sigma): Vector[Action] =
     if s.budget <= 0 || s.released.nonEmpty then Vector(Action.Stop)
     else
-      val ask = if s.asked.isEmpty then Vector(4, 8, 16).map(Action.Ask(_)) else Vector.empty
-      val train = if s.asked.exists(_.kept > 0) && s.adapter.isEmpty then Vector(1, 2, 3).map(Action.Train(_))
-        else Vector.empty
+      // ask first; or ask MORE when the taught reader is measured and does not pass the gate (the corpus repaired)
+      val failed = s.adapter.nonEmpty && s.measures.exists(_.what.startsWith("taught")) &&
+        s.measured(Teaching.baselineWhat).nonEmpty && best(s).isEmpty
+      val ask = if s.asked.isEmpty then Vector(4, 8, 16).map(Action.Ask(_))
+        else if failed then Vector(8, 16).map(Action.Ask(_)) else Vector.empty
+      // train when there are questions the adapter was not trained on
+      val train = if s.asked.exists(_.kept > s.trainedOn) then Vector(1, 2, 3).map(Action.Train(_)) else Vector.empty
       val measure = for t <- Vector(false, true) if !t || s.adapter.nonEmpty; c <- Vector(false, true)
         if s.measured(Action.what(t, c)).isEmpty yield Action.Measure(t, c)
       val baseline = Option.when(s.asked.exists(_.kept > 0) && s.measured(Teaching.baselineWhat).isEmpty)(
@@ -98,7 +102,9 @@ object Teaching:
           case Action.Stop => pure(spent)
           case Action.Ask(n) => Lesson.ask(n).flatMap(x => step(spent.copy(asked = Some(x))))
           case Action.Train(e) =>
-            Lesson.train(s.asked.get.cases, e).flatMap(x => step(spent.copy(adapter = Some(x))))
+            // a new adapter: the taught measures and the baseline (learned from the questions) are taken again
+            Lesson.train(s.asked.get.cases, e).flatMap(x => step(spent.copy(adapter = Some(x),
+              trainedOn = s.asked.get.kept, measures = spent.measures.filter(_.what.startsWith("untaught")))))
           case Action.Measure(t, c) =>
             Lesson.measure(s.sealedSet, if t then s.adapter else None, c).flatMap(m =>
               step(spent.copy(measures = spent.measures :+ m.copy(what = Action.what(t, c)))))
@@ -119,7 +125,9 @@ object Teaching:
   val task: String =
     "You teach a small language model to read questions of a domain: you ask a teacher for training questions, " +
       "train an adapter, measure readers on a sealed set you never see, and release a reader only when it is " +
-      "better than the untaught one. Here is the state of the lesson. Choose the next operation."
+      "better than the untaught one and the baseline; when it is not, you may ask for more questions and train " +
+      "again. " +
+      "Here is the state of the lesson. Choose the next operation."
 
   /** a model chooses (any `Llm`, by numbered choices — `Choose`); an answer that is no option stops the lesson */
   def byModel[R[_]](using In[okay.llm.Llm, R]): Chooser[R] = s =>
@@ -136,5 +144,6 @@ object Sigma:
       Option.when(s.measured(Teaching.baselineWhat).isEmpty)("the baseline measured")).flatten
     if missing.nonEmpty then s"A release needs first: ${missing.mkString(", ")}."
     else if TeacherSpace.best(s).isEmpty then
-      "A release needs the best taught reader to beat the untaught one and the baseline: it does not yet."
+      "A release needs the best taught reader to beat the untaught one and the baseline: it does not yet — more " +
+        "questions and training again may help."
     else "A release is possible now."

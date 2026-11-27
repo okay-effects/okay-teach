@@ -51,3 +51,23 @@ class TeachingSuite extends munit.FunSuite:
     assert(s.said.contains("A release needs first: the baseline measured."), s.said)
     val ready = s.copy(measures = s.measures :+ m(Teaching.baselineWhat, 22, 34))
     assert(ready.said.contains("A release is possible now."), ready.said)
+
+  test("a failed gate lets the teacher ask more and train again; a new adapter is measured again"):
+    val failed = start.copy(asked = Some(Asked(Ref("c"), 32, 0)), adapter = Some(Ref("a")), trainedOn = 32,
+      measures = Vector(m("untaught, plain", 44, 90), m("taught, plain", 50, 84), m(Teaching.baselineWhat, 53, 81)))
+    assert(TeacherSpace.best(failed).isEmpty)
+    assert(TeacherSpace.allowed(failed).contains(Action.Ask(16)), "ask more after a failed gate")
+    assert(!TeacherSpace.allowed(failed).exists(_.isInstanceOf[Action.Train]), "nothing new to train on")
+    val more = failed.copy(asked = Some(Asked(Ref("c"), 160, 0)))
+    assert(TeacherSpace.allowed(more).contains(Action.Train(2)), "train again on the grown corpus")
+    assert(failed.said.contains("more questions and training again may help"), failed.said)
+    // driven: the trained-again adapter's measures replace the old ones
+    var trainings = 0
+    val s = okay.scala3.run(handle(Teaching.drive[Lesson](more, st => pure(
+        if TeacherSpace.allowed(st).contains(Action.Train(2)) then Action.Train(2) else Action.Stop)),
+      Handler.tail[Lesson, Pure, Sigma, Sigma](pure)([X] => (op: Lesson[X]) => op match
+        case Lesson.Train(_, _) => trainings += 1; Ref("a2")
+        case _ => sys.error(s"not expected: $op"))))
+    assertEquals(trainings, 1)
+    assertEquals(s.trainedOn, 160)
+    assertEquals(s.measures.map(_.what), Vector("untaught, plain"))

@@ -115,12 +115,12 @@ object Teach:
 
   private val model = "mlx-community/Qwen3-0.6B-4bit"
 
-  def write[D, T](t: Taught[D, T], n: Int, out: Path): (Int, Int) =
+  def write[D, T](t: Taught[D, T], n: Int, out: Path, seed: Long = 0): (Int, Int) =
     val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
       env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
     val written = t.meanings.zipWithIndex.map { (m, i) =>
       // (isolated: `write` runs inside a lesson's handler too, a run of its own — okay-scala's NestedRun otherwise)
-      val w = runIsolated(Llm.on(teacher)(Teacher.write[D, T, Llm](t.domain, t.data, m, n, t.about, i.toLong)))
+      val w = runIsolated(Llm.on(teacher)(Teacher.write[D, T, Llm](t.domain, t.data, m, n, t.about, seed + i.toLong)))
       println(s"  ${t.show(m)}: kept ${w.kept.size}, refused ${w.refused.size}" +
         (if w.byStop then "" else " (the reply hit the token limit)"))
       // the teacher's raw replies kept beside the cases: a short count is diagnosed from them

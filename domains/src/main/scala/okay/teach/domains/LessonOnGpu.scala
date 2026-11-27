@@ -17,6 +17,7 @@ final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFi
     epsilon: Double = 0.05, repo: String = "mlx-community/Qwen3-0.6B-4bit"):
   Files.createDirectories(out)
   private val trace = out.resolve("trace.jsonl")
+  private var asks = 0
 
   private def note(op: String, result: String): Unit =
     val line = Json.obj("at" -> Json.Str(java.time.Instant.now.toString), "domain" -> Json.Str(name),
@@ -27,12 +28,21 @@ final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFi
   private def answer[X](op: Lesson[X]): X =
     val result: X = op match
       case Lesson.Ask(n) =>
+        // the first ask of a run that has questions resumes them; a later ask (the corpus repaired) writes MORE, with
+        // other seeds, appended — the teacher does not repeat itself
         val cases = out.resolve("cases.jsonl")
-        val (kept, refused) = if Files.exists(cases) then (Teach.cases(t, cases).size, 0)
-          else Teach.write(t, n, cases)
-        Asked(Ref(cases.toString), kept, refused)
+        asks += 1
+        val refused =
+          if Files.exists(cases) && asks == 1 then 0
+          else
+            val more = out.resolve(s"cases.$asks.jsonl")
+            val (_, r) = Teach.write(t, n, more, seed = 1000L * asks)
+            Files.write(cases, Files.readAllLines(more), StandardOpenOption.CREATE, StandardOpenOption.APPEND)
+            r
+        Asked(Ref(cases.toString), Teach.cases(t, cases).size, refused)
       case Lesson.Train(cases, epochs) =>
-        val dir = out.resolve("adapter")
+        // an adapter for each size of the corpus: training again after more questions makes a new one
+        val dir = out.resolve(s"adapter-${Teach.cases(t, Path.of(cases.id)).size}")
         if !Files.exists(dir.resolve("reader.adapter.safetensors")) then
           OnGpu.train(t.domain, t.data, Teach.cases(t, Path.of(cases.id)), repo, dir, epochs)
         Ref(dir.resolve("reader.adapter.safetensors").toString)
