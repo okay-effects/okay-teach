@@ -291,3 +291,21 @@ of the space as data: a new book file, the teacher's 124 questions relabelled), 
 
 The best reader of this chapter is the repaired space read by a vote of three seeds: 83 of 92 first. Where all agree
 it answers 55 with 1 wrong.
+
+### 7.12 The repairs chosen by the teacher (T19; 2026-11-27)
+
+The Lesson gained three operations. `Check` reads questions the teacher writes apart (`valid.jsonl`, 2 a passage,
+never trained on) and finds inseparable pairs (`Checked.pairs`). `Merge(a, b)` is a repair of the space; the book
+loop merges two sections. `Train(epochs, seeds)` trains several adapters, which are read as a vote. A new law: **L8,
+a reader is released only once checked on questions apart.** Without L8 the 35B released chapter 3 at 71 and never
+looked (run t19-ch3).
+
+Under L8, with the 35B driving (`okay-teach book … model`, runs t19b):
+
+- **ch. 3**: measure → ask 124 → train → baseline 60 → taught 71 → **check: 3.2 and 3.3 inseparable (13 of the
+  questions apart)** → **merge** → untaught again → train → taught **73** (in two 83, bar 26 answered, 0 wrong) →
+  baseline 64 → check: no pair left → release.
+- **ch. 2**: taught 74 → check: no inseparable pair → release 74. Nothing was merged where nothing needed it.
+
+The teacher found and repaired the pair itself, from questions apart only. It did not choose several seeds; the state
+now says what a vote of three gave (runs t19c).
