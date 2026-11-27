@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-27 — T17 contrast questions: negative. More questions of confused meanings lower the reader ~8 (seeds
+  checked), contrast more; an inseparable pair flips wholesale by seed. Answer in two / merge the pair instead.
 - 2026-11-27 — a second chapter, nothing tuned (OpenStax ch. 3, 92 questions): taught 71 first, 87 in two, baseline 60;
   a 5% bar answers 22 with 0 wrong; released.
 - 2026-11-27 — readers voting (`Vote`, `measure a,b,c,d`): four seeds' adapters vote 79 of 98 first, 90 in two

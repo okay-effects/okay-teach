@@ -238,3 +238,29 @@ tuned for it. The 35B chose as on chapter 2 (ask 4 a passage = 124, train 2 epoc
 The confusions are the book's own overlap: 3.3 (vectors, analytical methods) read as 3.2 (graphical methods) 12 times,
 3.5 as 3.4 four. The baseline is stronger here (the sections' words differ more), and the taught reader still beats
 it by 11 first and 6 in two.
+
+### 7.10 Contrast questions: a negative result (T17; 2026-11-27)
+
+`okay-teach contrast <book.txt> <run>`: the run's adapter reads questions the teacher writes apart (2 a passage,
+never trained on, never the sealed set); its confused pairs there get contrast questions ("easily taken for B, yet
+about A"), a control gets as many plain questions of the same meanings; both retrained (2 epochs), read on the
+sealed set. Right first, of chapter 2's 98 and chapter 3's 92:
+
+| | ch. 2 | ch. 3 |
+|---|---|---|
+| before (run f; ch. 3 run) | 74 | 71 |
+| contrast, one side of each pair | 78 | 39 |
+| control, one side | 70 | 60 |
+| contrast, both sides (pairs seen ≥ 2) | 54 | 49 |
+| control, both sides | 64 | 63 |
+
+Training noise was checked on chapter 3. The base 124 questions with other LoRA seeds give 71, 65, 66. The
+both-sides control with other seeds gives 63, 58, 55. More questions of the confused meanings lower the reader by
+about 8 on average, and contrast questions lower it more. Its readings drift toward the meanings that got questions:
+3.5 is read 49–52 times where it is meant 25. The one gain (+4 on ch. 2) is within the spread.
+
+What the seeds show instead: the reader cannot split 3.2 from 3.3 (vector addition, graphical vs analytical). It gives
+the whole pair to one side, and which side depends on the seed: 3.2 read 4 times, then 34 times. Right in two stays
+86–90. Such a pair is one meaning for this reader at this size. The remedy is the answer in two (§7.6), or merging
+the pair in the space (F1), not more questions (F4). Contrast stays an experiment step and is not a Lesson operation.
+The gate would have refused every one of these adapters.

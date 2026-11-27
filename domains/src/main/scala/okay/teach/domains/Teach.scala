@@ -88,12 +88,14 @@ object Teach:
 
   private def main1(args: Array[String]): Unit =
     val t: Taught[?, ?] = if args(1).endsWith(".json") then fromSpec(Path.of(args(1)))
+      else if args(1).endsWith(".txt") then BookLoop.load(Path.of(args(1)))._1
       else domains.getOrElse(args(1), sys.error(s"no domain ${args(1)}; known: ${domains.keys.mkString(", ")}"))
     args(0) match
       case "check" => check(t, Path.of(args(2)))
       case "write" => val _ = write(t, args(2).toInt, Path.of(args(3)))
       case "train" => OnGpu.train(t.domain, t.data, cases(t, Path.of(args(2))), args.lift(5).getOrElse(model),
-        Path.of(args(3)), args.lift(4).fold(2)(_.toInt))
+        Path.of(args(3)), args.lift(4).fold(2)(_.toInt),
+        seed = 5 + sys.env.get("OKAY_TEACH_SEED").fold(0)(_.toInt))
       case "read" => read(t, Path.of(args(2)), args(3), args(4), args.lift(5).fold(0.05)(_.toDouble),
         args.lift(6).getOrElse(model))
       case "lesson" =>

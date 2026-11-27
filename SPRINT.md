@@ -302,7 +302,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   and with the two likeliest below it (a page shows both sections). Measure: right-first, right-in-two, and the bar.
 - **Done when**: specs/teach.md §7.6 — run e's adapter re-measured by the new measure.
 
-## T17 — contrast questions for the pairs a reader confuses  `[~]`
+## T17 — contrast questions for the pairs a reader confuses  `[x]`
+
+- **Outcome** (specs/teach.md §7.10): NEGATIVE. Contrast and control both lower the reader (ch. 3 base 71/65/66 over
+  seeds; control 63/58/55; contrast 49); readings drift to the meanings that got questions. An inseparable pair
+  (3.2/3.3) goes wholesale to one side by seed; in two stays 86–90. Remedy: answer in two or merge the pair (F1).
 
 - **Why**: the taught reader's errors are pairs of neighbouring meanings (ch. 2: 2.3 as 2.2; ch. 3: 3.3 as 3.2 12
   times). More plain questions stopped helping (§7.5); questions that separate the pair might.
