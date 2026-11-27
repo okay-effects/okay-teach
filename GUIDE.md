@@ -68,12 +68,18 @@ it. No person and no remote model between the fetch and the report.
 
 1. **Get the book into the loop's form**: sections `# <id> <title>`, their text, their questions as `?? ` lines.
    For an OpenStax chapter: `scripts/fetch-openstax-chapter.zsh 2` → `books/openstax-cp2e-ch2.txt` (8 sections,
-   136 questions; never committed — CC BY-NC-SA). Any book can be written in this form by hand or by a script.
+   98 whole questions; never committed — CC BY-NC-SA). Any book can be written in this form by hand or by a script.
 2. **Check it**: `sbt "domains/testOnly *BookLoopSuite"` (for chapter 2) — every section a meaning, every question
-   labelled, no question inside a text the teacher reads.
+   labelled, no question inside a text the teacher reads. Every lesson also checks its sealed set itself (`Lint`: texts too
+   short to be questions, texts twice, thin meanings — the first fetch had 36 formula fragments among 134); a `Lint`
+   line in the trace means: repair the set before reading any measure.
 3. **Run the loop**: `scripts/gpu.zsh runs/<book>.log okay-teach book books/<book>.txt` — the local Qwen3.6-35B (okay-mlx on :8090) drives the lesson: it chooses how many questions
    to ask, how long to train, what to measure, whether to release; the teacher writes questions from each section's
    text; the micro-model (Qwen3-0.6B) is trained; it is measured on the book's questions against the baseline; the
    gate decides. `standard` instead of the model: the fixed policy.
 4. **Read the result**: `runs/<book>/sigma.txt` (the state and every choice), `trace.jsonl`, `competence/` if
    released. A question → its section (the micro-model) → the section's text (the book, quoted).
+5. **Measure again, or vary**: `okay-teach measure books/<book>.txt - <adapter> <cases.jsonl> [out]` re-reads an
+   adapter on the book's questions (seconds): right first, right among the first two, the baseline both ways, and
+   `margins.*.tsv` (each reading's margin and labels, no text) to study a bar. The loop is deterministic;
+   `OKAY_TEACH_SEED=<n>` varies the teacher's questions and the LoRA's start to measure the spread.
