@@ -100,7 +100,16 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **What**: a local model (Qwen3-1.7B or 4B + LoRA) trained on the traces' good steps; measured on held-out domains
   (theory §7: CUKR from okay-migrant first) — alone, does it get a reader past the baseline, or say `Uncovered`?
 
-## T8 — the equations engine  `[ ]`
+## T8 — the equations engine  `[~]`
+
+- **Progress**: module `equations` (JVM, Scala.js; no dependency): `Quantities.scala` (Rational, Dim, `SiUnit`,
+  `Units` catalog and expressions "km/h", "kg*m/s^2", `Quantity`), `Expr.scala` (parse, eval with an inexact flag
+  for a non-square root, dimension, `isolate`), `Theory.scala` (`Variable`, `Law`, `Theory.parse` of
+  `variable v: speed [m/s]` / `law speed: v = s / t`, `check`, `solve` with `Step`s). `EquationsSuite` — the
+  spec's §7 laws pass. Left: the expression space for `Theorize` (laws written by choosing), the OpenStax chapter
+  and its judge (worked examples split train / held out), the reader's DomainSpec (find / given / end).
+- **Gotchas**: `Unit` and `given` are names Scala takes (scala.Unit; the `given` keyword) — `SiUnit`, `givens`;
+  tuple patterns in a `for` over `Either` need `withFilter` in Scala 3.3 — bind the tuple, then take its parts.
 
 - **What**: the catalog's missing engine (theory §6): quantities with dimensions, equations as data, a solver that
   chains them to the unknown with exact arithmetic and checks dimensions; then a physics chapter (OpenStax,
