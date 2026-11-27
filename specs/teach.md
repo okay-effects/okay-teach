@@ -66,3 +66,22 @@ one hole, a line "rule: <English title>"); and `rules <train> <rounds> <out>` fo
 Everything above is built and its laws pass; the numbers come next: the calibrated reader on okay-tax's 192
 held-out questions; the teacher's questions and a LoRA, against the word search's 134; the 35B building Carroll's
 rules by choosing, against its 0 of 16.
+
+### 7.1 The first lesson, okay-tax's rules (T1, 2026-11-27)
+
+`Teach all tax-rules 8 2 ../okay-tax/data/heldout.tsv` (13:04–13:28, one GPU lock): the 35B asked for 8 questions a
+language for each of 25 rules (800) wrote 359, all reached (refused 0); kept per rule from 4 to 32. A LoRA (rank 16,
+2 epochs, loss 0.0988 → 0.0140, 216 s). The 192 sealed questions, right first:
+
+| reader | right of 192 | en / pl / ru / uk (of 48) | bar at ε 0.05 |
+|---|---|---|---|
+| untaught, plain | 14 | 4 / 3 / 4 / 3 | none holds |
+| untaught, calibrated | 16 | 5 / 2 / 3 / 6 | none holds |
+| **taught, plain** | **116** | 32 / 25 / 30 / 29 | none holds |
+| taught, calibrated | 90 | 24 / 20 / 23 / 23 | none holds |
+| (the word search, okay-tax §6.1) | 134 | 29 / 29 / 39 / 37 | — |
+
+Teaching works (14 → 116 from 359 teacher questions) but does not yet beat the search; content-free calibration
+helps an untaught reader a little and hurts a taught one (the taught reader's preferences ARE what the text adds);
+no bar keeps wrong at 5% (the margin does not separate right from wrong well enough yet). Diagnosis (theory §4):
+the corpus is thin and uneven (F4: 359 of 800, 4 for some rules) — the teacher's undersupply (F7) first.

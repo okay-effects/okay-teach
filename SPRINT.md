@@ -5,10 +5,14 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 | task | state | notes |
 |---|---|---|
-| T1 first-run | in progress | queued 2026-11-27 13:00 in ../okay-teach-run (a worktree pinned at 84b2130 + gpu.zsh), waiting for the GPU lock; log runs/tax-rules/all.log there |
+| T10 corpus-repair | next | T1 taught 116 < the search 134: the teacher's undersupply first |
 | T9 teaching-skill | in progress | the whole process as a skill any model can follow: a domain as a JSON spec in the command, SKILL.md, then MCP tools |
 
-## T1 — first-run: the first real lesson, okay-tax's rules  `[~]`
+## T1 — first-run: the first real lesson, okay-tax's rules  `[x]`
+
+- **Outcome** (2026-11-27 13:04–13:28; specs/teach.md §7.1; trace data/traces/okay-teach-tax-rules.jsonl): the
+  35B wrote 359 of 800 questions (4–32 a rule, none refused); taught 116 of 192 (untaught 14), calibrated 90; no bar
+  holds at ε 0.05; the search 134 not yet beaten. Next: T10 (the corpus repaired).
 
 - **What**: `Teach all tax-rules` end to end — the 35B writes training questions, a LoRA on Qwen3-0.6B, okay-tax's
   192 held-out questions read four ways (untaught / taught × plain / calibrated), the bar at ε 0.05.
@@ -152,3 +156,12 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   any model as a skill; lessons run by the skill write traces that feed the teacher model (T7).
 - **Done when**: a fresh agent given only the skill and a domain spec runs a lesson end to end (asks, trains,
   measures, releases or stops) without reading this repository's code.
+
+## T10 — the corpus repaired: the teacher's undersupply  `[ ]`
+
+- **What**: T1's diagnosis (F4/F7): 359 of 800 questions, 4 for some rules. Find why (the raw replies are now
+  kept: `cases.jsonl.replies.txt`), then ask again so every rule has its share, retrain, measure; the gate decides.
+- **How**: one rule's `write` with replies kept (a truncated reply? lines not "<lang>: text"? one language only?);
+  repair `Teacher.task` / `parse` / the token budget accordingly; `Teach lesson` into `runs/tax-rules-2` (a new out
+  dir: the first lesson's files stay as they are). Baselines: taught 116, the search 134.
+- **Done when**: the second lesson's numbers in specs/teach.md §7.2 and its trace written, better or not.
