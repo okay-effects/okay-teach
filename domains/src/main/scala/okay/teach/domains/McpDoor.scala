@@ -29,7 +29,8 @@ object McpDoor:
       "required" -> Json.Arr(required.map(Json.Str(_))))
 
   val specs: List[ToolSpec] = List(
-    ToolSpec("teach_check", "Check a domain spec (JSON) against a few question rows you wrote FOR THE CHECK (never the " +
+    ToolSpec("teach_check",
+      "Check a domain spec (JSON) against a few question rows you wrote FOR THE CHECK (never the " +
       "sealed ones): how many rows' meanings are read and reached. No GPU.",
       schema(Vector("spec", "rows"), string("spec", "the spec's path, e.g. examples/residence.json"),
         string("rows", "a tsv: meaning words<TAB>language<TAB>question"))),
@@ -38,7 +39,8 @@ object McpDoor:
       schema(Vector("domain", "sealed"), string("domain", "a spec's path (…json) or a registered domain (tax-rules)"),
         integer("questions", "questions a language a meaning (default 8)"), integer("epochs", "default 2"),
         string("sealed", "the sealed set's path (tsv) — you never read it"), string("run", "the output directory"))),
-    ToolSpec("teach_drive", "Start a lesson the local model drives itself (it chooses each operation the laws allow). " +
+    ToolSpec("teach_drive",
+      "Start a lesson the local model drives itself (it chooses each operation the laws allow). " +
       "Returns the run.",
       schema(Vector("domain", "sealed"), string("domain", "a spec's path or a registered domain"),
         string("sealed", "the sealed set's path"), string("run", "the output directory"))),
@@ -48,7 +50,8 @@ object McpDoor:
         string("run", "the output directory"), string("driver", "model (default) or standard"))),
     ToolSpec("teach_status", "Where a run stands: waiting for the GPU, running (the operations so far), or finished.",
       schema(Vector("run"), string("run", "the run's directory, as a start returned it"))),
-    ToolSpec("teach_result", "A finished run's result: the lesson's state (measures, choices, released or not) and its " +
+    ToolSpec("teach_result",
+      "A finished run's result: the lesson's state (measures, choices, released or not) and its " +
       "trace. Counts only.", schema(Vector("run"), string("run", "the run's directory"))))
 
   private val root = Path.of(".").toAbsolutePath.normalize

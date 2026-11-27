@@ -112,6 +112,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 ## T7 — the teacher taught  `[~]`
 
+- **Step 1 done** (2026-11-27; data/traces/residence-driven.jsonl): the 35B's first drive stopped unreleased (the
+  state never said a release needs the baseline); with Σ saying it, its second drive ran a whole lesson — measure
+  untaught 19, ask 4 a language, train 1 epoch, taught 52 of 56, baseline 20, RELEASE, stop: better and cheaper than
+  the fixed policy (49 with 8 and 2 epochs). The first lesson a local model ran end to end.
+
 - **Step 1 running** (2026-11-27 ~14:25): the 35B drives a lesson itself — `Teach drive examples/residence.json
   examples/residence.sealed.tsv model runs/residence-driven` in ../okay-teach-run (gpu.zsh); its Σ and choices in
   `runs/residence-driven/sigma.txt` and `trace.jsonl`. Compare with the fixed policy's lesson (49 taught, released).

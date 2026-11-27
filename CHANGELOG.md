@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-27 — T7 step 1: the 35B drove a whole lesson itself (taught 52 of 56, baseline 20, released); T14: three
+  doors (okay-teach command, MCP tools, the skill); T13: the book loop built (OpenStax ch. 2 queued).
 - 2026-11-27 — T12: the skill checked by a fresh agent (a new domain, a lesson end to end, released); its findings
   repaired, the baseline every lesson must beat (L7): residence 49 vs 22, tax 141 vs 115.
 - 2026-11-27 — T1, T10: the first lessons — taught 116, then (the teacher repaired) 141 of 192 above the search's 134;
