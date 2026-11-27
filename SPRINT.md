@@ -5,7 +5,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 | task | state | notes |
 |---|---|---|
-| T9 check | next | a fresh agent given only the skill runs a lesson on a new domain (the skill's done-when) |
+| T9 check | in progress (a fresh agent, 14:06) | a fresh agent given only the skill runs a lesson on a new domain (the skill's done-when) |
 | T9 teaching-skill | in progress | the whole process as a skill any model can follow: a domain as a JSON spec in the command, SKILL.md, then MCP tools |
 
 ## T1 — first-run: the first real lesson, okay-tax's rules  `[x]`
@@ -143,8 +143,10 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **Progress** (166851e): `Teach` takes `<domain>.json` (`Teach.fromSpec`; meanings from `<domain>.meanings.txt` or
   enumerated when every hole is an enum — `Meanings`), `examples/tax-rules.json` (made by `SpecExport`, read back
   by a test), `skills/teach-a-model/SKILL.md` linked into `~/.agents/skills` and `~/.claude/skills`, theory §9.
-  Left: the done-when check — a fresh agent given only the skill runs a lesson on a new domain (needs the GPU after
-  T1); the MCP tools.
+  Left: the done-when check — RUNNING since 2026-11-27 14:06: a fresh agent given only the skill and a new domain
+  (which Polish residence or work document a question is about, 7 meanings) writes examples/residence.json and its
+  sealed set, runs the lesson in the main checkout (do not edit code there until its run has compiled), writes
+  data/traces/residence.jsonl, reports where the skill was unclear; then the MCP tools.
 
 - **What**: the whole process as a skill for any model (theory §9): (1) `Teach` takes a domain as a JSON
   `DomainSpec` file (no Scala), its meanings listed or enumerated, its sealed set as `meaning words<TAB>lang<TAB>text`;
