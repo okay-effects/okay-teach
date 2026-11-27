@@ -103,6 +103,14 @@ sealed one):
 
 Repair one factor, run again, and let the gate decide.
 
+### 5b. a book — the closed loop
+
+When the domain is "which part of this book answers the question", the loop needs no spec and no sealed set from
+you: put the book in the form `# <id> <title>` + text + `?? question` lines (`scripts/fetch-openstax-chapter.zsh`
+does it for OpenStax), then `Teach book <book.txt>` — the book's titles are the meanings, its own questions the
+sealed set, the local model drives the lesson. Check first that no question is inside a section's text (the
+teacher would read it): `BookLoopSuite` shows how.
+
 ### 6. theory — when the engine needs rules or equations
 
 `Teach rules` (Datalog, Carroll's soriteses) and `Teach laws` (equations, OpenStax kinematics) show how a big model

@@ -60,3 +60,21 @@ today; `CarrollRules.scala` shows how a book, its vocabulary and its judge are g
 
 The lesson as an effect, the domain as data, a teacher model that runs these steps itself, and the equations
 engine — so that the steps above are done by a model, and you only seal the held-out set and read the result.
+
+## From a book — the closed loop (specs/book-loop.md)
+
+A local model teaches a micro-model which section of a book a question is about; the book's own questions measure
+it. No person and no remote model between the fetch and the report.
+
+1. **Get the book into the loop's form**: sections `# <id> <title>`, their text, their questions as `?? ` lines.
+   For an OpenStax chapter: `scripts/fetch-openstax-chapter.zsh 2` → `books/openstax-cp2e-ch2.txt` (8 sections,
+   136 questions; never committed — CC BY-NC-SA). Any book can be written in this form by hand or by a script.
+2. **Check it**: `sbt "domains/testOnly *BookLoopSuite"` (for chapter 2) — every section a meaning, every question
+   labelled, no question inside a text the teacher reads.
+3. **Run the loop**: `scripts/gpu.zsh runs/<book>.log sbt "domains/runMain okay.teach.domains.Teach book
+   books/<book>.txt"` — the local Qwen3.6-35B (okay-mlx on :8090) drives the lesson: it chooses how many questions
+   to ask, how long to train, what to measure, whether to release; the teacher writes questions from each section's
+   text; the micro-model (Qwen3-0.6B) is trained; it is measured on the book's questions against the baseline; the
+   gate decides. `standard` instead of the model: the fixed policy.
+4. **Read the result**: `runs/<book>/sigma.txt` (the state and every choice), `trace.jsonl`, `competence/` if
+   released. A question → its section (the micro-model) → the section's text (the book, quoted).

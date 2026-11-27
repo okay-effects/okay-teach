@@ -10,8 +10,8 @@ a remote model once the book is given; a person only chooses the book and reads 
 book (sections, each with its own questions)
   │  split: the text the teacher may read │ the questions it may not (the sealed set, labelled by section)
   ▼
-topics ── the local model titles and summarises each section (prose, read as prose: L5)
-  │        → a DomainSpec built by the tool: one enum hole `topic`, an option a section, shown as its title
+topics ── a DomainSpec built by the tool from the book: one enum hole `topic`, an option a section, shown as its
+  │        printed title (a book without titles: the local model titles each section — BACKLOG)
   ▼
 lesson ── driven by the local model (Teach drive … model): it chooses each operation among those the laws allow
   │        ask: the teacher writes questions as people who do not know the answer (Domain.about = the section)
@@ -44,7 +44,8 @@ a user's question — they ask about the topic, they do not name it — which ma
 ## What a person does
 
 1. Chooses a book (an open one) and fetches it into the form above.
-2. Runs one command: `Teach book <book.txt> [out]` — topics, the driven lesson, the competence, the trace.
+2. Runs one command: `Teach book <book.txt> [out] [model|standard]` — the spec, the sealed set (beside the book),
+   the lesson driven by the local model, the competence, the trace.
 3. Reads the report: the numbers, whether it was released, the trace.
 
 ## Done when
