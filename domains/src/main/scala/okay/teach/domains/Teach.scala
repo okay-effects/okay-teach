@@ -312,15 +312,18 @@ object Teach:
       None)))
     val seen = readAll(adapter, valid)
     val confused = seen.filterNot(_.right).flatMap(r => r.meaning.map(r.c.meant -> _)).groupBy(identity)
-      .map((k, v) => k -> v.size).toVector.sortBy(-_._2).take(pairs)
+      .map((k, v) => k -> v.size).toVector.filter(_._2 >= 2).sortBy(-_._2).take(pairs)
     println(s"valid: ${valid.size} questions apart, right ${seen.count(_.right)}; confused there: " +
       confused.map { case ((a, b), k) => s"${t.show(a)} as ${t.show(b)} $k" }.mkString(", "))
-    val contrastCases = once(run.resolve("contrast.jsonl"))(confused.zipWithIndex.flatMap { case (((a, b), _), i) =>
+    // BOTH SIDES of each pair (§7.10: one side only shifted the reader toward it — ch. 3 fell from 71 to 39): A in
+    // contrast with B and B with A; the control as many plain questions of both
+    val sides = confused.map(_._1).flatMap((a, b) => Vector(a -> b, b -> a)).distinct
+    val contrastCases = once(run.resolve("contrast-both.jsonl"))(sides.zipWithIndex.flatMap { case ((a, b), i) =>
       written(a, n, 8000L + i, Some(b)) })
-    val controlCases = once(run.resolve("control.jsonl"))(confused.zipWithIndex.flatMap { case (((a, _), _), i) =>
+    val controlCases = once(run.resolve("control-both.jsonl"))(sides.zipWithIndex.flatMap { case ((a, _), i) =>
       written(a, n, 9000L + i, None) })
     println(s"contrast ${contrastCases.size}, control ${controlCases.size} questions")
-    for (name, extra) <- Vector("adapter-contrast" -> contrastCases, "adapter-control" -> controlCases) do
+    for (name, extra) <- Vector("adapter-contrast-both" -> contrastCases, "adapter-control-both" -> controlCases) do
       val reads = readAll(train(name, trained ++ extra), sealedCases)
       println(s"$name (${trained.size} + ${extra.size}): sealed right ${reads.count(_.right)} of ${reads.size}, " +
         s"in two ${reads.count(_.inTwo)}")
