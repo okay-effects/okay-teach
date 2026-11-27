@@ -332,7 +332,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   the gate on the merged sealed labels. The operation the teacher chooses: `Repair(merge A B)`; in the trace.
 - **Done when**: ch. 3 merged and retrained: right first ≥ 80 of 92 on 2 seeds, released by the gate; §7.11.
 
-## T19 — the repairs as the teacher's operations: Repair(merge), Release(vote)  `[ ]`
+## T19 — the repairs as the teacher's operations: Repair(merge), Release(vote)  `[x]`
+
+- **Outcome** (specs/teach.md §7.12): Lesson Check / Merge / Train(seeds), L8 (released only once checked). The 35B
+  driving: ch. 3 check → merge → vote of 3 = 83 of 92; ch. 2 vote 79 of 98, ch. 4 39 of 82, ch. 5 58 of 61; it
+  merged only where the check found a pair.
 
 - **Why** (§7.10–7.11): the two levers that worked are a merged pair (+8 mean) and a vote of seeds (+7 to +9); one
   adapter swings ±10. Today both are steps a person runs.
@@ -341,3 +345,13 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   set of adapters and the vote; TeacherSpace offers Merge only for detected pairs. Traces record both.
 - **Done when**: `okay-teach book` on ch. 3 with the 35B driving ends merged and voted, ≥ 80 of 92; on ch. 2 the
   teacher's choice measured too (§7.12).
+
+## T20 — chapter 4: the teacher's questions are not like the book's  `[ ]`
+
+- **Why** (§7.12): ch. 4 (Newton's laws) — questions apart read 52 of 80, the book's own 39 of 82; one adapter 27,
+  below the word search (35); the book mixes the laws (4.3 read as 4.4 eleven times), the teacher's questions keep
+  them apart.
+- **How**: look at the teacher's questions per section (not the sealed ones) against the book's exercise STYLE as the
+  passages show it; try `Domain.asking` variants (problems with numbers vs conceptual, the book's end-of-chapter
+  wording), measured on questions apart first; only then once on the sealed set. Also: more questions (ask 8).
+- **Done when**: ch. 4 released ≥ 50 of 82 on a vote, with the same change not lowering ch. 2/3/5.

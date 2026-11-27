@@ -309,3 +309,24 @@ Under L8, with the 35B driving (`okay-teach book … model`, runs t19b):
 
 The teacher found and repaired the pair itself, from questions apart only. It did not choose several seeds; the state
 now says what a vote of three gave (runs t19c).
+
+Then the state said what a vote of three seeds gave (commit e9de33e; runs t19c, t19d, the 35B driving, every number on
+the book's own questions):
+
+| chapter | the teacher's path | taught (one adapter) | released | baseline |
+|---|---|---|---|---|
+| 2 (98) | check: no pair → 3 seeds | 74 | **79 (81%)**, vote of 3 | 57 |
+| 3 (92) | check: 3.2/3.3 → merge → train → check: none → 3 seeds | 71 → 73 merged | **83 (90%)**, merged, vote of 3 | 64 |
+| 4 (82) | 3 seeds → check: no pair | 27 | **39 (48%)**, vote of 3 | 35 |
+| 5 (61) | check: no pair → 3 seeds | 56 | **58 (95%)**, vote of 3 | 51 |
+
+The teacher repaired the space only where the check found a pair (chapter 3) and asked for a vote everywhere.
+Chapter 3 meets T19's mark (≥ 80 of 92) with no person in the loop.
+
+Chapter 4 (Newton's laws) is the weak one. One adapter was below the word search (27 against 35), and the vote clears
+it by only 4. The questions apart are read far better (52 of 80) than the book's own (39 of 82). The teacher's
+questions on the three laws are easier to separate than the book's, which mix them (4.3 read as 4.4 eleven times):
+the teacher's questions are not yet like the book's there (F4; SPRINT T20).
+
+A bug was found on the way: a merge relabelled the questions apart in place, so a run that copied them checked
+merged labels against an unmerged space and found no pair. Fixed: `valid.m<k>.jsonl`.
