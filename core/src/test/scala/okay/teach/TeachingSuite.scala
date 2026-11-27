@@ -60,6 +60,7 @@ class TeachingSuite extends munit.FunSuite:
     assert(!TeacherSpace.allowed(failed).exists(_.isInstanceOf[Action.Train]), "nothing new to train on")
     val more = failed.copy(asked = Some(Asked(Ref("c"), 160, 0)))
     assert(TeacherSpace.allowed(more).contains(Action.Train(2)), "train again on the grown corpus")
+    assert(!TeacherSpace.allowed(more).exists(_.isInstanceOf[Action.Ask]), "no asking again before training on the new")
     assert(failed.said.contains("more questions and training again may help"), failed.said)
     // driven: the trained-again adapter's measures replace the old ones
     var trainings = 0

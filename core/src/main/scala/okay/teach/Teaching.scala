@@ -58,8 +58,9 @@ object TeacherSpace extends Space[Sigma, Action]:
     if s.budget <= 0 || s.released.nonEmpty then Vector(Action.Stop)
     else
       // ask first; or ask MORE when the taught reader is measured and does not pass the gate (the corpus repaired)
+      // (once an adapter: the questions asked since must be trained on before asking again — run c asked twice)
       val failed = s.adapter.nonEmpty && s.measures.exists(_.what.startsWith("taught")) &&
-        s.measured(Teaching.baselineWhat).nonEmpty && best(s).isEmpty
+        s.measured(Teaching.baselineWhat).nonEmpty && best(s).isEmpty && s.asked.forall(_.kept == s.trainedOn)
       val ask = if s.asked.isEmpty then Vector(4, 8, 16).map(Action.Ask(_))
         else if failed then Vector(8, 16).map(Action.Ask(_)) else Vector.empty
       // train when there are questions the adapter was not trained on
