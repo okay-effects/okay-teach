@@ -275,3 +275,9 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   15:21 in ../okay-teach-run3: run c (the 35B drives) then run d (the fixed policy: 8 a passage, 2 epochs), logs
   runs/book-ch2-{c,d}.log. The control without passages (fixed policy, 8 a section) runs before them in
   ../okay-teach-run2 (runs/book-ch2-std.log).
+- **Seen** (runs c and the control): the control without passages (fixed policy, 64 questions, 2 epochs): taught
+  49, calibrated 54, baseline 39 — released; twice the questions gave nothing. Run c (the 35B, passages): 176 →
+  taught 55 vs baseline 59 (refused) → it asked more: 880 → 58 vs 59 → asked again: 1584 … — a plateau near 55–58
+  of 134; likely the domain (sections that overlap: 2.4, 2.5, 2.6, 2.7), not the corpus. Added (f975232 and the one
+  before): the measure's most-confused meanings (counts), Σ's trend of adapters, the teacher told to stop when more
+  questions stop helping.
