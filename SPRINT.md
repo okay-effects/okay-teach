@@ -57,7 +57,12 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **Done when**: no API outside `Measure` can read sealed texts (a test: a lesson program cannot); `Teach read` on
   sealed goes through it.
 
-## T4 — the domain as data  `[ ]`
+## T4 — the domain as data  `[~]`
+
+- **Progress** (this commit's parent): `core/DomainSpec.scala`, `specs/domain-spec.md` (the format); `DomainSpecSuite`
+  (kinds, `when`, laws, JSON back); `TaxRulesSpecSuite` — the JSON spec prompts, offers and writes lines exactly as
+  `TaxRules` on all 192 held-out texts. Left: the pay lines and the goal ported (their own laws and readings).
+
 
 - **What**: `DomainSpec` (theory §5) as JSON and its interpreter to a `Space` + `Domain`; hole kinds Enum,
   FromText, FromData, Derived (a closed set of named functions), Lines; the words `key: value` with an exact parser.
