@@ -258,3 +258,16 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   operation starts in the background and returns a run id, `teach_status` follows it; sealed sets by path only,
   results as counts (theory L1). (3) the skill and GUIDE point at both doors.
 - **Done when**: a model with only the MCP tools runs a lesson; the command line runs one with `okay-teach lesson …`.
+
+## T15 — the book loop's questions: by passage, in the book's style  `[~]`
+
+- **Why**: the loop closed (T13) but weak and unsteady: taught 57 / 50 of 134 with 32 questions (4 a section). The
+  book's questions hold on to specifics of a section (bacteria's flagella, a car on wet concrete); a teacher shown a
+  whole section writes generic ones; and it writes them as a forum user, while a book is asked as a student and an
+  exercise ask.
+- **How**: `Domain.passages(data, meant)` — what the teacher is told, one passage at a time (default: `about`
+  alone); `Teacher.write` asks n questions a language FOR EACH PASSAGE; `BookDomain` cuts a section into passages of
+  ~2000 characters at paragraph ends (at most 8) and asks for questions as a student or the book's own exercises put
+  them (conceptual and numeric), never quoting the passage. The control run (the fixed policy, 8 a section, 2 epochs)
+  first, then the 35B again.
+- **Done when**: the book loop's taught reader measured with passages, against T13's 57 / 50 and the control.
