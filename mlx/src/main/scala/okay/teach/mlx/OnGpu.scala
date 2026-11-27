@@ -5,6 +5,8 @@ import okay.effects.json.Json
 import okay.llm.compute.OnMlx
 import okay.llm.qwen.{Qwen3Compute, Qwen3Config, Safetensors, Tokenizer}
 import okay.llm.read.{Adapted, OnQwen, Read, Reading}
+import okay.frames.Reading as FramesReading
+import okay.scala3.*
 import okay.teach.{Bar, Case, Domain, Reader}
 
 import java.nio.file.{Files, Path}
@@ -43,7 +45,9 @@ object OnGpu:
   def read[D, T](domain: Domain[D, T], data: D, cases: Vector[Case[T]], gpu: Reading,
       scoring: Reader.Scoring = Reader.Scoring.Plain): Vector[Read1[T]] =
     cases.map { c =>
-      val r = Read.run(Reader.read[D, T, Read](domain, data, c.text, scoring), gpu)
+      // (isolated: a measure runs inside a lesson's handler — okay-scala's NestedRun otherwise)
+      val r = okay.scala3.runIsolated(handle(Reader.read[D, T, Read](domain, data, c.text, scoring),
+        Read.sync[Pure, FramesReading[D, T]](gpu)))
       Read1(c, r.meaning, r.margin) }
 
   /** the counts of a measure, by language, and the bar `epsilon` allows on these readings */
