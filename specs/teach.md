@@ -106,3 +106,18 @@ language a call. `Teach lesson tax-rules 8 2 ../okay-tax/data/heldout.tsv runs/t
 The gate passed: the competence was released (`runs/tax-rules-2/competence/`). The taught 0.6B beats the search
 (141 against 134) and, above its bar, answers 37% of the questions with 2 wrong. Caveat (theory L2): the bar was
 chosen on the same 192 it is reported on — its ε is not yet validated; a calibration set apart is the next step.
+
+### 7.3 The bar validated on a set apart (T11, 2026-11-27)
+
+okay-tax's 192 split by a rule fixed before any look: of each rule's two questions in a language, the first
+calibrates, the second reports (`data/tax-rules.calibration.tsv`, `data/tax-rules.report.tsv`, 96 each). Lesson 2's
+adapter, `Teach calibrate`:
+
+| set | right | the bar (ε 0.05, chosen on calibration) | answered | wrong among answered |
+|---|---|---|---|---|
+| calibration (96) | 79 | 0.484 | 28 | 0 |
+| **report (96)** | 62 | 0.484 | **30** | **0** |
+
+Above the bar the reader answered 30 of the 96 questions it had never been calibrated on, all right; below it, it
+asks. 30 is few: "0 wrong of 30" bounds the true rate only loosely (one-sided 95%: under ~10%); more sealed questions
+tighten it. The method holds: the bar is the calibration's, the number the report's.

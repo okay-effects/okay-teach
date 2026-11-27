@@ -5,7 +5,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 | task | state | notes |
 |---|---|---|
-| T11 calibration-apart | next | the bar chosen on a calibration set apart from the sealed one (theory L2) |
+| T9 check | next | a fresh agent given only the skill runs a lesson on a new domain (the skill's done-when) |
 | T9 teaching-skill | in progress | the whole process as a skill any model can follow: a domain as a JSON spec in the command, SKILL.md, then MCP tools |
 
 ## T1 — first-run: the first real lesson, okay-tax's rules  `[x]`
@@ -176,7 +176,10 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   dir: the first lesson's files stay as they are). Baselines: taught 116, the search 134.
 - **Done when**: the second lesson's numbers in specs/teach.md §7.2 and its trace written, better or not.
 
-## T11 — the bar validated on a calibration set apart  `[ ]`
+## T11 — the bar validated on a calibration set apart  `[x]`
+
+- **Outcome** (specs/teach.md §7.3): split by a fixed rule (96 + 96); the bar 0.484 from calibration; on the report
+  half 30 answered of 96, 0 wrong. Small: more sealed questions would tighten the bound.
 
 - **What**: lesson 2's bar (0.421: 71 answered, 2 wrong) was chosen on the 192 it is reported on — its ε is not
   validated (theory L2: calibration and sealed disjoint). Calibrate on one set, report the bar's realised wrong on
