@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-27 — run f: the 35B drove the book loop on the repaired set: 74 of 98 first, 87 in two, baseline 57,
+  released; identical to run e (reproducible). Lint checks every sealed set before it measures.
 - 2026-11-27 — the book's sealed set repaired: 36 of 134 questions were formula fragments (the fetch script
   read MathML lines as question numbers); 98 whole. Run e: 74 first, 87 in two (baseline 57, 72). `Bar.pair`; each
   measure writes its margins (no text).

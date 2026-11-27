@@ -184,3 +184,9 @@ the 40 surest readings have 1 wrong. No bar holds at ε 5% only because that one
 the fixed sequence begins (`Bar.choose`; `Bar.pair` likewise); at ε 10% the bar holds. Runs a–e (§7.5) were measured
 on the 134; their order stands, their numbers are on that set. Lesson for the teacher (theory §4): when a measure
 surprises, diagnose the measuring set (F4 Corpus) before the reader.
+
+Run f (2026-11-27 17:19, commit 1568505, `okay-teach book books/openstax-cp2e-ch2.txt runs/openstax-ch2-f model` in a
+pinned worktree): the 35B drove the loop again on the 98 whole questions. It chose the same operations (measure
+untaught 24, ask 4 a passage = 176, train 2 epochs, baseline 57, measure taught **74**, in two 87, release). Every
+number equals run e's adapter re-measured: the loop is reproducible end to end (the teacher's seeds, the training
+seed, a greedy driver). Run-to-run spread therefore needs other seeds on purpose (BACKLOG).
