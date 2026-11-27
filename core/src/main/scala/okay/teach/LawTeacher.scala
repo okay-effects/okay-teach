@@ -21,7 +21,8 @@ object LawTeacher:
     val failed = results.collect {
       case (e, Left(why)) => s"example ${e.number}: $why"
       case (e, Right((got, _))) if !e.agrees(got) =>
-        s"example ${e.number}: the book says ${e.answer.value.show()} for ${e.asked}, the laws gave ${got.value.show()}" }
+        s"example ${e.number}: the book says ${e.answer.value.show()} for ${e.asked}, the laws gave " +
+          got.value.show() }
     RuleTeacher.Verdict(examples.size - failed.size, examples.size, failed.take(3).mkString("; "))
 
   def planTask(lesson: String, known: Vector[Variable], feedback: Option[String]): String =
