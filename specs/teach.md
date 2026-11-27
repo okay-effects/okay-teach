@@ -268,3 +268,26 @@ The gate would have refused every one of these adapters.
 Merging the pair, counted from the same readings without retraining: with 3.2 and 3.3 one meaning ("vector addition",
 both sections shown), the three chapter 3 adapters are right 83, 82 and 81 of 92 first (89%). Unmerged they score
 71, 65 and 66. The spread across seeds falls from 6 to 2. This is the repair to build (SPRINT T18).
+
+### 7.11 The pair merged, trained (T18; 2026-11-27)
+
+`okay-teach merge books/openstax-cp2e-ch3.txt 3.2 3.3 books/openstax-cp2e-ch3-m.txt <cases> <merged cases>` (a repair
+of the space as data: a new book file, the teacher's 124 questions relabelled), then `train` with LoRA seeds 0–2 and
+`measure`. Chapter 3's 92, right first:
+
+| reader | seed 0 | seed 1 | seed 2 | mean | three voting |
+|---|---|---|---|---|---|
+| unmerged | 71 | 65 | 66 | 67.3 | 74 |
+| unmerged, balanced (`OKAY_TEACH_BALANCE=1`) | 55 | 70 | 56 | 60.3 | — |
+| **merged** | 60 | 82 | 83 | 75.0 | **83 (90%)** |
+| merged, balanced | 72 | 68 | 82 | 74.0 | — |
+
+1. Merging raises the mean by 8 and the vote by 9.
+2. One adapter alone swings by ±10 between seeds: seed 0 merged read 22 of 3.5's questions as the merged section. The
+   vote removes most of that swing.
+3. Balancing (each meaning cut to the median) does not help. It throws away questions.
+4. With the pair merged, agreement can be trusted. All three agreed on 55 questions and were wrong on 1 (unmerged: 49
+   agreed, 4 wrong; ch. 2's four: 53, 5 wrong). The inseparable pair was where the agreeing errors came from.
+
+The best reader of this chapter is the repaired space read by a vote of three seeds: 83 of 92 first. Where all agree
+it answers 55 with 1 wrong.

@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-27 — T18 the pair merged: ch. 3 three seeds voting 83 of 92 first (unmerged 74), all agreeing 55
+  with 1 wrong; one adapter swings ±10 by seed; balancing throws data away. T19 queued (repairs as operations).
 - 2026-11-27 — T17 contrast questions: negative. More questions of confused meanings lower the reader ~8 (seeds
   checked), contrast more; an inseparable pair flips wholesale by seed. Answer in two / merge the pair instead.
 - 2026-11-27 — a second chapter, nothing tuned (OpenStax ch. 3, 92 questions): taught 71 first, 87 in two, baseline 60;
