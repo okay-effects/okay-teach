@@ -159,3 +159,20 @@ meanings overlap (theory §4, F1): the next step answers with the two likeliest 
 Passages (T15: a section cut into ~2000-character pieces, questions as a student and the book's exercises ask) and
 two epochs lift the reader from ~50 to 80 of 134; more questions at one epoch do not (880 → 58). The teacher's space
 was repaired from runs a and c: asking again after a failed gate, once an adapter; epochs 2 or 3.
+
+### 7.6 Overlapping meanings: two readings (T16; 2026-11-27)
+
+Run e's errors fall into one general section, 2.5 (Motion Equations), from its neighbours. The meanings overlap
+(theory §4, F1): 2.5 restates what 2.3, 2.4 and 2.8 teach. More questions do not separate them. So the reader now
+reads twice (`Reader.readTwo`). The first reading is the best one. The second takes the runner-up at the least sure
+choice, then reads the holes after it again. A measure counts both: right first, and right among the first two. The
+baseline counts its own first two (`Baseline.ranked`). Re-measured by `okay-teach measure` (12 s on the M-series GPU):
+
+| reader on the book's 134 | right first | right among the first two |
+|---|---|---|
+| run e's adapter (taught, plain) | 96 (72%) | **118 (88%)** |
+| the word search (baseline) | 59 | 78 |
+
+The first reading is exactly run e's 96: the measure is deterministic. Where one section cannot be named, a page shows
+the two likeliest, and the right one is among them 88 times in 100. No bar holds at ε 5% for one answer on this book.
+The next step (BACKLOG) is a bar for the pair: one answer above a margin, two below it.
