@@ -44,6 +44,13 @@ class TeachSuite extends munit.FunSuite:
     assertEquals(Bar.pair(Vector((1.0, false, false)), 0.05), None)
 
 
+
+  test("the meanings' proportions kept: each cut to the median count (§7.11)"):
+    val cs = Vector.tabulate(6)(i => Case("en", s"a$i", "a")) ++ Vector.tabulate(3)(i => Case("en", s"b$i", "b")) ++
+      Vector.tabulate(2)(i => Case("en", s"c$i", "c"))
+    val b = Balance.toMedian(cs)
+    assertEquals(b.groupBy(_.meant).map((m, v) => m -> v.size), Map("a" -> 3, "b" -> 3, "c" -> 2))
+    assertEquals(b.filter(_.meant == "b"), cs.filter(_.meant == "b"))
   test("readers voting: two votes for a best reading, one for a runner-up (§7.8)"):
     val v = Vote.of(Vector((Some("a"), Some("b")), (Some("b"), Some("a")), (Some("b"), Some("c"))))
     assertEquals((v.first, v.second, v.votes, v.of), (Some("b"), Some("a"), 5, 9))

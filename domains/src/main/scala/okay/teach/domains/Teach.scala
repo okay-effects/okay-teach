@@ -96,7 +96,11 @@ object Teach:
     args(0) match
       case "check" => check(t, Path.of(args(2)))
       case "write" => val _ = write(t, args(2).toInt, Path.of(args(3)))
-      case "train" => OnGpu.train(t.domain, t.data, cases(t, Path.of(args(2))), args.lift(5).getOrElse(model),
+      case "train" =>
+        // OKAY_TEACH_BALANCE=1: each meaning cut to the median count (Balance, §7.11)
+        val all = cases(t, Path.of(args(2)))
+        val used = if sys.env.get("OKAY_TEACH_BALANCE").contains("1") then okay.teach.Balance.toMedian(all) else all
+        OnGpu.train(t.domain, t.data, used, args.lift(5).getOrElse(model),
         Path.of(args(3)), args.lift(4).fold(2)(_.toInt),
         seed = 5 + sys.env.get("OKAY_TEACH_SEED").fold(0)(_.toInt))
       case "read" => read(t, Path.of(args(2)), args(3), args(4), args.lift(5).fold(0.05)(_.toDouble),
