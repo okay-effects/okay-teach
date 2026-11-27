@@ -22,7 +22,3 @@ Can-wait work, each with why and what would promote it to the SPRINT.
 
 - **A released competence of several adapters** (§7.8): the Release writes one adapter; a vote of 4 seeds gains 7.5
   first. Release the set and let the page read with all (cost: 4 readings a question). Measure on a phone first.
-
-- **Merge an inseparable pair** (§7.10): when two meanings flip wholesale between seeds (ch. 3: 3.2/3.3), propose to
-  the teacher to merge them in the space (one option, both sections shown) — measured right-first should rise to
-  about right-in-two. A Diagnose → Repair(F1) step the teacher model can learn.

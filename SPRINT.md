@@ -317,3 +317,13 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   Two adapters (cases + contrast, cases + control, 2 epochs) read the sealed set.
 - **Done when**: specs/teach.md §7.10 — contrast vs control vs before on ch. 2 (run f) and ch. 3; if contrast wins
   on both, it becomes a Lesson operation the teacher can choose.
+
+## T18 — merge an inseparable pair (a Repair of the space, F1)  `[ ]`
+
+- **Why** (§7.10): 3.2/3.3 flip wholesale by seed; merged, right first is 81–83 of 92 on three seeds (unmerged
+  65–71), counted from the same readings.
+- **How**: detect on questions APART (valid.jsonl): a pair whose confusions both ways are a large share of the
+  pair's questions, or that flips between two adapters. Then a space repair: `HoleKind.Enum` options grouped (one
+  option `3.2+3.3`, shown as both titles; the answer shows both sections), cases relabelled, the reader retrained,
+  the gate on the merged sealed labels. The operation the teacher chooses: `Repair(merge A B)`; in the trace.
+- **Done when**: ch. 3 merged and retrained: right first ≥ 80 of 92 on 2 seeds, released by the gate; §7.11.

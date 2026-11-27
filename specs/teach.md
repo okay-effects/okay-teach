@@ -264,3 +264,7 @@ the whole pair to one side, and which side depends on the seed: 3.2 read 4 times
 86–90. Such a pair is one meaning for this reader at this size. The remedy is the answer in two (§7.6), or merging
 the pair in the space (F1), not more questions (F4). Contrast stays an experiment step and is not a Lesson operation.
 The gate would have refused every one of these adapters.
+
+Merging the pair, counted from the same readings without retraining: with 3.2 and 3.3 one meaning ("vector addition",
+both sections shown), the three chapter 3 adapters are right 83, 82 and 81 of 92 first (89%). Unmerged they score
+71, 65 and 66. The spread across seeds falls from 6 to 2. This is the repair to build (SPRINT T18).
