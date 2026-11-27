@@ -43,6 +43,14 @@ class TeachSuite extends munit.FunSuite:
     assertEquals((p.two, p.answeredTwo), (6.0, 15))
     assertEquals(Bar.pair(Vector((1.0, false, false)), 0.05), None)
 
+  test("a measuring set checked: fragments, texts twice, thin meanings — counts and names, no text"):
+    val cs = Vector(Case("en", "How fast does it fall from 10 m?", "fall"), Case("en", "80 m /s", "fall"),
+      Case("en", "80 m /s", "fall"), Case("en", "What is a vector, and is speed one?", "vector"))
+    assertEquals(Lint.cases[String](cs, identity), Vector("2 texts shorter than 20 characters (fragments, not " +
+      "questions?)", "1 texts twice", "meanings with fewer than 2 texts: vector"))
+    assertEquals(Lint.cases[String](cs.take(1) ++ cs.take(1).map(_.copy(text = "Why does it fall at all?")), identity),
+      Vector.empty)
+
   test("the teacher's lines: numbering, bullets, quotes and a language label stripped, one message a line"):
     val got = Teacher.parse("1. How much tax do I pay?\n2) \"Ile podatku?\"\n- en: Do I pay at all?\n\n• one more")
     assertEquals(got, Vector("How much tax do I pay?", "Ile podatku?", "Do I pay at all?", "one more"))

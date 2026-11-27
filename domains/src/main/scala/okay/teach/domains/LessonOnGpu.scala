@@ -2,7 +2,7 @@ package okay.teach.domains
 
 import okay.effects.json.Json
 import okay.scala3.*
-import okay.teach.{Asked, Bar, Lesson, Measured, Reader, Ref}
+import okay.teach.{Asked, Bar, Lesson, Lint, Measured, Reader, Ref}
 import okay.teach.mlx.OnGpu
 
 import java.nio.file.{Files, Path, StandardCopyOption, StandardOpenOption}
@@ -25,6 +25,9 @@ final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFi
       "op" -> Json.Str(op), "result" -> Json.Str(result)).render + "\n"
     Files.writeString(trace, line, StandardOpenOption.CREATE, StandardOpenOption.APPEND)
     println(s"  $op → $result")
+
+  // each sealed set checked before it measures (Lint): its problems in the trace, counts only
+  sealedFiles.foreach((id, f) => Lint.cases(Teach.cases(t, f), t.show).foreach(p => note(s"Lint($id)", p)))
 
   private def answer[X](op: Lesson[X]): X =
     val result: X = op match
