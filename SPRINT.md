@@ -271,3 +271,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   them (conceptual and numeric), never quoting the passage. The control run (the fixed policy, 8 a section, 2 epochs)
   first, then the 35B again.
 - **Done when**: the book loop's taught reader measured with passages, against T13's 57 / 50 and the control.
+- **Progress** (9eb0b95): built — passages (chapter 2: 4, 3, 4, 8, 8, 2, 8, 7 = 44), the student's style. QUEUED
+  15:21 in ../okay-teach-run3: run c (the 35B drives) then run d (the fixed policy: 8 a passage, 2 epochs), logs
+  runs/book-ch2-{c,d}.log. The control without passages (fixed policy, 8 a section) runs before them in
+  ../okay-teach-run2 (runs/book-ch2-std.log).
