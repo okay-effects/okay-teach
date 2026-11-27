@@ -3,7 +3,7 @@ package okay.teach.domains
 import okay.effects.json.Json
 import okay.llm.{HttpBackend, Llm}
 import okay.scala3.*
-import okay.teach.{Case, Domain, Reader, Teacher}
+import okay.teach.{Case, Domain, Lesson, Reader, Sealed, Teacher}
 import okay.teach.mlx.OnGpu
 
 import java.nio.file.{Files, Path}
@@ -20,6 +20,8 @@ final case class Taught[D, T](domain: Domain[D, T], data: D, meanings: Vector[T]
  *  - `write <domain> <n> <out.jsonl>` — the teacher (TEACHER_URL, TEACHER_MODEL; the local 35B by default) writes n
  *    questions a language for each meaning; the kept (reached by the space) written as cases, the refused counted
  *  - `train <domain> <cases.jsonl> <out dir> [epochs] [model]` — a LoRA on the cases (Qwen3-0.6B by default)
+ *  - `lesson <domain> <n> <epochs> <sealed.tsv> [out]` — the standard Lesson (an effect, theory §2): the same line,
+ *    the sealed set measured by aggregates only, the gate, a released competence, the trace in `<out>/trace.jsonl`
  *  - `all <domain> <n> <epochs> <held-out> [out]` — the whole line, written, trained and read (below)
  *  - `read <domain> <cases> <adapter|-> <plain|calibrated> [epsilon] [model]` — the reader on cases (a jsonl of
  *    `write`, or a tsv of meaning, language, text): right by language, and the bar epsilon allows
@@ -49,13 +51,18 @@ object Teach:
         Path.of(args(3)), args.lift(4).fold(2)(_.toInt))
       case "read" => read(t, Path.of(args(2)), args(3), args(4), args.lift(5).fold(0.05)(_.toDouble),
         args.lift(6).getOrElse(model))
+      case "lesson" =>
+        val out = Path.of(args.lift(5).getOrElse(s"runs/${args(1)}"))
+        val o = LessonOnGpu(t, args(1), out, Map("held" -> Path.of(args(4)))).run(
+          Lesson.standard[Lesson](Sealed("held"), args(2).toInt, args(3).toInt))
+        println(s"released: ${o.released.fold("none (the gate did not pass)")(_.id)}")
       case "all" => all(t, args(2).toInt, args(3).toInt, Path.of(args(4)),
         Path.of(args.lift(5).getOrElse(s"runs/${args(1)}")))
       case other => sys.error(s"no step $other")
 
   private val model = "mlx-community/Qwen3-0.6B-4bit"
 
-  def write[D, T](t: Taught[D, T], n: Int, out: Path): Unit =
+  def write[D, T](t: Taught[D, T], n: Int, out: Path): (Int, Int) =
     val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
       env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
     val written = t.meanings.zipWithIndex.map { (m, i) =>
@@ -66,6 +73,7 @@ object Teach:
       "text" -> Json.Str(c.text), "meant" -> Json.Str(t.show(c.meant))).render)
     Files.write(out, rows.asJava)
     println(s"$out: ${rows.size} cases kept of ${rows.size + written.map(_.refused.size).sum} written")
+    (rows.size, written.map(_.refused.size).sum)
 
   def read[D, T](t: Taught[D, T], file: Path, adapter: String, scoring: String, epsilon: Double, repo: String): Unit =
     val cs = cases(t, file)
@@ -74,7 +82,8 @@ object Teach:
     val t0 = System.nanoTime()
     val reads = OnGpu.read(t.domain, t.data, cs, gpu, s)
     gpu.close()
-    reads.filterNot(_.right).foreach(r =>
+    // the texts misread only when asked (SHOW_TEXTS=1): a sealed set's texts are never shown to a teacher (theory L1)
+    if sys.env.get("SHOW_TEXTS").contains("1") then reads.filterNot(_.right).foreach(r =>
       println(s"    [${r.c.language}] ${r.c.text} → ${r.meaning.map(t.show)} (${t.show(r.c.meant)})"))
     println(f"$repo + $adapter, $scoring, ${(System.nanoTime() - t0) / 1e9 / math.max(1, cs.size)}%.2f s a text")
     println(OnGpu.said(reads, epsilon))
@@ -109,7 +118,7 @@ object Teach:
   def all[D, T](t: Taught[D, T], n: Int, epochs: Int, held: Path, out: Path): Unit =
     Files.createDirectories(out)
     val cases = out.resolve("cases.jsonl")
-    if !Files.exists(cases) then write(t, n, cases)
+    if !Files.exists(cases) then { val _ = write(t, n, cases) }
     val adapter = out.resolve("adapter")
     if !Files.exists(adapter.resolve("reader.adapter.safetensors")) then
       OnGpu.train(t.domain, t.data, Teach.cases(t, cases), model, adapter, epochs)
