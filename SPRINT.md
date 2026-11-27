@@ -231,4 +231,8 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   `BookDomain.about` = the section's text (for the teacher only); (d) `Teach book` = topics + `Teaching.drive` by
   the model + the competence; (e) GUIDE.md "from a book", the skill's step; (f) the first book: OpenStax College
   Physics 2e chapter 2 (CC BY-NC-SA: fetched, never committed).
+- **Progress** (to ac5d018): Book, the fetcher (chapter 2: 8 sections, 136 questions), BookDomain, `Teach book`,
+  `BookLoopSuite` (no question leaks into a teacher's text), GUIDE.md and the skill (5b). RUNNING since 14:52: the
+  first loop on chapter 2, driven by the 35B, in ../okay-teach-run2 (a second pinned worktree: ../okay-teach-run
+  holds the residence-driven-2 lesson), log runs/book-ch2.log, out runs/openstax-ch2.
 - **Done when**: specs/book-loop.md's done-when.
