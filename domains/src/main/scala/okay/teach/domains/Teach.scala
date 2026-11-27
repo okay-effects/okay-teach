@@ -31,7 +31,7 @@ final case class Taught[D, T](domain: Domain[D, T], data: D, meanings: Vector[T]
  */
 object Teach:
   val domains: Map[String, Taught[?, ?]] = Map(
-    "tax-rules" -> Taught[Unit, String](TaxRules, (), okay.tax.Rules.all.map(_.id), TaxRules.about, identity,
+    "tax-rules" -> Taught[Unit, String](TaxRules, (), okay.tax.Rules.all.map(_.id), TaxRules.topic, identity,
       identity))
 
   private def env(k: String, d: String) = sys.env.getOrElse(k, d)

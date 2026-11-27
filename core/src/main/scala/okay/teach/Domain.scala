@@ -16,6 +16,9 @@ trait Domain[D, T]:
   def user(@annotation.unused data: D, text: String): String = text
   /** a choice as a line of the answer (the option itself by default; "label: option" where holes are slots) */
   def line(@annotation.unused hole: Hole, option: String): String = option
+  /** what a teacher is told of a meaning (its canonical words by default; a domain may add what only the teacher
+   * should know, marked so: the answer behind a question, never to be quoted) */
+  def about(data: D, meant: T): String = s"The meaning: ${space.say(data, meant, "en")}"
   /** the languages questions are asked in */
   def languages: Vector[String] = Vector("en", "pl", "ru", "uk")
 

@@ -35,10 +35,9 @@ class TeachSuite extends munit.FunSuite:
     assertEquals(one.bar, 21.0); assertEquals(one.wrong, 0)
     assertEquals(Bar.choose(Vector((1.0, false)), 0.05), None)
 
-  test("the teacher's lines: '<lang>: text', in the domain's languages only"):
-    val got = Teacher.parse("Here:\nen: How much tax?\n- pl: \"Ile podatku?\"\nde: Wie viel?\nnoise",
-      Vector("en", "pl"))
-    assertEquals(got, Vector("en" -> "How much tax?", "pl" -> "Ile podatku?"))
+  test("the teacher's lines: numbering, bullets, quotes and a language label stripped, one message a line"):
+    val got = Teacher.parse("1. How much tax do I pay?\n2) \"Ile podatku?\"\n- en: Do I pay at all?\n\n• one more")
+    assertEquals(got, Vector("How much tax do I pay?", "Ile podatku?", "Do I pay at all?", "one more"))
 
   test("a chooser's number: the last one in the reply, within the options"):
     assertEquals(Choose.number("I think 2, no: 3", 4), Some(3))
