@@ -27,8 +27,9 @@ object RuleTeacher:
        |The predicates (name/arity): $preds
        |${if v.constants.isEmpty then "" else s"The constants: ${v.constants.mkString(", ")}"}
        |
-       |List the Datalog rules this lesson needs, each in plain words naming its predicates — what follows from
-       |what. One rule a line, beginning "rule: ". No code.
+       |First declare any new predicate the rules need, one a line: "predicate: name/arity — what it means"
+       |(a lowercase name). Then list the Datalog rules this lesson needs, each in plain words naming its
+       |predicates — what follows from what. One rule a line, beginning "rule: ". No code.
        |${feedback.fold("")(f => s"\nThe last theory failed the book's exercises: $f\nChange the rules so they " +
          "pass.")}"""
       .stripMargin
@@ -37,6 +38,11 @@ object RuleTeacher:
   def plan(reply: String): Vector[String] =
     reply.linesIterator.map(_.trim.stripPrefix("- ")).collect {
       case l if l.toLowerCase.startsWith("rule:") => l.drop(5).trim }.filter(_.nonEmpty).toVector
+
+  /** the predicates a plan declares: "predicate: name/arity — …", a lowercase name and an arity 1 to 4 */
+  def declared(reply: String): Map[String, Int] =
+    val one = """\s*-?\s*[Pp]redicate:\s*`?([a-z][a-z0-9_]*)\s*/\s*([1-4]).*""".r
+    reply.linesIterator.collect { case one(name, arity) => name -> arity.toInt }.toMap
 
   def ruleTask(lesson: String): String =
     s"""$lesson
@@ -50,8 +56,12 @@ object RuleTeacher:
     val ask = Ask(Vector(Teacher.message("user", planTask(lesson, v, feedback))), maxTokens = 3000,
       sampling = Sampling(temperature = Some(0.3), seed = Some(seed)))
     for
-      planned <- Llm.complete[R](ask).map(d => plan(d.reply.content))
-      read <- Read.each(planned)(d => Choose.read[Vocabulary, Rule, R](RuleSpace, v, d, ruleTask(lesson)).map(d -> _))
+      reply <- Llm.complete[R](ask).map(_.reply.content)
+      planned = plan(reply)
+      // the vocabulary grown by the plan's own predicates (a known one keeps its arity)
+      words = v.copy(predicates = declared(reply) ++ v.predicates)
+      read <- Read.each(planned)(d =>
+        Choose.read[Vocabulary, Rule, R](RuleSpace, words, d, ruleTask(lesson)).map(d -> _))
     yield
       val rules = read.flatMap(_._2.meaning).distinct
       val verdict = judge(Program(rules))

@@ -44,8 +44,13 @@ number parsed strictly; the pick scores 1 (margin 1), an answer that is no optio
 Datalog rule (okay-datalog) as holes — the head, its arguments, the body's length, each literal's kind, predicate
 and arguments — over a `Vocabulary` (predicates with arities, constants, the variables X, Y, Z …); only a safe rule
 closes; the words the rule's text, its variables renamed in order (`canonical`). `RuleTeacher.teach`: (1) the
-teacher lists the rules wanted in plain words; (2) each built by `Choose` in `RuleSpace`; (3) the program judged
-on the book's exercises, what failed told back; rounds until all pass, the best kept.
+teacher declares the predicates it needs ("predicate: name/arity — meaning") and lists the rules wanted in plain
+words; (2) each built by `Choose` in `RuleSpace` over the vocabulary grown by those predicates; (3) the program
+judged on the book's exercises, what failed told back; rounds until all pass, the best kept.
+
+`CarrollRules` (module `domains`): Carroll's soriteses (okay-study) — the reading forms the reference teacher wrote
+kept, only the rules taught; the judge the training exercises (10), the measure the held out (16). Fair by its
+laws: every reference rule is reached by choosing, and the judge passes the reference 10 of 10 and 16 of 16.
 
 ## 6. On Apple's GPU, and the command
 
@@ -53,7 +58,7 @@ on the book's exercises, what failed told back; rounds until all pass, the best 
 page's), with an adapter or none; `train`, a LoRA on a domain's cases (rank 16, every projection, lr 2e-4, the
 prompt not learned), saved for mlx-scala and for the page; `read`, the measure and its bar.
 
-`Teach` (module `domains`): `write`, `train`, `read` over a named domain. The first: `tax-rules` (okay-tax's rules,
+X
 one hole, a line "rule: <English title>").
 
 ## 7. Not yet measured

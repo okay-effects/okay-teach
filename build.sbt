@@ -48,7 +48,10 @@ lazy val root = (project in file(".")).aggregate(core.jvm, core.js, mlx, domains
 /** THE DOMAINS TAUGHT, and the command `teach` (write, train, read): okay-tax's rules first */
 lazy val domains = (project in file("domains")).dependsOn(mlx)
   .settings(name := "okay-teach-domains", publish / skip := true,
-    resolvers += "okay-tax" at "https://okay-effects.github.io/okay-tax/maven",
-    libraryDependencies += "io.github.okay-effects" %% "okay-tax-core" % "0.1.0",
+    resolvers ++= Seq("okay-tax" at "https://okay-effects.github.io/okay-tax/maven",
+      "okay-study" at "https://okay-effects.github.io/okay-study/maven"),
+    libraryDependencies ++= Seq("io.github.okay-effects" %% "okay-tax-core" % "0.1.0",
+      "io.github.okay-effects" %% "okay-study" % "0.1.0", munit.value),
+    Test / fork := true, Test / baseDirectory := (ThisBuild / baseDirectory).value,
     fork := true, run / baseDirectory := (ThisBuild / baseDirectory).value,
     javaOptions ++= Seq("--enable-native-access=ALL-UNNAMED", s"-Dokm.lib=$mlxNativeLib/libokm.dylib", "-Xss16m"))

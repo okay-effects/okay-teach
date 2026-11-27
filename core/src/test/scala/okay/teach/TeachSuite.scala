@@ -83,3 +83,9 @@ class TeachSuite extends munit.FunSuite:
     assertEquals(Reader.lines(PickDomain, (), "gamma", "gamma"), Vector("gamma"))
     assertEquals(RuleSpace.say(v, rule("anc(A, B) :- parent(A, B)."), "en"), "anc(X, Y) :- parent(X, Y).")
     assert(Program(Vector(rule("anc(X, Y) :- parent(X, Y)."))).rules.nonEmpty)
+
+  test("a plan's lines: the rules described, the predicates it declares"):
+    val reply = "predicate: chain/2 — a chain of premisses\n- predicate: `retinend/1` — kept\npredicate: Bad/2\n" +
+      "rule: chain holds when a premiss links X to Y\nRule: a term is a retinend when …\nnoise"
+    assertEquals(RuleTeacher.declared(reply), Map("chain" -> 2, "retinend" -> 1))
+    assertEquals(RuleTeacher.plan(reply).size, 2)

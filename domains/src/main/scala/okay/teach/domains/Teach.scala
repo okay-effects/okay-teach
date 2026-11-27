@@ -36,6 +36,11 @@ object Teach:
     else lines.map(Json.fromText).map(j => Case(j("language").string, j("text").string, t.read(j("meant").string)))
 
   def main(args: Array[String]): Unit =
+    if args(0) == "rules" then
+      rules(args.lift(1).fold(10)(_.toInt), args.lift(2).fold(4)(_.toInt), Path.of(args(3)))
+    else main1(args)
+
+  private def main1(args: Array[String]): Unit =
     val t = domains.getOrElse(args(1), sys.error(s"no domain ${args(1)}; known: ${domains.keys.mkString(", ")}"))
     args(0) match
       case "write" => write(t, args(2).toInt, Path.of(args(3)))
@@ -70,3 +75,26 @@ object Teach:
       println(s"    [${r.c.language}] ${r.c.text} → ${r.meaning.map(t.show)} (${t.show(r.c.meant)})"))
     println(f"$repo + $adapter, $scoring, ${(System.nanoTime() - t0) / 1e9 / math.max(1, cs.size)}%.2f s a text")
     println(OnGpu.said(reads, epsilon))
+
+  /**
+   * `rules <train> <rounds> <out dir>` — the teacher writes Carroll's rules by choosing (`RuleTeacher`), judged on the
+   * first `train` consistent exercises; each round's plan, rules and verdict written to the directory; the best
+   * program measured on the held out
+   */
+  def rules(train: Int, rounds: Int, out: Path): Unit =
+    Files.createDirectories(out)
+    val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
+      env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
+    val (trainSet, held) = CarrollRules.exercises(train)
+    val t0 = System.nanoTime()
+    val done = run(Llm.on(teacher)(okay.teach.RuleTeacher.teach[Llm](CarrollRules.lesson, CarrollRules.vocabulary,
+      CarrollRules.judge(trainSet), rounds)))
+    done.zipWithIndex.foreach { (r, i) =>
+      Files.writeString(out.resolve(s"round-${i + 1}.txt"), (Vector(s"passed ${r.passed} of ${r.of}", "",
+        "plan:") ++ r.plan ++ Vector("", "rules:") ++ r.rules.map(_.toString) ++ Vector("", "not built:") ++
+        r.unread ++ Vector("", s"told: ${r.told}")).mkString("\n"))
+      println(s"  round ${i + 1}: ${r.plan.size} described, ${r.rules.size} built, passed ${r.passed} of ${r.of}") }
+    okay.teach.RuleTeacher.best(done).foreach { p =>
+      Files.writeString(out.resolve("best.dl"), p.toString)
+      println(s"the best on the held out: ${CarrollRules.scored(p, held).said}") }
+    println(f"${(System.nanoTime() - t0) / 1e9}%.0f s")
