@@ -64,7 +64,8 @@ object TeacherSpace extends Space[Sigma, Action]:
       val ask = if s.asked.isEmpty then Vector(4, 8, 16).map(Action.Ask(_))
         else if failed then Vector(8, 16).map(Action.Ask(_)) else Vector.empty
       // train when there are questions the adapter was not trained on
-      val train = if s.asked.exists(_.kept > s.trainedOn) then Vector(1, 2, 3).map(Action.Train(_)) else Vector.empty
+      // 2 or 3 epochs: one under-trains (the book loop, 2026-11-27: 880 questions × 1 epoch → 58 of 134; 352 × 2 → 80)
+      val train = if s.asked.exists(_.kept > s.trainedOn) then Vector(2, 3).map(Action.Train(_)) else Vector.empty
       val measure = for t <- Vector(false, true) if !t || s.adapter.nonEmpty; c <- Vector(false, true)
         if s.measured(Action.what(t, c)).isEmpty yield Action.Measure(t, c)
       val baseline = Option.when(s.asked.exists(_.kept > 0) && s.measured(Teaching.baselineWhat).isEmpty)(

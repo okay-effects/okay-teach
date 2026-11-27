@@ -138,3 +138,19 @@ learned from the teacher's training questions, never seeing the sealed set):
 
 (okay-tax's hand-written search scored 134; the agent's own word search 54 of 56 was written from memory of the
 sealed questions — tuned on them, worth nothing: why law 6 forbids it.)
+
+### 7.5 The book loop, measured (T13, T15; 2026-11-27)
+
+OpenStax College Physics 2e chapter 2 (8 sections), the book's own 134 questions sealed; right first:
+
+| run | driver | the teacher's questions | epochs | untaught | baseline | taught | released |
+|---|---|---|---|---|---|---|---|
+| a | the 35B | 4 a section (32) | 1 | 44 | 53 | 50 | no |
+| b | the 35B | 4 a section (32) | 1 | 44 | 43 | 57 | yes |
+| control | fixed | 8 a section (64) | 2 | 44 | 39 | 49 | yes |
+| c | the 35B | 4, then 16 a passage (176 → 880 → …) | 1 | 44 | 59 | 55 → 58 | no (budget) |
+| **d** | fixed | **8 a passage (352)** | **2** | 44 | 52 | **80** (bar: 23, 0 wrong) | **yes** |
+
+Passages (T15: a section cut into ~2000-character pieces, questions as a student and the book's exercises ask) and
+two epochs lift the reader from ~50 to 80 of 134; more questions at one epoch do not (880 → 58). The teacher's space
+was repaired from runs a and c: asking again after a failed gate, once an adapter; epochs 2 or 3.
