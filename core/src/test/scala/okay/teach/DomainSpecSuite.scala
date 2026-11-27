@@ -6,10 +6,10 @@ import okay.frames.Laws
 class DomainSpecSuite extends munit.FunSuite:
   private val pay = DomainSpec("pay", "You read a question about pay into lines.", Vector(
     HoleSpec("contract", HoleKind.Enum(Vector("uop", "b2b"))),
-    HoleSpec("gross", HoleKind.Numbers, when = Map("contract" -> "uop")),
-    HoleSpec("revenue", HoleKind.Numbers, when = Map("contract" -> "b2b")),
+    HoleSpec("gross", HoleKind.Numbers(), when = Map("contract" -> Vector("uop"))),
+    HoleSpec("revenue", HoleKind.Numbers(), when = Map("contract" -> Vector("b2b"))),
     HoleSpec("form", HoleKind.Enum(Vector("scale", "linear", "lump"), Map("lump" -> "ryczałt")),
-      when = Map("contract" -> "b2b")),
+      when = Map("contract" -> Vector("b2b"))),
     HoleSpec("years", HoleKind.Derived("differences"), notSaid = true)))
   private val space = pay.domain.space
   private val data: DomainSpec.Data = Map.empty
