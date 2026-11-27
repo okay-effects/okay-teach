@@ -12,7 +12,10 @@ class BookLoopSuite extends munit.FunSuite:
     val (t, sealedFile) = BookLoop.load(file)
     val book = t.domain.asInstanceOf[BookDomain].book
     assertEquals(t.meanings.size, 8)
-    assert(book.questions.size >= 100, book.questions.size.toString)
+    assert(book.questions.size >= 90, book.questions.size.toString)
+    // whole questions: no formula fragment ("80 m /s") taken for a question, none twice (the fetch, specs/teach.md §7.6)
+    assertEquals(book.questions.map(_._2).filter(_.trim.length < 20), Vector.empty)
+    assertEquals(book.questions.size, book.questions.map(_._2).distinct.size)
     val texts = book.sections.map(_.text.replaceAll("\\s+", " "))
     val leaked = book.questions.map(_._2.replaceAll("\\s+", " ").take(60)).filter(q => q.length > 30 &&
       texts.exists(_.contains(q)))

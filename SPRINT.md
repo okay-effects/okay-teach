@@ -289,7 +289,12 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   before): the measure's most-confused meanings (counts), Σ's trend of adapters, the teacher told to stop when more
   questions stop helping.
 
-## T16 — overlapping meanings: answer with the two likeliest when unsure  `[ ]`
+## T16 — overlapping meanings: answer with the two likeliest when unsure  `[x]`
+
+- **Outcome** (specs/teach.md §7.6): `Reader.readTwo`, `Measured.inTwo`, `Baseline.ranked`, `Bar.pair`, the step
+  `measure` (writes margins, no text). The margins exposed a broken sealed set: 36 of 134 were formula fragments
+  (the fetch read MathML lines as question numbers; fixed, BookLoopSuite checks whole questions). On the 98 whole
+  questions run e's adapter: 74 first, 87 in two (baseline 57, 72); the "overlap" was mostly the fragments.
 
 - **Why**: run e's errors fall into one general section (2.5) from its neighbours — the meanings overlap (F1); more
   questions do not help, and no bar holds at 5%.
