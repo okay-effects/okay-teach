@@ -5,7 +5,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 | task | state | notes |
 |---|---|---|
-| T1 first-run | in progress | the first real lesson on okay-tax's rules |
+| T1 first-run | in progress | queued 2026-11-27 13:00 in ../okay-teach-run (a worktree pinned at 84b2130 + gpu.zsh), waiting for the GPU lock; log runs/tax-rules/all.log there |
 
 ## T1 — first-run: the first real lesson, okay-tax's rules  `[~]`
 
@@ -17,6 +17,9 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **How**: `sbt "domains/runMain okay.teach.domains.Teach all tax-rules 8 2 ../okay-tax/data/heldout.tsv runs/tax-rules"`
   (8 questions a language a rule: 25 rules × 4 × 8 = 800 asked); with nohup, log to `runs/tax-rules/all.log`. Steps
   are skipped when their output exists (`cases.jsonl`, `adapter/`), so a rerun resumes.
+- **Resume**: the run lives in `../okay-teach-run` (a worktree pinned to a commit, so edits here do not leak into a
+  run that compiles when the lock frees); `runs/wait.log` there says where it stands; rerunning the same command
+  there resumes (finished steps are skipped).
 - **Gotchas**: the 35B (okay-mlx on :8090) and the LoRA share the Mac's GPU with other sessions — check `ps` for
   other GPU jobs first; the teacher must never see `heldout.tsv` (it is only an argument of `read`) — L1 of the
   theory; okay-tax's held-out also includes a rule added later (`loss`), so its 192 cover 24 rules.
