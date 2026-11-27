@@ -18,7 +18,7 @@ final case class Sigma(domain: String, sealedSet: Sealed, asked: Option[Asked] =
       adapter.fold("No adapter trained yet.")(_ => "An adapter is trained."),
       if measures.isEmpty then "Nothing measured yet." else "Measured on the sealed set:\n" +
         measures.map("  " + _.said).mkString("\n"),
-      released.fold("Nothing released.")(_ => "A competence is released."),
+      released.fold("Nothing released. " + Sigma.toRelease(this))(_ => "A competence is released."),
       s"Operations left in the budget: $budget.").mkString("\n")
 
 /** an operation a teacher may choose, with its arguments (theory §2), as the option it is offered by */
@@ -124,3 +124,17 @@ object Teaching:
   /** a model chooses (any `Llm`, by numbered choices — `Choose`); an answer that is no option stops the lesson */
   def byModel[R[_]](using In[okay.llm.Llm, R]): Chooser[R] = s =>
     Choose.read[Sigma, Action, R](TeacherSpace, s, s.said, task).map(_.meaning.getOrElse(Action.Stop))
+
+object Sigma:
+  /** what a release still needs, in words: the measures the gate compares (L4, L7) and the taught reader beating them
+   * (the 35B driving its first lesson stopped short of it: the state never said what release needed) */
+  def toRelease(s: Sigma): String =
+    val missing = Vector(
+      Option.when(s.adapter.isEmpty)("an adapter trained"),
+      Option.when(!s.measures.exists(_.what.startsWith("taught")))("a taught reader measured"),
+      Option.when(!s.measures.exists(_.what.startsWith("untaught")))("an untaught reader measured"),
+      Option.when(s.measured(Teaching.baselineWhat).isEmpty)("the baseline measured")).flatten
+    if missing.nonEmpty then s"A release needs first: ${missing.mkString(", ")}."
+    else if TeacherSpace.best(s).isEmpty then
+      "A release needs the best taught reader to beat the untaught one and the baseline: it does not yet."
+    else "A release is possible now."

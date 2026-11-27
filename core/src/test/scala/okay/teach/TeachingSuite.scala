@@ -44,3 +44,10 @@ class TeachingSuite extends munit.FunSuite:
     for st <- Vector(start, start.copy(asked = Some(Asked(Ref("c"), 10, 0)))); a <- TeacherSpace.allowed(st) do
       assertEquals(Laws.reach(TeacherSpace)(st, st.said, a), None)
       assertEquals(Laws.roundTrip(TeacherSpace)(st, a, Seq("en")), None)
+
+  test("the state says what a release still needs (the 35B stopped short of the baseline without being told)"):
+    val s = start.copy(asked = Some(Asked(Ref("c"), 10, 0)), adapter = Some(Ref("a")),
+      measures = Vector(m("untaught, plain", 19, 37), m("taught, plain", 52, 4)))
+    assert(s.said.contains("A release needs first: the baseline measured."), s.said)
+    val ready = s.copy(measures = s.measures :+ m(Teaching.baselineWhat, 22, 34))
+    assert(ready.said.contains("A release is possible now."), ready.said)
