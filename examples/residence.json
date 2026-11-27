@@ -1,0 +1,21 @@
+{
+  "name": "residence",
+  "system": "You read a question about Polish residence and work documents into the one document it asks about, a line: document: TITLE.\ndocument: A temporary residence card (karta pobytu czasowego)\ndocument: A permanent residence card (pobyt stały)\ndocument: The EU long-term resident card (rezydent długoterminowy UE)\ndocument: The CUKR card for Ukrainian citizens under the 2025 special act\ndocument: The PESEL UKR status\ndocument: A work permit (zezwolenie na pracę)\ndocument: A national visa D",
+  "languages": ["en", "pl", "ru", "uk"],
+  "holes": [
+    {
+      "key": "document",
+      "kind": "enum",
+      "options": ["temporary", "permanent", "eu.resident", "cukr", "pesel.ukr", "work.permit", "visa.d"],
+      "shown": {
+        "temporary": "A temporary residence card (karta pobytu czasowego)",
+        "permanent": "A permanent residence card (pobyt stały)",
+        "eu.resident": "The EU long-term resident card (rezydent długoterminowy UE)",
+        "cukr": "The CUKR card for Ukrainian citizens under the 2025 special act",
+        "pesel.ukr": "The PESEL UKR status",
+        "work.permit": "A work permit (zezwolenie na pracę)",
+        "visa.d": "A national visa D"
+      }
+    }
+  ]
+}
