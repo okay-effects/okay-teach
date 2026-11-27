@@ -54,7 +54,7 @@ class TeachingSuite extends munit.FunSuite:
     val ready = s.copy(measures = s.measures :+ m(Teaching.baselineWhat, 22, 34),
       checked = Some(Checked(30, 40, Vector.empty)))
     assert(ready.copy(checked = None).said.contains("checked on questions apart"), ready.said)
-    assert(ready.said.contains("A release is possible now."), ready.said)
+    assert(ready.said.contains("A release is possible now"), ready.said)
 
 
   test("check, then merge a pair it found, then everything again on the merged space (T19)"):

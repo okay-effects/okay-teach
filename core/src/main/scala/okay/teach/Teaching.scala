@@ -186,4 +186,7 @@ object Sigma:
     else if s.checked.exists(_.pairs.nonEmpty) && s.canMerge then
       "A release is possible now; but the check found meanings the reader cannot split — merging them and training " +
         "again (several seeds) raised a book chapter from 74 to 83 of 92."
+    else if s.seeds == 1 then
+      "A release is possible now; but one adapter swings by about 10 between seeds — three seeds voting raised a " +
+        "book chapter from 71.5 to 79 of 98 (train again with 3 seeds, then measure)."
     else "A release is possible now."
