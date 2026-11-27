@@ -58,6 +58,7 @@ effects, the implementations are handlers — applied to teaching itself.
 | `Ask` | training questions for meanings | `Teacher.write` + `Laws.reach` | a space |
 | `Train` | an adapter on the training cases | `OnGpu.train` | reach share ≥ θ on the cases |
 | `Measure` | right / asked / wrong — aggregates only | `OnGpu.read` on the sealed set | an adapter or none; never on training cases |
+| `Baseline` | the no-model reader every candidate must beat (L7) | `Baseline.words` on the training cases | the training cases |
 | `Calibrate` | the bar | `Bar.choose` on the calibration set | calibration cases disjoint from training |
 | `Diagnose` | the failures, attributed to factors (§4) | — (to build) | a measure |
 | `Repair` | one action per attributed failure | — (to build) | a diagnosis |
@@ -87,6 +88,10 @@ given Σ, chooses the next operation and its arguments.
   do writing freely.
 - **L6 — Budget.** Every lesson has a budget (teacher calls, GPU minutes, rounds); a lesson that spends it stops
   and reports where it stands.
+- **L7 — Beat the baseline.** Every lesson measures a reader that needs no model and never sees the sealed set — a
+  word search learned from the teacher's training questions (`Baseline`) — and the gate (L4) requires the taught
+  reader to beat it as well as the untaught one. A baseline written by whoever wrote the sealed set is tuned on it
+  and worth nothing (the skill's first check, SPRINT T12).
 
 ## 4. Diagnosis: one failure, one factor
 

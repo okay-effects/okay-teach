@@ -23,10 +23,15 @@ each was made. The model never writes an answer: an exact engine computes it fro
 2. **Choose, don't write.** Anything formal (a meaning, a rule, an equation) is built by choosing among options a
    space offers. If you are about to write free text that a program must parse, stop: describe a space instead.
 3. **The gate.** A reader replaces the one before only if, on the sealed set, it is right more often AND has no
-   more silent wrong answers. Coverage never buys silent errors.
+   more silent wrong answers (a reader with no bar counts every wrong answer as silent). Coverage never buys silent
+   errors. The tool applies it; you do not override it.
 4. **Numbers are copied, not remembered.** Every number you report names the run (date, command) that gave it.
 5. **Budget.** Say up front how many teacher calls and GPU minutes the lesson may use; stop when spent, and say
    where you stand.
+6. **Beat the baseline.** Every lesson also measures a word search learned from the teacher's training questions
+   (it never sees the sealed set), and the gate requires the taught reader to beat it too. Never write a baseline
+   yourself after writing the sealed questions — you would tune it on them (the skill's first check did exactly
+   that: 54 of 56, worth nothing).
 
 ## Steps
 
@@ -39,8 +44,10 @@ Write `<domain>.json` (format: `specs/domain-spec.md`). Holes are asked in order
 (one enum hole). If a hole is not an enum, list the meanings to teach in `<domain>.meanings.txt`, one a line in the
 spec's words (`contract: uop; gross: 15000; end`).
 
-Check it before anything else: `sbt "domains/testOnly *SpecSuite"` covers the examples; for yours, read one
-meaning back with the command in step 3 on a two-line sealed file — a meaning the space cannot reach is refused.
+Check it before anything else, with a few rows you write FOR THE CHECK (not the sealed ones), same format as step 2:
+`sbt "domains/runMain okay.teach.domains.Teach check <domain>.json <check.tsv>"` — no GPU; it says how many rows'
+meanings were read and reached, and names the first that were not. `Teach` alone prints every step's arguments.
+Keep the spec in a file named for the domain; the lesson records the spec's `name`, not its path.
 
 If no hole kind fits the domain, or the answer needs an engine the catalog lacks (`specs/theory.md` §6), stop and
 say so (the `Uncovered` outcome): what is missing, not a workaround.
@@ -48,7 +55,9 @@ say so (the `Uncovered` outcome): what is missing, not a workaround.
 ### 2. seal — the held-out questions
 
 Write `<domain>.sealed.tsv`: `meaning words<TAB>language<TAB>question`, questions as real people put them, 2+ per
-meaning per language (en, pl, ru, uk by default). Commit it before step 3. From now on, never open it.
+meaning per language (en, pl, ru, uk by default). The meaning words are the spec's lines joined by "; " — an enum's
+option key or its `shown` text, both read (`document: cukr`). Freeze it before step 3: commit it if the checkout is
+yours to commit, else record its hash (`shasum <file>`) in your report. From now on, never open it.
 
 ### 3. lesson — ask, train, measure, release
 
@@ -61,16 +70,22 @@ scripts/gpu.zsh runs/<domain>/lesson.log \
 the teacher (the local Qwen3.6-35B at `127.0.0.1:8090`, or `TEACHER_URL`/`TEACHER_MODEL`) writes 8 questions a
 language for each meaning, kept only when the spec reaches their meaning (`runs/<domain>/cases.jsonl`; its raw replies
 in `cases.jsonl.replies.txt`); a LoRA trains 2 epochs (`adapter/`); the reader is measured four ways (untaught /
-taught × plain / calibrated); if the best taught one passes the gate, `competence/` is released. Every operation is
-appended to `runs/<domain>/trace.jsonl`. Steps already done are skipped on a rerun.
+taught × plain / calibrated) and the baseline (law 6); if the best taught one passes the gate against both, it is
+released into `competence/`. Every operation is appended to `runs/<domain>/trace.jsonl`. Steps already done are
+skipped on a rerun. Cost: one teacher call per meaning per language (7 meanings × 4 languages = 28), a few minutes
+of GPU for a small domain (the first check: 3 minutes for 7 meanings), longer for many meanings.
 
 To let a model choose the operations itself instead: `Teach drive <domain>.json <sealed.tsv> model`.
 
 ### 4. read — the numbers
 
-Each measure: `right R of N (by language)` and the bar `answered A, wrong W`. Compare with a baseline that needs no
-model (a word search, a parser) — a reader that does not beat it is not worth shipping. Look at the counts the
-teacher kept per meaning in the log: a meaning with few kept questions is a corpus gap.
+Each measure: `right R of N (by language)` and the bar `answered A, wrong W`; the baseline's line `baseline (words)`.
+A reader that does not beat the baseline is not released. Look at the counts the teacher kept per meaning in the
+log: a meaning with few kept questions is a corpus gap. The bar the lesson prints is chosen on the set it is
+reported on — to trust it, calibrate on one half and report on the other:
+`Teach calibrate <domain>.json <adapter> <calibration.tsv> <report.tsv>` (split the sealed rows by a rule fixed
+before you look, e.g. the first question of each meaning and language calibrates, the second reports).
+To read without an adapter, pass `-`.
 
 ### 5. diagnose — one failure, one factor
 
@@ -99,5 +114,7 @@ vocabulary (predicates or variables), its exercises split train / held out, a ju
 
 Add the lesson to `data/traces/<domain>.jsonl` (format: `specs/traces.md`): each step's state, operation, outcome
 copied from the log, the factor for a diagnosis or repair, the verdict (helped / hurt / neutral / informative).
+Cite the source as the commit and spec section when there is one, else the log's path, the run's date and its
+command. The lesson's own `runs/<domain>/trace.jsonl` holds every operation already; yours adds the diagnosis.
 Lessons recorded this way are what the teacher model (okay-teach SPRINT T7) learns to teach from — a failed lesson
 is as useful as a good one, if it is recorded honestly.
