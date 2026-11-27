@@ -71,3 +71,6 @@ class TeachingSuite extends munit.FunSuite:
     assertEquals(trainings, 1)
     assertEquals(s.trainedOn, 160)
     assertEquals(s.measures.map(_.what), Vector("untaught, plain"))
+    // the last adapter's numbers kept as the trend, and said
+    assertEquals(s.earlier, Vector((32, 50, 53)))
+    assert(s.said.contains("32 → 50 vs 53"), s.said)

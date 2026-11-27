@@ -9,7 +9,8 @@ import okay.scala3.*
  */
 final case class Sigma(domain: String, sealedSet: Sealed, asked: Option[Asked] = None, adapter: Option[Ref] = None,
     measures: Vector[Measured] = Vector.empty, released: Option[Ref] = None, budget: Int = 12,
-    history: Vector[String] = Vector.empty, trainedOn: Int = 0):
+    history: Vector[String] = Vector.empty, trainedOn: Int = 0,
+    earlier: Vector[(Int, Int, Int)] = Vector.empty):
   def measured(what: String): Option[Measured] = measures.find(_.what == what)
   /** the state in words, for a teacher model */
   def said: String =
@@ -18,8 +19,10 @@ final case class Sigma(domain: String, sealedSet: Sealed, asked: Option[Asked] =
       adapter.fold("No adapter trained yet.")(_ => s"An adapter is trained, on $trainedOn of the questions."),
       if measures.isEmpty then "Nothing measured yet." else "Measured on the sealed set:\n" +
         measures.map("  " + _.said).mkString("\n"),
+      if earlier.isEmpty then "" else "Earlier adapters (questions → taught right, the baseline right): " +
+        earlier.map((n, t, b) => s"$n → $t vs $b").mkString(", ") + ".",
       released.fold("Nothing released. " + Sigma.toRelease(this))(_ => "A competence is released."),
-      s"Operations left in the budget: $budget.").mkString("\n")
+      s"Operations left in the budget: $budget.").filter(_.nonEmpty).mkString("\n")
 
 /** an operation a teacher may choose, with its arguments (theory §2), as the option it is offered by */
 enum Action:
@@ -102,9 +105,13 @@ object Teaching:
           case Action.Stop => pure(spent)
           case Action.Ask(n) => Lesson.ask(n).flatMap(x => step(spent.copy(asked = Some(x))))
           case Action.Train(e) =>
-            // a new adapter: the taught measures and the baseline (learned from the questions) are taken again
+            // a new adapter: the taught measures and the baseline (learned from the questions) are taken again;
+            // the last adapter's numbers kept as the trend, so a teacher sees when more questions stop helping
+            val last = for t <- spent.measures.filter(_.what.startsWith("taught")).maxByOption(_.right)
+              b <- spent.measured(baselineWhat) yield (spent.trainedOn, t.right, b.right)
             Lesson.train(s.asked.get.cases, e).flatMap(x => step(spent.copy(adapter = Some(x),
-              trainedOn = s.asked.get.kept, measures = spent.measures.filter(_.what.startsWith("untaught")))))
+              trainedOn = s.asked.get.kept, earlier = spent.earlier ++ last,
+              measures = spent.measures.filter(_.what.startsWith("untaught")))))
           case Action.Measure(t, c) =>
             Lesson.measure(s.sealedSet, if t then s.adapter else None, c).flatMap(m =>
               step(spent.copy(measures = spent.measures :+ m.copy(what = Action.what(t, c)))))
@@ -126,7 +133,7 @@ object Teaching:
     "You teach a small language model to read questions of a domain: you ask a teacher for training questions, " +
       "train an adapter, measure readers on a sealed set you never see, and release a reader only when it is " +
       "better than the untaught one and the baseline; when it is not, you may ask for more questions and train " +
-      "again. " +
+      "again — and when more questions have stopped helping (see the earlier adapters), stop. " +
       "Here is the state of the lesson. Choose the next operation."
 
   /** a model chooses (any `Llm`, by numbered choices — `Choose`); an answer that is no option stops the lesson */
