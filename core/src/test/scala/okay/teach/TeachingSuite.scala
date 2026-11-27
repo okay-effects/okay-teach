@@ -15,10 +15,12 @@ class TeachingSuite extends munit.FunSuite:
     okay.scala3.run(handle(Teaching.drive[Lesson](start, choose),
       Handler.tail[Lesson, Pure, Sigma, Sigma](pure)([X] => (op: Lesson[X]) => op match
         case Lesson.Ask(n) => Asked(Ref("cases"), 25 * 4 * n, 3)
-        case Lesson.Train(_, _) => Ref("adapter")
+        case Lesson.Train(_, _, _) => Ref("adapter")
         case Lesson.Measure(_, a, c) => if a.isEmpty then m("u", if c then 30 else 16, 70) else m("t", 150, 8)
         case Lesson.Baseline(_, _) => m("b", 100, 100)
         case Lesson.Release(a, _) => Ref(s"released ${a.id}")
+        case Lesson.Check(_) => Checked(0, 0, Vector.empty)
+        case Lesson.Merge(_, _) => Asked(Ref("merged"), 0, 0)
         case Lesson.Uncovered(_) => ())))
 
   test("the laws as preconditions: what each state allows"):
@@ -52,12 +54,30 @@ class TeachingSuite extends munit.FunSuite:
     val ready = s.copy(measures = s.measures :+ m(Teaching.baselineWhat, 22, 34))
     assert(ready.said.contains("A release is possible now."), ready.said)
 
+
+  test("check, then merge a pair it found, then everything again on the merged space (T19)"):
+    val s0 = Sigma("book", Sealed("held"), asked = Some(Asked(Ref("c"), 120, 0)), adapter = Some(Ref("a")),
+      trainedOn = 120, canMerge = true)
+    assert(TeacherSpace.allowed(s0).contains(Action.Check))
+    val s1 = s0.copy(checked = Some(Checked(40, 60, Vector(("topic: A", "topic: B", 9)))))
+    assert(TeacherSpace.allowed(s1).contains(Action.Merge("topic: A", "topic: B")))
+    assert(!TeacherSpace.allowed(s1.copy(canMerge = false)).exists(_.isInstanceOf[Action.Merge]))
+    val end = okay.scala3.run(handle(Teaching.drive[Lesson](s1, st => pure(
+        if st.merged.isEmpty then Action.Merge("topic: A", "topic: B") else Action.Stop)),
+      Handler.tail[Lesson, Pure, Sigma, Sigma](pure)([X] => (op: Lesson[X]) => op match
+        case Lesson.Merge(_, _) => Asked(Ref("c-merged"), 120, 0)
+        case _ => sys.error(s"not expected: $op"))))
+    assertEquals((end.adapter, end.trainedOn, end.measures, end.checked), (None, 0, Vector.empty, None))
+    assertEquals(end.asked.map(_.cases.id), Some("c-merged"))
+    assert(end.said.contains("Merged into one meaning: topic: A + topic: B"), end.said)
+    assert(TeacherSpace.allowed(end).contains(Action.Train(2, 3)))
   test("a failed gate lets the teacher ask more and train again; a new adapter is measured again"):
     val failed = start.copy(asked = Some(Asked(Ref("c"), 32, 0)), adapter = Some(Ref("a")), trainedOn = 32,
       measures = Vector(m("untaught, plain", 44, 90), m("taught, plain", 50, 84), m(Teaching.baselineWhat, 53, 81)))
     assert(TeacherSpace.best(failed).isEmpty)
     assert(TeacherSpace.allowed(failed).contains(Action.Ask(16)), "ask more after a failed gate")
-    assert(!TeacherSpace.allowed(failed).exists(_.isInstanceOf[Action.Train]), "nothing new to train on")
+    // nothing new to train on: only the same questions again with several seeds voting (§7.11)
+    assertEquals(TeacherSpace.allowed(failed).collect { case t: Action.Train => t }, Vector(Action.Train(2, 3)))
     val more = failed.copy(asked = Some(Asked(Ref("c"), 160, 0)))
     assert(TeacherSpace.allowed(more).contains(Action.Train(2)), "train again on the grown corpus")
     assert(!TeacherSpace.allowed(more).exists(_.isInstanceOf[Action.Ask]), "no asking again before training on the new")
@@ -67,7 +87,7 @@ class TeachingSuite extends munit.FunSuite:
     val s = okay.scala3.run(handle(Teaching.drive[Lesson](more, st => pure(
         if TeacherSpace.allowed(st).contains(Action.Train(2)) then Action.Train(2) else Action.Stop)),
       Handler.tail[Lesson, Pure, Sigma, Sigma](pure)([X] => (op: Lesson[X]) => op match
-        case Lesson.Train(_, _) => trainings += 1; Ref("a2")
+        case Lesson.Train(_, _, _) => trainings += 1; Ref("a2")
         case _ => sys.error(s"not expected: $op"))))
     assertEquals(trainings, 1)
     assertEquals(s.trainedOn, 160)

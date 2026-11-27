@@ -27,6 +27,12 @@ final case class Measured(what: String, right: Int, of: Int, byLanguage: Map[Str
       pair.fold("")(p => s"; ${p.said}") +
       (if top.isEmpty then "" else s"; most confused: ${top.mkString(", ")}")
 
+/** questions the teacher wrote APART (never trained on, never the sealed set) read by an adapter: right of all, and the
+ * pairs of meanings it cannot split — confused both ways often enough to be one meaning for it (SPRINT T19) */
+final case class Checked(right: Int, of: Int, pairs: Vector[(String, String, Int)]):
+  def said: String = s"on questions apart right $right of $of" + (if pairs.isEmpty then "; no inseparable pair"
+    else "; inseparable: " + pairs.map((a, b, k) => s"$a and $b (confused $k times)").mkString(", "))
+
 /**
  * THE LESSON AS AN EFFECT (theory §2): each operation a decision of the teacher, each handler a tool. A lesson is a
  * program over it; who chooses the operations (this file's `standard`, a person, a teacher model) is not the
@@ -35,8 +41,12 @@ final case class Measured(what: String, right: Int, of: Int, byLanguage: Map[Str
 enum Lesson[X]:
   /** the teacher writes `n` questions a language for every meaning; the space's laws keep or refuse each */
   case Ask(n: Int) extends Lesson[Asked]
-  /** an adapter trained on the cases */
-  case Train(cases: Ref, epochs: Int) extends Lesson[Ref]
+  /** an adapter trained on the cases; with `seeds` > 1 that many, read as a vote (one Ref, the ids joined by a comma) */
+  case Train(cases: Ref, epochs: Int, seeds: Int = 1) extends Lesson[Ref]
+  /** the adapter read on questions the teacher writes apart: the inseparable pairs (no sealed text) */
+  case Check(adapter: Ref) extends Lesson[Checked]
+  /** two meanings made one (a repair of the space, F1): the cases relabelled, the sealed labels too (by the handler) */
+  case Merge(a: String, b: String) extends Lesson[Asked]
   /** the reader (an adapter or none; plain or calibrated) on the sealed set: aggregates only */
   case Measure(on: Sealed, adapter: Option[Ref], calibrated: Boolean) extends Lesson[Measured]
   /** the baseline (theory L7): a word search learned from the training cases, measured on the sealed set */
@@ -48,7 +58,10 @@ enum Lesson[X]:
 
 object Lesson:
   def ask[R[_]](n: Int)(using In[Lesson, R]): Asked ! R = perform[Lesson](Ask(n))
-  def train[R[_]](cases: Ref, epochs: Int)(using In[Lesson, R]): Ref ! R = perform[Lesson](Train(cases, epochs))
+  def train[R[_]](cases: Ref, epochs: Int, seeds: Int = 1)(using In[Lesson, R]): Ref ! R =
+    perform[Lesson](Train(cases, epochs, seeds))
+  def check[R[_]](adapter: Ref)(using In[Lesson, R]): Checked ! R = perform[Lesson](Check(adapter))
+  def merge[R[_]](a: String, b: String)(using In[Lesson, R]): Asked ! R = perform[Lesson](Merge(a, b))
   def measure[R[_]](on: Sealed, adapter: Option[Ref], calibrated: Boolean)(using In[Lesson, R]): Measured ! R =
     perform[Lesson](Measure(on, adapter, calibrated))
   def baseline[R[_]](on: Sealed, cases: Ref)(using In[Lesson, R]): Measured ! R = perform[Lesson](Baseline(on, cases))
@@ -86,3 +99,16 @@ object Lesson:
         if passes(best, untaught.maxBy(_.right)) && passes(best, words) then release(adapter, best).map(Some(_))
         else pure[Option[Ref], R](None)
     yield Outcome(asked, untaught ++ taught :+ words, released)
+
+object Checked:
+  /**
+   * THE INSEPARABLE PAIRS (specs/teach.md §7.10–7.11): from (meant, read) of questions apart, the unordered pairs
+   * confused (both ways counted) at least `least` times and at least `share` of the two meanings' questions — on
+   * chapter 3, 3.2/3.3: 13 of the pair's questions apart; merged, three seeds voting rose from 74 to 83 of 92
+   */
+  def pairs(reads: Vector[(String, String)], least: Int = 4, share: Double = 0.25): Vector[(String, String, Int)] =
+    val of = reads.groupBy(_._1).map((m, v) => m -> v.size)
+    reads.filter((m, r) => m != r && of.contains(r)).map((m, r) => if m < r then (m, r) else (r, m))
+      .groupBy(identity).map((p, v) => (p._1, p._2, v.size)).toVector
+      .filter((a, b, k) => k >= least && k >= share * (of.getOrElse(a, 0) + of.getOrElse(b, 0)))
+      .sortBy(-_._3)

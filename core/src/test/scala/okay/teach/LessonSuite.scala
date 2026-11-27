@@ -16,17 +16,19 @@ class LessonSuite extends munit.FunSuite:
         seen :+= op.toString
         op match
           case Lesson.Ask(n) => Asked(Ref("cases"), 10 * n, 1)
-          case Lesson.Train(c, e) => Ref(s"adapter of ${c.id} × $e")
+          case Lesson.Train(c, e, _) => Ref(s"adapter of ${c.id} × $e")
           case Lesson.Measure(_, a, c) => measures((a.nonEmpty, c))
           case Lesson.Baseline(_, _) => words
           case Lesson.Release(a, _) => Ref(s"released ${a.id}")
+          case Lesson.Check(_) => Checked(0, 0, Vector.empty)
+          case Lesson.Merge(_, _) => Asked(Ref("merged"), 0, 0)
           case Lesson.Uncovered(_) => ())))
     (out, seen)
 
   test("the standard lesson: ask, train, four measures on the sealed set, release when the gate passes"):
     val (out, seen) = run(Map((false, false) -> m("u", 16, 84), (false, true) -> m("uc", 30, 70),
       (true, false) -> m("t", 150, 10), (true, true) -> m("tc", 140, 12)))
-    assertEquals(seen.take(2), Vector("Ask(8)", "Train(Ref(cases),2)"))
+    assertEquals(seen.take(2), Vector("Ask(8)", "Train(Ref(cases),2,1)"))
     assertEquals(seen.count(_.startsWith("Measure(Sealed(held)")), 4)
     assertEquals(out.released, Some(Ref("released adapter of cases × 2")))
 
@@ -36,6 +38,11 @@ class LessonSuite extends munit.FunSuite:
     assertEquals(out.released, None)
     assert(!seen.exists(_.startsWith("Release")))
 
+
+  test("the inseparable pairs: confused both ways, often enough among the pair's questions apart (T19)"):
+    val reads = Vector.fill(6)(("g", "g")) ++ Vector.fill(5)(("a", "g")) ++ Vector.fill(4)(("a", "a")) ++
+      Vector.fill(9)(("p", "p")) ++ Vector.fill(2)(("p", "v")) ++ Vector.fill(8)(("v", "v"))
+    assertEquals(Checked.pairs(reads), Vector(("a", "g", 5)))
   test("the gate refuses a taught reader the baseline beats (L7), however it compares with the untaught"):
     val good = Map((false, false) -> m("u", 16, 84), (false, true) -> m("uc", 30, 70),
       (true, false) -> m("t", 150, 10), (true, true) -> m("tc", 140, 12))
