@@ -11,6 +11,21 @@ final case class Section(id: String, title: String, text: String)
 final case class Book(sections: Vector[Section], questions: Vector[(String, String)]):
   def section(id: String): Option[Section] = sections.find(_.id == id)
 
+  /** TWO SECTIONS MERGED INTO ONE MEANING (SPRINT T18, a repair of the space): a reader that cannot split them gives
+   * the pair wholesale to one side by seed (specs/teach.md §7.10). One section `a+b`, titled by both, its text
+   * both texts, in the first one's place; their questions relabelled. */
+  def merge(a: String, b: String): Option[Book] =
+    for sa <- section(a); sb <- section(b) if a != b yield
+      val id = s"$a+$b"
+      val merged = Section(id, s"${sa.title} / ${sb.title}", sa.text + "\n\n" + sb.text)
+      Book(sections.filter(_.id != b).map(s => if s.id == a then merged else s),
+        questions.map((q, t) => (if q == a || q == b then id else q) -> t))
+
+  /** the book in its file form (`Book.parse` reads it back) */
+  def render: String =
+    sections.map(s => (Vector(s"# ${s.id} ${s.title}", s.text) ++ questions.filter(_._1 == s.id).map("?? " + _._2))
+      .mkString("\n")).mkString("\n")
+
 object Book:
   def parse(text: String): Book =
     val Head = """# (\S+)\s+(.*)""".r

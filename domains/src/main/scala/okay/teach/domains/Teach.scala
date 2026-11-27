@@ -3,7 +3,7 @@ package okay.teach.domains
 import okay.effects.json.Json
 import okay.llm.{HttpBackend, Llm}
 import okay.scala3.*
-import okay.teach.{Case, Domain, DomainSpec, Lesson, Meanings, Reader, Ref, Sealed, Teacher, Vote}
+import okay.teach.{Book, Case, Domain, DomainSpec, Lesson, Meanings, Reader, Ref, Sealed, Teacher, Vote}
 import okay.teach.mlx.OnGpu
 
 import java.nio.file.{Files, Path}
@@ -47,6 +47,7 @@ object Teach:
     """okay-teach <step> …  (bin/okay-teach; paths from the checkout's root; skills/teach-a-model says when)
       |  mcp                                                the model's door: these steps as MCP tools over stdio
       |  book <book.txt> [out] [model|standard]               the book loop: sections → a lesson the model drives
+      |  merge <book.txt> <a> <b> <out.txt> [cases.jsonl out.jsonl]  two sections one meaning
       |  contrast <book.txt> <run> [pairs] [n]           confused pairs (on questions apart) taught by contrast
       |  measure <book.txt|domain|spec.json> <sealed.tsv|-> <adapter|a,b,…|-> <cases.jsonl> [out]  first + in two; several vote
       |  check <spec.json> <file.tsv>                       a spec and a question file checked: no GPU
@@ -62,6 +63,8 @@ object Teach:
   def main(args: Array[String]): Unit =
     if args.isEmpty || args.length < 2 && args(0) != "mcp" then println(usage)
     else if args(0) == "mcp" then McpDoor.serve()
+    else if args(0) == "merge" then merge(Path.of(args(1)), args(2), args(3), Path.of(args(4)),
+      Option.when(args.length > 6)(Path.of(args(5)) -> Path.of(args(6))))
     else if args(0) == "contrast" then
       contrast(Path.of(args(1)), Path.of(args(2)), args.lift(3).fold(6)(_.toInt), args.lift(4).fold(2)(_.toInt))
     else if args(0) == "measure" then measure(args(1), args(2), args(3), Path.of(args(4)), args.lift(5))
@@ -331,6 +334,26 @@ object Teach:
         s"in two ${reads.count(_.inTwo)}")
     val before = readAll(adapter, sealedCases)
     println(s"before (${trained.size}): sealed right ${before.count(_.right)}, in two ${before.count(_.inTwo)}")
+
+  /**
+   * `merge <book.txt> <a> <b> <out.txt> [<cases.jsonl> <out-cases.jsonl>]` — A REPAIR OF THE SPACE (SPRINT T18): the
+   * book with sections a and b one meaning (`Book.merge`), and the teacher's cases relabelled to it — every other step
+   * (train, measure, book) then runs on the merged book unchanged
+   */
+  def merge(file: Path, a: String, b: String, out: Path, cases: Option[(Path, Path)]): Unit =
+    val book = Book.parse(Files.readString(file))
+    val merged = book.merge(a, b).getOrElse(sys.error(s"no sections $a and $b in $file"))
+    Files.writeString(out, merged.render + "\n")
+    val title = merged.sections.find(_.id == s"$a+$b").get.title
+    val old = Set(a, b).flatMap(book.section).map(s => s"topic: ${s.title}")
+    cases.foreach { (in, to) =>
+      val rows = Files.readAllLines(in).asScala.toVector.filterNot(_.isBlank).map { l =>
+        val j = Json.fromText(l)
+        val meant = j("meant").string
+        Json.obj("language" -> j("language"), "text" -> j("text"),
+          "meant" -> Json.Str(if old(meant) then s"topic: $title" else meant)).render }
+      Files.write(to, rows.asJava) }
+    println(s"$out: ${merged.sections.size} sections ($a+$b: $title)")
   /**
    * `measure <book.txt|domain|spec.json> <sealed.tsv|-> <adapter|-> <cases.jsonl> [out]` — A MEASURE ALONE (SPRINT
    * T16): an adapter already made, read plain on the sealed set (`-` for a book's own), and the baseline learned from
