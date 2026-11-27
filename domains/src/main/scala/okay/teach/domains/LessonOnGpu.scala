@@ -15,7 +15,9 @@ import scala.jdk.CollectionConverters.*
  * appended to `<out>/trace.jsonl` — a lesson's trace, the teacher model's data (theory §7).
  */
 final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFiles: Map[String, Path],
-    epsilon: Double = 0.05, repo: String = "mlx-community/Qwen3-0.6B-4bit"):
+    epsilon: Double = 0.05, repo: String = "mlx-community/Qwen3-0.6B-4bit",
+    // a run's seed (OKAY_TEACH_SEED, default 0 = the runs recorded): the teacher's questions and the LoRA's start
+    seed: Long = sys.env.get("OKAY_TEACH_SEED").fold(0L)(_.toLong)):
   Files.createDirectories(out)
   private val trace = out.resolve("trace.jsonl")
   private var asks = 0
@@ -40,7 +42,7 @@ final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFi
           if Files.exists(cases) && asks == 1 then 0
           else
             val more = out.resolve(s"cases.$asks.jsonl")
-            val (_, r) = Teach.write(t, n, more, seed = 1000L * asks)
+            val (_, r) = Teach.write(t, n, more, seed = 1000L * asks + 100000L * seed)
             Files.write(cases, Files.readAllLines(more), StandardOpenOption.CREATE, StandardOpenOption.APPEND)
             r
         Asked(Ref(cases.toString), Teach.cases(t, cases).size, refused)
@@ -48,7 +50,7 @@ final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFi
         // an adapter for each size of the corpus: training again after more questions makes a new one
         val dir = out.resolve(s"adapter-${Teach.cases(t, Path.of(cases.id)).size}")
         if !Files.exists(dir.resolve("reader.adapter.safetensors")) then
-          OnGpu.train(t.domain, t.data, Teach.cases(t, Path.of(cases.id)), repo, dir, epochs)
+          OnGpu.train(t.domain, t.data, Teach.cases(t, Path.of(cases.id)), repo, dir, epochs, seed = 5 + seed.toInt)
         Ref(dir.resolve("reader.adapter.safetensors").toString)
       case Lesson.Measure(on, adapter, calibrated) =>
         val file = sealedFiles.getOrElse(on.id, sys.error(s"no sealed set ${on.id}"))
