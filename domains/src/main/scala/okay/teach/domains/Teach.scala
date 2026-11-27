@@ -45,6 +45,7 @@ object Teach:
 
   val usage: String =
     """Teach <step> …  (skills/teach-a-model/SKILL.md says when to use which)
+      |  book <book.txt> [out] [model|standard]               the book loop: sections → a lesson the model drives
       |  check <spec.json> <file.tsv>                       a spec and a question file checked: no GPU
       |  lesson <domain|spec.json> <n> <epochs> <sealed.tsv> [out]
       |  drive <domain|spec.json> <sealed.tsv> [standard|model] [out]
@@ -57,6 +58,7 @@ object Teach:
 
   def main(args: Array[String]): Unit =
     if args.length < 2 then println(usage)
+    else if args(0) == "book" then book(Path.of(args(1)), args.lift(2), args.lift(3).getOrElse("model"))
     else if args(0) == "laws" then
       laws(args.lift(1).fold(4)(_.toInt), Path.of(args.lift(2).getOrElse("runs/kinematics")))
     else if args(0) == "rules" then
@@ -244,3 +246,24 @@ object Teach:
     println(s"${rows.size} rows: ${rows.size - unread.size - unreached.size} fine, ${unread.size} meanings not read, " +
       s"${unreached.size} not reached")
     (unread.take(3) ++ unreached.take(3)).foreach(m => println(s"  $m"))
+
+  /**
+   * `book <book.txt> [out] [model|standard]` — THE BOOK LOOP (specs/book-loop.md): the book's sections become the
+   * domain, its own questions the sealed set (written beside it, never read by the teacher), and the lesson is driven
+   * by the local model (`model`, the default) or the fixed policy; Σ, the trace and the competence in `out`
+   */
+  def book(file: Path, out: Option[String], driver: String): Unit =
+    val (t, sealedFile) = BookLoop.load(file)
+    val name = t.domain.asInstanceOf[BookDomain].name
+    val dir = Path.of(out.getOrElse(s"runs/$name"))
+    println(s"$name: ${t.meanings.size} sections, sealed ${Files.readAllLines(sealedFile).size} questions " +
+      s"($sealedFile), driven by $driver")
+    val gpu = LessonOnGpu(t, name, dir, Map("held" -> sealedFile))
+    val start = okay.teach.Sigma(name, Sealed("held"))
+    val end = if driver == "model" then
+      val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
+        env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
+      run(Llm.on(teacher)(gpu.on(okay.teach.Teaching.drive[Lesson + Llm](start, okay.teach.Teaching.byModel))))
+    else gpu.run(okay.teach.Teaching.drive[Lesson](start, okay.teach.Teaching.standard))
+    Files.writeString(dir.resolve("sigma.txt"), end.said + "\n\nhistory:\n" + end.history.mkString("\n"))
+    println(end.said)
