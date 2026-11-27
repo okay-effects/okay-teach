@@ -241,6 +241,10 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   `BookLoopSuite` (no question leaks into a teacher's text), GUIDE.md and the skill (5b). RUNNING since 14:52: the
   first loop on chapter 2, driven by the 35B, in ../okay-teach-run2 (a second pinned worktree: ../okay-teach-run
   holds the residence-driven-2 lesson), log runs/book-ch2.log, out runs/openstax-ch2.
+- **First run** (data/traces/openstax-ch2.jsonl): the 35B asked 4 a section (32, English only), trained 1 epoch:
+  taught 50, baseline 53, untaught 44 of the book's 134 — refused by the gate; it could not ask more (the space
+  allowed one ask). Repaired: ask more after a failed gate, train again. SECOND RUN queued 15:04 in
+  ../okay-teach-run2 (bin/okay-teach book …, log runs/book-ch2-b.log, out runs/openstax-ch2-b).
 - **Done when**: specs/book-loop.md's done-when.
 
 ## T14 — one tool, three doors: a model's (MCP), the command line's, an agent's (the skill)  `[~]`
