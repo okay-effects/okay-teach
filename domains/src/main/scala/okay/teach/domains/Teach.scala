@@ -47,6 +47,7 @@ object Teach:
     """okay-teach <step> …  (bin/okay-teach; paths from the checkout's root; skills/teach-a-model says when)
       |  mcp                                                the model's door: these steps as MCP tools over stdio
       |  book <book.txt> [out] [model|standard]               the book loop: sections → a lesson the model drives
+      |  contrast <book.txt> <run> [pairs] [n]           confused pairs (on questions apart) taught by contrast
       |  measure <book.txt|domain|spec.json> <sealed.tsv|-> <adapter|a,b,…|-> <cases.jsonl> [out]  first + in two; several vote
       |  check <spec.json> <file.tsv>                       a spec and a question file checked: no GPU
       |  lesson <domain|spec.json> <n> <epochs> <sealed.tsv> [out]
@@ -61,6 +62,8 @@ object Teach:
   def main(args: Array[String]): Unit =
     if args.isEmpty || args.length < 2 && args(0) != "mcp" then println(usage)
     else if args(0) == "mcp" then McpDoor.serve()
+    else if args(0) == "contrast" then
+      contrast(Path.of(args(1)), Path.of(args(2)), args.lift(3).fold(6)(_.toInt), args.lift(4).fold(2)(_.toInt))
     else if args(0) == "measure" then measure(args(1), args(2), args(3), Path.of(args(4)), args.lift(5))
     else if args(0) == "book" then book(Path.of(args(1)), args.lift(2), args.lift(3).getOrElse("model"))
     else if args(0) == "laws" then
@@ -272,6 +275,57 @@ object Teach:
     Files.writeString(dir.resolve("sigma.txt"), end.said + "\n\nhistory:\n" + end.history.mkString("\n"))
     println(end.said)
 
+  /**
+   * `contrast <book.txt> <run> [pairs] [n]` — THE CONTRAST LESSON, AN EXPERIMENT (SPRINT T17): a released run's adapter
+   * reads questions the teacher writes APART (`valid.jsonl`, other seeds, never trained on); the meanings it confuses
+   * there (never on the sealed set) get contrast questions — about A, easily taken for B (`Domain.contrast`); a
+   * control gets as many plain questions of the same meanings. Two adapters trained (cases + contrast, cases +
+   * control) and both read on the sealed set: counts only.
+   */
+  def contrast(file: Path, run: Path, pairs: Int, n: Int): Unit =
+    val (t, sealedFile) = BookLoop.load(file)
+    contrastOn(t, sealedFile, run, pairs, n)
+
+  private def contrastOn[D, T](t: Taught[D, T], sealedFile: Path, run: Path, pairs: Int, n: Int): Unit =
+    val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
+      env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
+    def rows(cs: Vector[Case[T]]) = cs.map(c => Json.obj("language" -> Json.Str(c.language),
+      "text" -> Json.Str(c.text), "meant" -> Json.Str(t.show(c.meant))).render)
+    def written(m: T, k: Int, seed: Long, other: Option[T]) =
+      runIsolated(Llm.on(teacher)(Teacher.write[D, T, Llm](t.domain, t.data, m, k, t.about, seed,
+        other.map(t.show)))).kept
+    def once(p: Path)(make: => Vector[Case[T]]): Vector[Case[T]] =
+      if !Files.exists(p) then Files.write(p, rows(make).asJava)
+      cases(t, p)
+    def readAll(adapter: Path, cs: Vector[Case[T]]) =
+      val gpu = OnGpu.Gpu(model, Some(adapter))
+      try OnGpu.read(t.domain, t.data, cs, gpu) finally gpu.close()
+    def train(name: String, cs: Vector[Case[T]]): Path =
+      val dir = run.resolve(name)
+      if !Files.exists(dir.resolve("reader.adapter.safetensors")) then
+        OnGpu.train(t.domain, t.data, cs, model, dir, 2)
+      dir.resolve("reader.adapter.safetensors")
+    val trained = cases(t, run.resolve("cases.jsonl"))
+    val adapter = run.resolve(s"adapter-${trained.size}/reader.adapter.safetensors")
+    val sealedCases = cases(t, sealedFile)
+    val valid = once(run.resolve("valid.jsonl"))(t.meanings.zipWithIndex.flatMap((m, i) => written(m, 2, 7000L + i,
+      None)))
+    val seen = readAll(adapter, valid)
+    val confused = seen.filterNot(_.right).flatMap(r => r.meaning.map(r.c.meant -> _)).groupBy(identity)
+      .map((k, v) => k -> v.size).toVector.sortBy(-_._2).take(pairs)
+    println(s"valid: ${valid.size} questions apart, right ${seen.count(_.right)}; confused there: " +
+      confused.map { case ((a, b), k) => s"${t.show(a)} as ${t.show(b)} $k" }.mkString(", "))
+    val contrastCases = once(run.resolve("contrast.jsonl"))(confused.zipWithIndex.flatMap { case (((a, b), _), i) =>
+      written(a, n, 8000L + i, Some(b)) })
+    val controlCases = once(run.resolve("control.jsonl"))(confused.zipWithIndex.flatMap { case (((a, _), _), i) =>
+      written(a, n, 9000L + i, None) })
+    println(s"contrast ${contrastCases.size}, control ${controlCases.size} questions")
+    for (name, extra) <- Vector("adapter-contrast" -> contrastCases, "adapter-control" -> controlCases) do
+      val reads = readAll(train(name, trained ++ extra), sealedCases)
+      println(s"$name (${trained.size} + ${extra.size}): sealed right ${reads.count(_.right)} of ${reads.size}, " +
+        s"in two ${reads.count(_.inTwo)}")
+    val before = readAll(adapter, sealedCases)
+    println(s"before (${trained.size}): sealed right ${before.count(_.right)}, in two ${before.count(_.inTwo)}")
   /**
    * `measure <book.txt|domain|spec.json> <sealed.tsv|-> <adapter|-> <cases.jsonl> [out]` — A MEASURE ALONE (SPRINT
    * T16): an adapter already made, read plain on the sealed set (`-` for a book's own), and the baseline learned from

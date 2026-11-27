@@ -301,3 +301,15 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **How**: `Measured` reports also "right among the first two"; a competence answers with one meaning above its bar
   and with the two likeliest below it (a page shows both sections). Measure: right-first, right-in-two, and the bar.
 - **Done when**: specs/teach.md §7.6 — run e's adapter re-measured by the new measure.
+
+## T17 — contrast questions for the pairs a reader confuses  `[~]`
+
+- **Why**: the taught reader's errors are pairs of neighbouring meanings (ch. 2: 2.3 as 2.2; ch. 3: 3.3 as 3.2 12
+  times). More plain questions stopped helping (§7.5); questions that separate the pair might.
+- **How**: `okay-teach contrast <book.txt> <run> [pairs] [n]` (Teach.contrast): the run's adapter reads questions the
+  teacher writes APART (`valid.jsonl`, 2 a passage, seeds 7000+; never trained on) → its top confused pairs there
+  (never on the sealed set: L1) → for each pair (A read as B) `Domain.contrast` asks n a passage of A "easily taken
+  for B, yet about A" (`contrast.jsonl`); the CONTROL asks as many plain questions of the same A (`control.jsonl`).
+  Two adapters (cases + contrast, cases + control, 2 epochs) read the sealed set.
+- **Done when**: specs/teach.md §7.10 — contrast vs control vs before on ch. 2 (run f) and ch. 3; if contrast wins
+  on both, it becomes a Lesson operation the teacher can choose.

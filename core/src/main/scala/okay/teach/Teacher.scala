@@ -30,12 +30,15 @@ object Teacher:
    * One a line, nothing else. (T1's questions quoted the rule's figures; asked for all languages at once, the teacher
    * often wrote one a language; shown a whole book section, it wrote generic ones.)
    */
-  def task[D, T](domain: Domain[D, T], n: Int, about: String, passage: String, language: String): String =
+  def task[D, T](domain: Domain[D, T], n: Int, about: String, passage: String, language: String,
+      other: Option[String] = None): String =
+    val lang = names.getOrElse(language, language)
+    val how = other.fold(domain.asking(n, lang))(o => domain.contrast(n, lang, o))
     s"""$about
        |
        |$passage
        |
-       |${domain.asking(n, names.getOrElse(language, language))}
+       |$how
        |One a line, nothing else: no numbering, no language labels, no quotes.""".stripMargin
 
   /** the lines of a reply: numbering, bullets, quotes and a leading language label stripped, empty lines dropped */
@@ -45,13 +48,14 @@ object Teacher:
       .replaceAll("""(?i)^(en|pl|ru|uk|english|polish|russian|ukrainian)\s*:\s*""", "")
       .stripPrefix("\"").stripSuffix("\"").trim).filter(_.nonEmpty).toVector.distinct
 
-  def write[D, T, R[_]](domain: Domain[D, T], data: D, meant: T, n: Int, about: String, seed: Long = 0)(
+  def write[D, T, R[_]](domain: Domain[D, T], data: D, meant: T, n: Int, about: String, seed: Long = 0,
+      other: Option[String] = None)(
       using In[Llm, R]): Written[T] ! R =
     val jobs = for (p, j) <- domain.passages(data, meant).zipWithIndex; (lang, i) <- domain.languages.zipWithIndex
       yield (p, lang, j * 10 + i)
     jobs.foldLeft(pure[Written[T], R](Written(meant, Vector.empty, Vector.empty))) {
       case (acc, (passage, lang, k)) => acc.flatMap { sofar =>
-        val ask = Ask(Vector(message("user", task(domain, n, about, passage, lang))), maxTokens = 120 * n + 600,
+        val ask = Ask(Vector(message("user", task(domain, n, about, passage, lang, other))), maxTokens = 120 * n + 600,
           sampling = Sampling(temperature = Some(0.9), seed = Some(seed * 100 + k)))
         Llm.complete[R](ask).map { done =>
           val asked = parse(done.reply.content).take(n)

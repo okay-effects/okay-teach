@@ -29,6 +29,11 @@ trait Domain[D, T]:
       "know the answer: they ask about their own situation, in everyday words, short or long, with or without " +
       "detail, the way real people write to a forum or a chat. Do not quote the answer, its figures or its wording; " +
       "write a number only where the person would (their own salary, age, dates)."
+  /** CONTRAST (SPRINT T17): questions of this meaning that a reader confuses with `other` (a confusion measured on
+   * the teacher's own held-apart questions, never the sealed set) — still about this meaning, not that one */
+  def contrast(n: Int, language: String, other: String): String =
+    asking(n, language) + s" Each one must be a question a reader could easily take for one about \"$other\" " +
+      "— the same words, the same kind of situation — and yet its answer needs what is above, not that."
   /** the languages questions are asked in */
   def languages: Vector[String] = Vector("en", "pl", "ru", "uk")
 
