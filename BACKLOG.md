@@ -19,3 +19,6 @@ Can-wait work, each with why and what would promote it to the SPRINT.
 - **The bar's start**: the fixed sequence begins at ⌈1/ε⌉ answered; on 98 questions one early error stops it (the 40
   surest have 1 wrong, yet no bar at 5%). A larger calibration set apart (the teacher's questions held out?) or a
   stated ε of 10% for books.
+
+- **A released competence of several adapters** (§7.8): the Release writes one adapter; a vote of 4 seeds gains 7.5
+  first. Release the set and let the page read with all (cost: 4 readings a question). Measure on a phone first.

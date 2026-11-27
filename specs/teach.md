@@ -208,3 +208,17 @@ passage = 176, train 2 epochs, release). On the 98 whole questions:
 The taught reader beats the baseline by 15 to 23 on every seed, and the in-two count barely moves (85–89): it is the
 number to rely on. The first-answer count moves by ±3. The bar is the unstable part: on two seeds of four it holds
 nothing at 5%. One answer with a guarantee needs a bigger calibration set than 98 (BACKLOG, the bar's start).
+
+### 7.8 Readers voting (2026-11-27)
+
+The four adapters of §7.7 read the same 98 questions and vote (`Vote.of`: two votes for a reader's best reading,
+one for its runner-up). `okay-teach measure books/openstax-cp2e-ch2.txt - <a1>,<a2>,<a3>,<a4> <cases.jsonl>`:
+
+| | right first | right in two |
+|---|---|---|
+| each adapter alone | 68–74 (mean 71.5) | 85–89 |
+| **the four voting** | **79 (81%)** | **90 (92%)** |
+
+Four LoRAs on one base cost four readings a question (the base's weights shared; on the phone the adapters are a few
+MB each). Agreement is no bar: all four agreed on 53 questions and 5 of those were wrong. They learn the same
+mistakes from the same teacher and the same labels, so the vote raises accuracy without bounding the error.

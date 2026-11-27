@@ -3,7 +3,7 @@ package okay.teach.domains
 import okay.effects.json.Json
 import okay.llm.{HttpBackend, Llm}
 import okay.scala3.*
-import okay.teach.{Case, Domain, DomainSpec, Lesson, Meanings, Reader, Ref, Sealed, Teacher}
+import okay.teach.{Case, Domain, DomainSpec, Lesson, Meanings, Reader, Ref, Sealed, Teacher, Vote}
 import okay.teach.mlx.OnGpu
 
 import java.nio.file.{Files, Path}
@@ -47,7 +47,7 @@ object Teach:
     """okay-teach <step> …  (bin/okay-teach; paths from the checkout's root; skills/teach-a-model says when)
       |  mcp                                                the model's door: these steps as MCP tools over stdio
       |  book <book.txt> [out] [model|standard]               the book loop: sections → a lesson the model drives
-      |  measure <book.txt|domain|spec.json> <sealed.tsv|-> <adapter|-> <cases.jsonl> [out]  right first + in two
+      |  measure <book.txt|domain|spec.json> <sealed.tsv|-> <adapter|a,b,…|-> <cases.jsonl> [out]  first + in two; several vote
       |  check <spec.json> <file.tsv>                       a spec and a question file checked: no GPU
       |  lesson <domain|spec.json> <n> <epochs> <sealed.tsv> [out]
       |  drive <domain|spec.json> <sealed.tsv> [standard|model] [out]
@@ -282,10 +282,27 @@ object Teach:
       if what.endsWith(".txt") then BookLoop.load(Path.of(what))
       else ((if what.endsWith(".json") then fromSpec(Path.of(what)) else domains(what)), Path.of(sealedArg))
     val held = if sealedArg == "-" then sealedFile else Path.of(sealedArg)
-    val gpu = LessonOnGpu(t, name(what), Path.of(out.getOrElse("runs/measure")), Map("held" -> held))
-    val on = Sealed("held")
-    val program = for
-      taught <- Lesson.measure[Lesson](on, Option.when(adapter != "-")(Ref(adapter)), false)
-      words <- Lesson.baseline[Lesson](on, Ref(casesFile.toString))
-    yield Vector(taught, words)
-    gpu.run(program).foreach(m => println(m.said))
+    if adapter.contains(',') then vote(t, held, adapter.split(',').toVector.map(Path.of(_)))
+    else
+      val gpu = LessonOnGpu(t, name(what), Path.of(out.getOrElse("runs/measure")), Map("held" -> held))
+      val on = Sealed("held")
+      val program = for
+        taught <- Lesson.measure[Lesson](on, Option.when(adapter != "-")(Ref(adapter)), false)
+        words <- Lesson.baseline[Lesson](on, Ref(casesFile.toString))
+      yield Vector(taught, words)
+      gpu.run(program).foreach(m => println(m.said))
+
+  /** several adapters (`a,b,c`) read the sealed set and vote (Vote, specs/teach.md §7.8): counts only */
+  private def vote[D, T](t: Taught[D, T], held: Path, adapters: Vector[Path]): Unit =
+    val sealedCases = cases(t, held)
+    val reads = adapters.map { a =>
+      val gpu = OnGpu.Gpu(model, Some(a))
+      try OnGpu.read(t.domain, t.data, sealedCases, gpu) finally gpu.close() }
+    reads.zip(adapters).foreach((rs, a) =>
+      println(s"  ${a.getParent.getParent.getFileName}/${a.getParent.getFileName}: right ${rs.count(_.right)}, in two ${rs.count(_.inTwo)}"))
+    val voted = sealedCases.indices.map(i => Vote.of(reads.map(rs => (rs(i).meaning, rs(i).second))))
+    val right = sealedCases.indices.count(i => voted(i).first.contains(sealedCases(i).meant))
+    val two = sealedCases.indices.count(i => voted(i).inTwo(sealedCases(i).meant))
+    val all = sealedCases.indices.filter(i => voted(i).votes == 2 * adapters.size)
+    println(s"voted by ${adapters.size}: right $right of ${sealedCases.size}, in two $two; all agreed on " +
+      s"${all.size}, right ${all.count(i => voted(i).first.contains(sealedCases(i).meant))}")

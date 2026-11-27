@@ -43,6 +43,12 @@ class TeachSuite extends munit.FunSuite:
     assertEquals((p.two, p.answeredTwo), (6.0, 15))
     assertEquals(Bar.pair(Vector((1.0, false, false)), 0.05), None)
 
+
+  test("readers voting: two votes for a best reading, one for a runner-up (§7.8)"):
+    val v = Vote.of(Vector((Some("a"), Some("b")), (Some("b"), Some("a")), (Some("b"), Some("c"))))
+    assertEquals((v.first, v.second, v.votes, v.of), (Some("b"), Some("a"), 5, 9))
+    assert(v.inTwo("a") && !v.inTwo("c"))
+    assertEquals(Vote.of(Vector.empty[(Option[String], Option[String])]).first, None)
   test("a measuring set checked: fragments, texts twice, thin meanings — counts and names, no text"):
     val cs = Vector(Case("en", "How fast does it fall from 10 m?", "fall"), Case("en", "80 m /s", "fall"),
       Case("en", "80 m /s", "fall"), Case("en", "What is a vector, and is speed one?", "vector"))
