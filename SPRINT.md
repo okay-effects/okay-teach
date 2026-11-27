@@ -191,3 +191,21 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   before looking), or write a second set; `Lesson.Calibrate(on: Sealed)` returning the bar, `Measure` reporting the
   realised wrong at it. Record both numbers.
 - **Done when**: specs/teach.md §7.3 — the bar from calibration, its answered / wrong on the report half.
+
+## T12 — the skill's check, its findings repaired  `[~]`
+
+- **The check** (2026-11-27 14:06–14:15, a fresh agent given only the skill; its files: examples/residence.json,
+  examples/residence.sealed.tsv, data/traces/residence.jsonl, runs/residence/): the lesson ran end to end in ~3 min
+  — 224 teacher questions (32 each of 7), untaught 19 / taught 49 of 56 (en 11, pl 14, ru 11, uk 13 of 14), the
+  bar 0.154 answering 24 of 56 with 0 wrong, released. The skill works for a stranger. Its findings:
+  1. THE GATE LACKS A BASELINE: it compares taught with untaught only; the agent's own word search scored 54 of 56
+     but was written from memory of the sealed questions (not fair). → a baseline every lesson measures that never
+     sees the sealed set: a word search learned from the TEACHER's training questions; the gate must beat it (L7).
+  2. No way to check a spec before the lesson (the skill pointed at the lesson command; `read` with no adapter
+     failed on "none") → `Teach check <spec.json> <file.tsv>` (no GPU: each row's meaning parsed and reached);
+     `-` for no adapter documented.
+  3. `Teach` with no arguments crashed → a usage message.
+  4. The sealed file's meaning column (key or shown text?) → both accepted; said in the skill.
+  5. The domain recorded as its path → the spec's name.
+  6. The skill silent on: teacher calls (meanings × languages), the gate's wrong when no bar holds (all wrong),
+     citing a log without a commit, "commit it" when the checkout is not one's to commit (freeze: record a hash).
