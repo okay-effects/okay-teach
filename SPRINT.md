@@ -136,6 +136,12 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 ## T9 — the teaching skill  `[~]`
 
+- **Progress** (166851e): `Teach` takes `<domain>.json` (`Teach.fromSpec`; meanings from `<domain>.meanings.txt` or
+  enumerated when every hole is an enum — `Meanings`), `examples/tax-rules.json` (made by `SpecExport`, read back
+  by a test), `skills/teach-a-model/SKILL.md` linked into `~/.agents/skills` and `~/.claude/skills`, theory §9.
+  Left: the done-when check — a fresh agent given only the skill runs a lesson on a new domain (needs the GPU after
+  T1); the MCP tools.
+
 - **What**: the whole process as a skill for any model (theory §9): (1) `Teach` takes a domain as a JSON
   `DomainSpec` file (no Scala), its meanings listed or enumerated, its sealed set as `meaning words<TAB>lang<TAB>text`;
   (2) `skills/teach-a-model/SKILL.md` (the open Agent Skills format, linked into `~/.agents/skills` and

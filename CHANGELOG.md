@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-27 — T9: the teaching skill (SKILL.md, a domain as a JSON spec in the command); T6: 35 trace steps from four
+  projects.
 - 2026-11-27 — T8: the equations engine, laws by choosing (LawSpace, LawTeacher), kinematics from OpenStax as the
   first book (fa4dddc).
 - 2026-11-27 — T4 (domain as data: tax rules and pay ported), T5 (the teacher's space, the driven lesson) built.
