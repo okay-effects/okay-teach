@@ -5,6 +5,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 | task | state | notes |
 |---|---|---|
+| T13 book-loop | in progress | a local model teaches a micro-model a book's topic, closed loop (specs/book-loop.md) |
 | T7 the-teacher-taught | next | traces of 6 lessons, the 35B as teacher (T5), then a local model trained on the good steps |
 | T9 teaching-skill | in progress | the whole process as a skill any model can follow: a domain as a JSON spec in the command, SKILL.md, then MCP tools |
 
@@ -217,3 +218,17 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   5. The domain recorded as its path → the spec's name.
   6. The skill silent on: teacher calls (meanings × languages), the gate's wrong when no bar holds (all wrong),
      citing a log without a commit, "commit it" when the checkout is not one's to commit (freeze: record a hash).
+
+## T13 — the book loop: a local model teaches a micro-model a book's topic  `[~]`
+
+- **What**: `specs/book-loop.md` — a book (sections + their own questions) → topics titled by the local model → a
+  spec built by the tool → a lesson driven by the local model → a released competence (a question → its section,
+  quoted) → its trace; the book's own questions are the sealed set. One command: `Teach book <book.txt> [out]`.
+- **Why**: the operator's aim — local training, a self-sufficient closed loop, documented (2026-11-27).
+- **How**: (a) `Book` (core): the form `# id title`, text, `?? question` lines; `parse` keeps questions out of the
+  text; (b) `scripts/fetch-openstax-chapter.zsh`: an OpenStax chapter's section pages → that form (each page's
+  "Conceptual Questions" as `??`); (c) `Topics`: the local model titles and summarises each section → `DomainSpec`;
+  `BookDomain.about` = the section's text (for the teacher only); (d) `Teach book` = topics + `Teaching.drive` by
+  the model + the competence; (e) GUIDE.md "from a book", the skill's step; (f) the first book: OpenStax College
+  Physics 2e chapter 2 (CC BY-NC-SA: fetched, never committed).
+- **Done when**: specs/book-loop.md's done-when.
