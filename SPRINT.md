@@ -61,7 +61,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 - **Progress** (this commit's parent): `core/DomainSpec.scala`, `specs/domain-spec.md` (the format); `DomainSpecSuite`
   (kinds, `when`, laws, JSON back); `TaxRulesSpecSuite` — the JSON spec prompts, offers and writes lines exactly as
-  `TaxRules` on all 192 held-out texts. Left: the pay lines and the goal ported (their own laws and readings).
+  `TaxRules` on all 192 held-out texts. Then (next commit): `either`, numbers with extra,
+  `when` lists and prefixes, `end`, holes walked by position; okay-desk's pay lines ported (`PaySpecSuite`: its exact
+  lines on three kinds of question). Left: the goal (needs a `percents` kind and a line label apart from the key).
+  The pay port is checked by lines written as PayLines writes them, not against PayLines itself (okay-desk is not a
+  library this repo can depend on).
 
 
 - **What**: `DomainSpec` (theory §5) as JSON and its interpreter to a `Space` + `Domain`; hole kinds Enum,
