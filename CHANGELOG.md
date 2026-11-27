@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-27 — T1, T10: the first lessons — taught 116, then (the teacher repaired) 141 of 192 above the search's 134;
+  the bar 0.421 answers 71 with 2 wrong; released.
 - 2026-11-27 — T9: the teaching skill (SKILL.md, a domain as a JSON spec in the command); T6: 35 trace steps from four
   projects.
 - 2026-11-27 — T8: the equations engine, laws by choosing (LawSpace, LawTeacher), kinematics from OpenStax as the

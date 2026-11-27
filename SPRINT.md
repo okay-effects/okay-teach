@@ -5,7 +5,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 | task | state | notes |
 |---|---|---|
-| T10 corpus-repair | next | T1 taught 116 < the search 134: the teacher's undersupply first |
+| T11 calibration-apart | next | the bar chosen on a calibration set apart from the sealed one (theory L2) |
 | T9 teaching-skill | in progress | the whole process as a skill any model can follow: a domain as a JSON spec in the command, SKILL.md, then MCP tools |
 
 ## T1 — first-run: the first real lesson, okay-tax's rules  `[x]`
@@ -157,7 +157,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **Done when**: a fresh agent given only the skill and a domain spec runs a lesson end to end (asks, trains,
   measures, releases or stops) without reading this repository's code.
 
-## T10 — the corpus repaired: the teacher's undersupply  `[~]`
+## T10 — the corpus repaired: the teacher's undersupply  `[x]`
+
+- **Outcome** (specs/teach.md §7.2): 768 questions in people's words; taught 141 of 192 — above the search's 134;
+  the bar 0.421 answers 71 with 2 wrong; the competence released. Two fixes on the way: the teacher's task (6a4b118),
+  the lesson's nested runs (runIsolated). Next: T11 (the bar validated on a calibration set apart).
 
 - **What**: T1's diagnosis (F4/F7): 359 of 800 questions, 4 for some rules. Find why (the raw replies are now
   kept: `cases.jsonl.replies.txt`), then ask again so every rule has its share, retrain, measure; the gate decides.
@@ -171,3 +175,14 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   stripped); `Teach lesson` into `runs/tax-rules-2` (a new out
   dir: the first lesson's files stay as they are). Baselines: taught 116, the search 134.
 - **Done when**: the second lesson's numbers in specs/teach.md §7.2 and its trace written, better or not.
+
+## T11 — the bar validated on a calibration set apart  `[ ]`
+
+- **What**: lesson 2's bar (0.421: 71 answered, 2 wrong) was chosen on the 192 it is reported on — its ε is not
+  validated (theory L2: calibration and sealed disjoint). Calibrate on one set, report the bar's realised wrong on
+  another.
+- **How**: a calibration set of the same kind as the sealed one (people's questions, written apart — not the
+  teacher's): either split okay-tax's 192 by a fixed rule (by meaning id hash: half calibrate, half report — fixed
+  before looking), or write a second set; `Lesson.Calibrate(on: Sealed)` returning the bar, `Measure` reporting the
+  realised wrong at it. Record both numbers.
+- **Done when**: specs/teach.md §7.3 — the bar from calibration, its answered / wrong on the report half.

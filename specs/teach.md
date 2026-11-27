@@ -85,3 +85,24 @@ Teaching works (14 → 116 from 359 teacher questions) but does not yet beat the
 helps an untaught reader a little and hurts a taught one (the taught reader's preferences ARE what the text adds);
 no bar keeps wrong at 5% (the margin does not separate right from wrong well enough yet). Diagnosis (theory §4):
 the corpus is thin and uneven (F4: 359 of 800, 4 for some rules) — the teacher's undersupply (F7) first.
+
+### 7.2 The second lesson: the teacher asked as people ask (T10, 2026-11-27)
+
+T1's questions were few (one a language for many rules) and quoted the answer ("the full rate starting at 5,652 zł
+(including 1,926.76 zł …)"). Repaired in the tool, not the model (6a4b118): `Domain.about` tells the teacher the
+answer as its own, never to be quoted; the task asks for messages of a person who does not know the answer, one
+language a call. `Teach lesson tax-rules 8 2 ../okay-tax/data/heldout.tsv runs/tax-rules-2` (13:31–13:48):
+
+| | lesson 1 | lesson 2 |
+|---|---|---|
+| the teacher's questions kept | 359 of 800 (4–32 a rule) | **768** (32 every rule) |
+| training (LoRA r16, 2 epochs) | loss → 0.0140 | loss 0.1884 → 0.0761 |
+| untaught, plain / calibrated | 14 / 16 | 14 / 16 |
+| **taught, plain** | 116 | **141** (en 35, pl 34, ru 36, uk 36 of 48) |
+| taught, calibrated | 90 | 122 |
+| the bar at ε 0.05 | none holds | **0.421: answered 71 of 192, wrong 2** |
+| the word search | 134 | 134 |
+
+The gate passed: the competence was released (`runs/tax-rules-2/competence/`). The taught 0.6B beats the search
+(141 against 134) and, above its bar, answers 37% of the questions with 2 wrong. Caveat (theory L2): the bar was
+chosen on the same 192 it is reported on — its ε is not yet validated; a calibration set apart is the next step.
