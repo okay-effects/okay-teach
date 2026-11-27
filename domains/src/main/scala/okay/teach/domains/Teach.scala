@@ -274,8 +274,25 @@ object Teach:
     val dir = Path.of(out.getOrElse(s"runs/$name"))
     println(s"$name: ${t.meanings.size} sections, sealed ${Files.readAllLines(sealedFile).size} questions " +
       s"($sealedFile), driven by $driver")
-    val gpu = LessonOnGpu(t, name, dir, Map("held" -> sealedFile))
-    val start = okay.teach.Sigma(name, Sealed("held"))
+    // a book can be repaired by merging two sections (T19): each merge writes `<out>/book.m<k>.txt` and its sealed set
+    Files.createDirectories(dir)
+    var current = file
+    var merges = 0
+    val merging = (a: String, b: String) =>
+      val book = Book.parse(Files.readString(current))
+      def id(w: String) = book.sections.find(s => s"topic: ${s.title}" == w).map(_.id)
+        .getOrElse(sys.error(s"no section $w"))
+      val (ia, ib) = (id(a), id(b))
+      val merged = book.merge(ia, ib).getOrElse(sys.error(s"cannot merge $a and $b"))
+      merges += 1
+      val next = dir.resolve(s"book.m$merges.txt")
+      Files.writeString(next, merged.render + "\n")
+      current = next
+      val (t2, sealed2) = BookLoop.load(next)
+      val title = merged.section(s"$ia+$ib").get.title
+      (t2, sealed2, (w: String) => if w == a || w == b then s"topic: $title" else w)
+    val gpu = LessonOnGpu(t, name, dir, Map("held" -> sealedFile), merging = Some(merging))
+    val start = okay.teach.Sigma(name, Sealed("held"), canMerge = true, budget = 20)
     val end = if driver == "model" then
       val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
         env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
