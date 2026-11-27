@@ -107,6 +107,7 @@ belong to it. This is the multi-factor model: the next action depends on which f
 | read right, answer wrong | F3 Theory | `Theorize` again with the failure told |
 | read right, theory right, answer wrong | F2 Engine | fix the engine — a person's or a strong model's work, under its tests |
 | right on calibration, wrong on sealed | F4 Corpus | calibration unlike the sealed: draw it the sealed's way |
+| two meanings read as each other, both ways, however much is asked (the measure's "most confused") | F1 Space (the meanings overlap) | merge them, or answer with both; more questions do not help |
 
 ## 5. The domain as data
 

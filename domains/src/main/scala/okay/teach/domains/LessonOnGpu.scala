@@ -56,7 +56,9 @@ final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFi
         Measured(what,
           reads.count(_.right), reads.size,
           reads.groupBy(_.c.language).map((l, rs) => l -> (rs.count(_.right), rs.size)),
-          Bar.choose(reads.map(r => (r.margin, r.right)), epsilon))
+          Bar.choose(reads.map(r => (r.margin, r.right)), epsilon),
+          reads.filterNot(_.right).groupBy(r => (t.show(r.c.meant), r.meaning.fold("nothing")(t.show)))
+            .map((k, rs) => k -> rs.size))
       case Lesson.Baseline(on, cases) =>
         // the word search learned from the training cases alone, read on the sealed set: counts only (L1, L7)
         val file = sealedFiles.getOrElse(on.id, sys.error(s"no sealed set ${on.id}"))
