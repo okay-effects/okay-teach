@@ -106,8 +106,10 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   `Units` catalog and expressions "km/h", "kg*m/s^2", `Quantity`), `Expr.scala` (parse, eval with an inexact flag
   for a non-square root, dimension, `isolate`), `Theory.scala` (`Variable`, `Law`, `Theory.parse` of
   `variable v: speed [m/s]` / `law speed: v = s / t`, `check`, `solve` with `Step`s). `EquationsSuite` — the
-  spec's §7 laws pass. Left: the expression space for `Theorize` (laws written by choosing), the OpenStax chapter
-  and its judge (worked examples split train / held out), the reader's DomainSpec (find / given / end).
+  spec's §7 laws pass. Then: `core/LawSpace.scala` (laws by choosing, depth
+  bound 5, one-dimension laws only), `Worked` (an example right to the book's figures), `core/LawTeacher.scala`
+  (plan → laws by `Choose` → judge → rounds); `LawSpaceSuite`. Left: the OpenStax chapter (its text and worked
+  examples into a book file, train / held out), `Teach laws`, the reader's DomainSpec (find / given / end).
 - **Gotchas**: `Unit` and `given` are names Scala takes (scala.Unit; the `given` keyword) — `SiUnit`, `givens`;
   tuple patterns in a `for` over `Either` need `withFilter` in Scala 3.3 — bind the tuple, then take its parts.
 
