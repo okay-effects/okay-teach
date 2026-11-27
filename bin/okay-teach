@@ -1,0 +1,20 @@
+#!/bin/zsh
+# OKAY-TEACH, THE COMMAND LINE'S DOOR (SPRINT T14): `okay-teach <step> …` runs okay.teach.domains.Teach (`okay-teach`
+# alone prints the steps) — the same operations and laws as the MCP door (`okay-teach mcp`) and the skill
+# (skills/teach-a-model). The classpath is exported once from sbt into target/okay-teach.classpath and again whenever a
+# source or the build is newer than it. Runs from the checkout's root whatever the caller's directory; link it into
+# ~/.local/bin to call it anywhere. MLX_SCALA_LIB overrides where libokm.dylib is (default ../mlx-scala/...).
+set -e
+self=${0:A}
+root=${self:h:h}
+cd $root
+cp=target/okay-teach.classpath
+if [ ! -f $cp ] || [ -n "$(find core equations mlx domains build.sbt -newer $cp \( -name '*.scala' -o -name '*.sbt' \) \
+    2>/dev/null | head -1)" ]; then
+  mkdir -p target
+  echo "okay-teach: building the classpath (once after a change)…" >&2
+  sbt -batch -error "export domains/Runtime/fullClasspath" | tail -1 > $cp
+fi
+lib=${MLX_SCALA_LIB:-$root/../mlx-scala/native-lib/out/lib}
+exec java --enable-native-access=ALL-UNNAMED -Dokm.lib=$lib/libokm.dylib -Xss16m -cp "$(cat $cp)" \
+  okay.teach.domains.Teach "$@"

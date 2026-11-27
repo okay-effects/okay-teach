@@ -44,7 +44,8 @@ object Teach:
     else lines.map(Json.fromText).map(j => Case(j("language").string, j("text").string, t.read(j("meant").string)))
 
   val usage: String =
-    """Teach <step> …  (skills/teach-a-model/SKILL.md says when to use which)
+    """okay-teach <step> …  (bin/okay-teach; paths from the checkout's root; skills/teach-a-model says when)
+      |  mcp                                                the model's door: these steps as MCP tools over stdio
       |  book <book.txt> [out] [model|standard]               the book loop: sections → a lesson the model drives
       |  check <spec.json> <file.tsv>                       a spec and a question file checked: no GPU
       |  lesson <domain|spec.json> <n> <epochs> <sealed.tsv> [out]
@@ -57,7 +58,8 @@ object Teach:
       |  rules [train] [rounds] <out>      laws [rounds] [out]""".stripMargin
 
   def main(args: Array[String]): Unit =
-    if args.length < 2 then println(usage)
+    if args.isEmpty || args.length < 2 && args(0) != "mcp" then println(usage)
+    else if args(0) == "mcp" then McpDoor.serve()
     else if args(0) == "book" then book(Path.of(args(1)), args.lift(2), args.lift(3).getOrElse("model"))
     else if args(0) == "laws" then
       laws(args.lift(1).fold(4)(_.toInt), Path.of(args.lift(2).getOrElse("runs/kinematics")))
