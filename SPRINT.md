@@ -6,6 +6,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 | task | state | notes |
 |---|---|---|
 | T1 first-run | in progress | queued 2026-11-27 13:00 in ../okay-teach-run (a worktree pinned at 84b2130 + gpu.zsh), waiting for the GPU lock; log runs/tax-rules/all.log there |
+| T9 teaching-skill | in progress | the whole process as a skill any model can follow: a domain as a JSON spec in the command, SKILL.md, then MCP tools |
 
 ## T1 — first-run: the first real lesson, okay-tax's rules  `[~]`
 
@@ -132,3 +133,16 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   solved for a variable occurring once, forward chaining with a derivation, the theory written by choosing, the
   judge the chapter's worked examples, the engine's own laws). Build as a module `equations` (core JVM/JS), its
   laws first (§7), then the expression space for `Theorize`, then the OpenStax chapter (§6).
+
+## T9 — the teaching skill  `[~]`
+
+- **What**: the whole process as a skill for any model (theory §9): (1) `Teach` takes a domain as a JSON
+  `DomainSpec` file (no Scala), its meanings listed or enumerated, its sealed set as `meaning words<TAB>lang<TAB>text`;
+  (2) `skills/teach-a-model/SKILL.md` (the open Agent Skills format, linked into `~/.agents/skills` and
+  `~/.claude/skills`): when to use, the steps, the laws, how to read the numbers, the diagnosis table, what to
+  record; (3) later, the Lesson's operations as MCP tools (okay-mcp) so a model without a shell can teach, the laws
+  enforced by the server.
+- **Why**: the operator's aim — models that teach and learn; each step built and understood, the process handed to
+  any model as a skill; lessons run by the skill write traces that feed the teacher model (T7).
+- **Done when**: a fresh agent given only the skill and a domain spec runs a lesson end to end (asks, trains,
+  measures, releases or stops) without reading this repository's code.
