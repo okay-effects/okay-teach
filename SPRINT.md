@@ -95,8 +95,9 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 ## T6 — the traces of past lessons  `[~]`
 
 - **Progress**: `specs/traces.md` (the step's fields: source, state, op, args, outcome, factor, verdict);
-  `data/traces/okay-invest-goal.jsonl` (9 steps), `okay-tax-rules.jsonl` (6 steps). Left (listed in the spec):
-  okay-desk frames, okay-study, T1's own trace.
+  `data/traces/`: okay-invest-goal (9 steps), okay-tax-rules (6), okay-desk-frames (12), okay-study-carroll (8) —
+  35 steps, every number copied from its source spec; `TracesSuite` checks each step's form. Left: okay-study's
+  CUKR, T1's own trace (from its run).
 
 - **What**: lessons already run by people and Claude written as traces (data): okay-desk (frames, self-play, the
   domains), okay-invest (goal reader v1→v2), okay-tax (§6: search vs models), okay-study (Carroll, CUKR).
