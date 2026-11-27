@@ -56,10 +56,10 @@ When the domain's engine takes a theory (Datalog rules), a big model writes it b
 exercises: `sbt "domains/runMain okay.teach.domains.Teach rules <train> <rounds> runs/<book>"` (Carroll's soriteses
 today; `CarrollRules.scala` shows how a book, its vocabulary and its judge are given).
 
-## What is coming (SPRINT.md)
+## Let a model drive
 
-The lesson as an effect, the domain as data, a teacher model that runs these steps itself, and the equations
-engine — so that the steps above are done by a model, and you only seal the held-out set and read the result.
+`Teach drive <domain|spec.json> <sealed.tsv> model` — the local model chooses each operation among those the laws
+allow (theory §7); `Teach book` below does it for a book. The trained teacher model (SPRINT T7) is next.
 
 ## From a book — the closed loop (specs/book-loop.md)
 

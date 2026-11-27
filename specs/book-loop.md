@@ -51,5 +51,5 @@ a user's question — they ask about the topic, they do not name it — which ma
 ## Done when
 
 On an OpenStax chapter (2: kinematics, eight sections), the loop runs with no person and no remote model between
-the fetch and the report: the local 35B titles the sections and drives the lesson; the released micro-model beats
+the fetch and the report: the local 35B drives the lesson and writes its questions; the released micro-model beats
 the baseline on the book's own questions; GUIDE.md and the skill say how, step by step.
