@@ -14,7 +14,9 @@ import okay.scala3.*
  */
 object Teacher:
   /** what one meaning gave: the questions kept, and those refused with why */
-  final case class Written[T](meant: T, kept: Vector[Case[T]], refused: Vector[(String, String)])
+  final case class Written[T](meant: T, kept: Vector[Case[T]], refused: Vector[(String, String)],
+      reply: String = "",
+      byStop: Boolean = true)
 
   def message(role: String, text: String): Json = Json.obj("role" -> Json.Str(role), "content" -> Json.Str(text))
 
@@ -46,7 +48,8 @@ object Teacher:
       val asked = parse(done.reply.content, domain.languages)
       val judged = asked.map((lang, text) => (lang, text, Laws.reach(domain.space)(data, text, meant)))
       Written(meant, judged.collect { case (lang, text, None) => Case(lang, text, meant) },
-        judged.collect { case (_, text, Some(why)) => text -> why })
+        judged.collect { case (_, text, Some(why)) => text -> why }).copy(reply = done.reply.content,
+        byStop = done.byStop)
     }
 
   /** every meaning written for, in turn */

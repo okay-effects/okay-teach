@@ -82,7 +82,12 @@ object Teach:
       env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
     val written = t.meanings.zipWithIndex.map { (m, i) =>
       val w = run(Llm.on(teacher)(Teacher.write[D, T, Llm](t.domain, t.data, m, n, t.about, i.toLong)))
-      println(s"  ${t.show(m)}: kept ${w.kept.size}, refused ${w.refused.size}")
+      println(s"  ${t.show(m)}: kept ${w.kept.size}, refused ${w.refused.size}" +
+        (if w.byStop then "" else " (the reply hit the token limit)"))
+      // the teacher's raw replies kept beside the cases: a short count is diagnosed from them
+      Files.writeString(out.resolveSibling(out.getFileName.toString + ".replies.txt"),
+        s"=== ${t.show(m)}\n${w.reply}\n", java.nio.file.StandardOpenOption.CREATE,
+        java.nio.file.StandardOpenOption.APPEND)
       w }
     val rows = written.flatMap(_.kept).map(c => Json.obj("language" -> Json.Str(c.language),
       "text" -> Json.Str(c.text), "meant" -> Json.Str(t.show(c.meant))).render)
