@@ -5,8 +5,8 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 | task | state | notes |
 |---|---|---|
-| T14 three-doors | in progress | MCP tools for a model, an okay-teach command, the skill |
-| T13 book-loop | in progress | a local model teaches a micro-model a book's topic, closed loop (specs/book-loop.md) |
+| T14 three-doors | done | MCP tools for a model, an okay-teach command, the skill |
+| T16 overlapping-meanings | next | answer with the two likeliest when unsure (run e: errors fall into one general section) |
 | T7 the-teacher-taught | next | traces of 6 lessons, the 35B as teacher (T5), then a local model trained on the good steps |
 | T9 teaching-skill | in progress | the whole process as a skill any model can follow: a domain as a JSON spec in the command, SKILL.md, then MCP tools |
 
@@ -225,7 +225,10 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   6. The skill silent on: teacher calls (meanings × languages), the gate's wrong when no bar holds (all wrong),
      citing a log without a commit, "commit it" when the checkout is not one's to commit (freeze: record a hash).
 
-## T13 — the book loop: a local model teaches a micro-model a book's topic  `[~]`
+## T13 — the book loop: a local model teaches a micro-model a book's topic  `[x]`
+
+- **Outcome**: done-when met — on OpenStax ch. 2 the loop runs with no person and no remote model; the 35B drove
+  run e to 96 of the book's 134 (baseline 59), released; GUIDE.md and the skill (5b) say how.
 
 - **What**: `specs/book-loop.md` — a book (sections + their own questions) → topics titled by the local model → a
   spec built by the tool → a lesson driven by the local model → a released competence (a question → its section,
@@ -259,7 +262,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   results as counts (theory L1). (3) the skill and GUIDE point at both doors.
 - **Done when**: a model with only the MCP tools runs a lesson; the command line runs one with `okay-teach lesson …`.
 
-## T15 — the book loop's questions: by passage, in the book's style  `[~]`
+## T15 — the book loop's questions: by passage, in the book's style  `[x]`
+
+- **Outcome** (specs/teach.md §7.5): passages and 2 epochs: fixed policy 80, the 35B 96 of 134 (run e, 176
+  questions, released) — from ~50; the space repaired on the way (ask again once an adapter; epochs 2 or 3; the
+  adapters' trend; the confusions measured).
 
 - **Why**: the loop closed (T13) but weak and unsteady: taught 57 / 50 of 134 with 32 questions (4 a section). The
   book's questions hold on to specifics of a section (bacteria's flagella, a car on wet concrete); a teacher shown a
@@ -281,3 +288,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   of 134; likely the domain (sections that overlap: 2.4, 2.5, 2.6, 2.7), not the corpus. Added (f975232 and the one
   before): the measure's most-confused meanings (counts), Σ's trend of adapters, the teacher told to stop when more
   questions stop helping.
+
+## T16 — overlapping meanings: answer with the two likeliest when unsure  `[ ]`
+
+- **Why**: run e's errors fall into one general section (2.5) from its neighbours — the meanings overlap (F1); more
+  questions do not help, and no bar holds at 5%.
+- **How**: `Measured` reports also "right among the first two"; a competence answers with one meaning above its bar
+  and with the two likeliest below it (a page shows both sections). Measure: right-first, right-in-two, and the bar.
+- **Done when**: specs/teach.md §7.6 — run e's adapter re-measured by the new measure.

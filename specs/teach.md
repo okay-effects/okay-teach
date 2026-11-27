@@ -150,6 +150,11 @@ OpenStax College Physics 2e chapter 2 (8 sections), the book's own 134 questions
 | control | fixed | 8 a section (64) | 2 | 44 | 39 | 49 | yes |
 | c | the 35B | 4, then 16 a passage (176 → 880 → …) | 1 | 44 | 59 | 55 → 58 | no (budget) |
 | **d** | fixed | **8 a passage (352)** | **2** | 44 | 52 | **80** (bar: 23, 0 wrong) | **yes** |
+| **e** | **the 35B** | 4 a passage (176) | 2 | 44 | 59 | **96** (72%) | **yes** |
+
+With the space repaired, the 35B's own run (e) is the best: 96 of 134 with half the fixed policy's questions. Its
+errors fall into one general section (2.5, Motion Equations: from 2.4 nine times, 2.8 seven, 2.3 five) — the
+meanings overlap (theory §4, F1): the next step answers with the two likeliest sections when unsure.
 
 Passages (T15: a section cut into ~2000-character pieces, questions as a student and the book's exercises ask) and
 two epochs lift the reader from ~50 to 80 of 134; more questions at one epoch do not (880 → 58). The teacher's space
