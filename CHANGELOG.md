@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-27 — a second chapter, nothing tuned (OpenStax ch. 3, 92 questions): taught 71 first, 87 in two, baseline 60;
+  a 5% bar answers 22 with 0 wrong; released.
 - 2026-11-27 — readers voting (`Vote`, `measure a,b,c,d`): four seeds' adapters vote 79 of 98 first, 90 in two
   (each alone 68–74, 85–89); all agreeing is no guarantee (53 agreed, 5 wrong).
 - 2026-11-27 — the spread over 4 seeds (book ch. 2, 98 questions): taught 71.5 first (68–74), 86.8 in two (85–89),

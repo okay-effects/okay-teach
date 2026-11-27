@@ -222,3 +222,19 @@ one for its runner-up). `okay-teach measure books/openstax-cp2e-ch2.txt - <a1>,<
 Four LoRAs on one base cost four readings a question (the base's weights shared; on the phone the adapters are a few
 MB each). Agreement is no bar: all four agreed on 53 questions and 5 of those were wrong. They learn the same
 mistakes from the same teacher and the same labels, so the vote raises accuracy without bounding the error.
+
+### 7.9 A second book chapter: the loop unchanged (2026-11-27, commit 4a29167)
+
+`scripts/fetch-openstax-chapter.zsh 3 <the five slugs>` (two-dimensional kinematics: 5 sections, 92 whole
+questions; 3.1 prints none), then `okay-teach book books/openstax-cp2e-ch3.txt runs/openstax-ch3 model`, nothing
+tuned for it. The 35B chose as on chapter 2 (ask 4 a passage = 124, train 2 epochs, release):
+
+| reader on chapter 3's 92 | right first | right in two | bar at ε 5% |
+|---|---|---|---|
+| untaught | 5 | 20 | none |
+| the word search (baseline) | 60 | 81 | — |
+| **taught** | **71 (77%)** | **87 (95%)** | **0.349: 22 answered, 0 wrong** |
+
+The confusions are the book's own overlap: 3.3 (vectors, analytical methods) read as 3.2 (graphical methods) 12 times,
+3.5 as 3.4 four. The baseline is stronger here (the sections' words differ more), and the taught reader still beats
+it by 11 first and 6 in two.
