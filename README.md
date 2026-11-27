@@ -2,6 +2,10 @@
 
 Teach a small model a domain, and make a big model write formal rules by choosing.
 
+Three doors to one tool: the command `okay-teach` (`bin/okay-teach`), MCP tools for a model (`okay-teach mcp`),
+and the skill `skills/teach-a-model` for an agent — `scripts/install.zsh` sets up the first and the third and
+prints how to add the second.
+
 - `Domain` — a space of meanings ([okay-frames](https://github.com/okay-effects/okay-frames)) and how a reader is
   asked about it.
 - `Reader` — a text read by a language model in the space, optionally calibrated (content-free).

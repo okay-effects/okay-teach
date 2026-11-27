@@ -34,7 +34,7 @@ only honest number.
 ## 3. Run the lesson
 
 ```
-sbt "domains/runMain okay.teach.domains.Teach all <domain> <n> <epochs> <heldout.tsv> runs/<domain>"
+okay-teach all <domain> <n> <epochs> <heldout.tsv> runs/<domain>
 ```
 
 It writes `runs/<domain>/cases.jsonl` (the teacher's questions, n a language a meaning, kept only when the space
@@ -53,7 +53,7 @@ shipping.
 ## 5. Rules from a book (a theory)
 
 When the domain's engine takes a theory (Datalog rules), a big model writes it by choosing, judged by the book's
-exercises: `sbt "domains/runMain okay.teach.domains.Teach rules <train> <rounds> runs/<book>"` (Carroll's soriteses
+exercises: `okay-teach rules <train> <rounds> runs/<book>` (Carroll's soriteses
 today; `CarrollRules.scala` shows how a book, its vocabulary and its judge are given).
 
 ## Let a model drive
@@ -71,8 +71,7 @@ it. No person and no remote model between the fetch and the report.
    136 questions; never committed — CC BY-NC-SA). Any book can be written in this form by hand or by a script.
 2. **Check it**: `sbt "domains/testOnly *BookLoopSuite"` (for chapter 2) — every section a meaning, every question
    labelled, no question inside a text the teacher reads.
-3. **Run the loop**: `scripts/gpu.zsh runs/<book>.log sbt "domains/runMain okay.teach.domains.Teach book
-   books/<book>.txt"` — the local Qwen3.6-35B (okay-mlx on :8090) drives the lesson: it chooses how many questions
+3. **Run the loop**: `scripts/gpu.zsh runs/<book>.log okay-teach book books/<book>.txt` — the local Qwen3.6-35B (okay-mlx on :8090) drives the lesson: it chooses how many questions
    to ask, how long to train, what to measure, whether to release; the teacher writes questions from each section's
    text; the micro-model (Qwen3-0.6B) is trained; it is measured on the book's questions against the baseline; the
    gate decides. `standard` instead of the model: the fixed policy.

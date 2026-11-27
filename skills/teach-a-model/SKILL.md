@@ -10,6 +10,16 @@ This skill is the procedure of okay-teach (github.com/okay-effects/okay-teach) f
 theory is `specs/theory.md` there; you do not need to read the code. The checkout is `~/work/my/okay-teach`
 (else clone it). Every command below runs from the checkout's root.
 
+## Three doors, one tool
+
+- **The command line**: `okay-teach <step> …` (`bin/okay-teach`; `scripts/install.zsh` links it into
+  `~/.local/bin`). `okay-teach` alone lists the steps. Paths are the checkout root's (or absolute).
+- **A model's tools (MCP)**: `okay-teach mcp` serves `teach_check`, `teach_lesson`, `teach_drive`, `teach_book`,
+  `teach_status`, `teach_result` over stdio — long operations start in the background and return a run to follow.
+  `scripts/install.zsh` prints how to add it to Claude Code or opencode.
+- **This skill**: the steps and the laws, for an agent with either door. The laws are kept by the tool in all three:
+  sealed sets by path only, counts back, the gate.
+
 ## What you make
 
 A **competence**: a JSON domain spec (what questions can mean), a trained adapter for Qwen3-0.6B (it reads a
@@ -45,7 +55,7 @@ Write `<domain>.json` (format: `specs/domain-spec.md`). Holes are asked in order
 spec's words (`contract: uop; gross: 15000; end`).
 
 Check it before anything else, with a few rows you write FOR THE CHECK (not the sealed ones), same format as step 2:
-`sbt "domains/runMain okay.teach.domains.Teach check <domain>.json <check.tsv>"` — no GPU; it says how many rows'
+`okay-teach check <domain>.json <check.tsv>` — no GPU; it says how many rows'
 meanings were read and reached, and names the first that were not. `Teach` alone prints every step's arguments.
 Keep the spec in a file named for the domain; the lesson records the spec's `name`, not its path.
 
@@ -63,7 +73,7 @@ yours to commit, else record its hash (`shasum <file>`) in your report. From now
 
 ```
 scripts/gpu.zsh runs/<domain>/lesson.log \
-  sbt "domains/runMain okay.teach.domains.Teach lesson <domain>.json 8 2 <domain>.sealed.tsv runs/<domain>"
+  okay-teach lesson <domain>.json 8 2 <domain>.sealed.tsv runs/<domain>
 ```
 
 `scripts/gpu.zsh` waits for the GPU (other sessions' MLX jobs and benchmarks) and holds a shared lock. The lesson:
