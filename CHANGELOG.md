@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-27 — T8: the equations engine, laws by choosing (LawSpace, LawTeacher), kinematics from OpenStax as the
+  first book (fa4dddc).
 - 2026-11-27 — T4 (domain as data: tax rules and pay ported), T5 (the teacher's space, the driven lesson) built.
 - 2026-11-27 — T2/T3: the Lesson effect, its GPU handler with the trace, the sealed set by id (c57e260).
 - 2026-11-27 — the theory (`specs/theory.md`: seven orthogonal factors, the Lesson as an effect, the laws of the

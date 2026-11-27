@@ -108,8 +108,12 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   `variable v: speed [m/s]` / `law speed: v = s / t`, `check`, `solve` with `Step`s). `EquationsSuite` — the
   spec's §7 laws pass. Then: `core/LawSpace.scala` (laws by choosing, depth
   bound 5, one-dimension laws only), `Worked` (an example right to the book's figures), `core/LawTeacher.scala`
-  (plan → laws by `Choose` → judge → rounds); `LawSpaceSuite`. Left: the OpenStax chapter (its text and worked
-  examples into a book file, train / held out), `Teach laws`, the reader's DomainSpec (find / given / end).
+  (plan → laws by `Choose` → judge → rounds); `LawSpaceSuite`. Then (fa4dddc): `domains/Kinematics.scala` — OpenStax
+  College Physics 2e §2.5 (CC BY-NC-SA 4.0: `scripts/fetch-openstax.zsh` fetches it into `books/`, never
+  committed), the lesson's variables, worked examples 2.8–2.13 transcribed (train 2.8, 2.9, 2.10, 2.12a; held out
+  2.11, 2.12b, 2.12c, 2.13), the reference laws pass 4/4 and 4/4 and are reached by choosing (`KinematicsSuite`);
+  `Teach laws [rounds] [out]`. Left: run `Teach laws` with the 35B (GPU after T1), the reader's DomainSpec
+  (find / given / end).
 - **Gotchas**: `Unit` and `given` are names Scala takes (scala.Unit; the `given` keyword) — `SiUnit`, `givens`;
   tuple patterns in a `for` over `Either` need `withFilter` in Scala 3.3 — bind the tuple, then take its parts.
 
