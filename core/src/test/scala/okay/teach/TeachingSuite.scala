@@ -32,7 +32,7 @@ class TeachingSuite extends munit.FunSuite:
 
   test("the fixed policy: ask, train, four measures, the baseline, release, stop — the trace in Σ"):
     val s = run(Teaching.standard[Lesson])
-    assertEquals(s.history.size, 9)
+    assertEquals(s.history.size, 10)
     assertEquals(s.released, Some(Ref("released adapter")))
     assertEquals(s.measures.map(_.what), Vector("untaught, plain", "untaught, calibrated", "taught, plain",
       "taught, calibrated", Teaching.baselineWhat))
@@ -51,7 +51,9 @@ class TeachingSuite extends munit.FunSuite:
     val s = start.copy(asked = Some(Asked(Ref("c"), 10, 0)), adapter = Some(Ref("a")),
       measures = Vector(m("untaught, plain", 19, 37), m("taught, plain", 52, 4)))
     assert(s.said.contains("A release needs first: the baseline measured."), s.said)
-    val ready = s.copy(measures = s.measures :+ m(Teaching.baselineWhat, 22, 34))
+    val ready = s.copy(measures = s.measures :+ m(Teaching.baselineWhat, 22, 34),
+      checked = Some(Checked(30, 40, Vector.empty)))
+    assert(ready.copy(checked = None).said.contains("checked on questions apart"), ready.said)
     assert(ready.said.contains("A release is possible now."), ready.said)
 
 

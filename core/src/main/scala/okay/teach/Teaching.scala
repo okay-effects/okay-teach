@@ -87,7 +87,9 @@ object TeacherSpace extends Space[Sigma, Action]:
         if s.measured(Action.what(t, c)).isEmpty yield Action.Measure(t, c)
       val baseline = Option.when(s.asked.exists(_.kept > 0) && s.measured(Teaching.baselineWhat).isEmpty)(
         Action.MeasureBaseline).toVector
-      val release = Option.when(best(s).nonEmpty)(Action.Release).toVector
+      // L8: released only once checked on questions apart (the 35B released ch. 3 at 71 without looking; the check
+      // would have found the pair whose merge gives 83)
+      val release = Option.when(best(s).nonEmpty && s.checked.nonEmpty)(Action.Release).toVector
       ask ++ train ++ check ++ merge ++ measure ++ baseline ++ release :+ Action.Stop
 
   /** the best taught measure that passes the gate against the best untaught (L4) and the baseline (L7) */
@@ -150,7 +152,8 @@ object Teaching:
   /** the fixed policy: the standard lesson's order (ask 8, train 2, the four measures, release, stop) */
   def standard[R[_]]: Chooser[R] = s =>
     val order = Vector(Action.Ask(8), Action.Train(2), Action.Measure(false, false), Action.Measure(false, true),
-      Action.Measure(true, false), Action.Measure(true, true), Action.MeasureBaseline, Action.Release, Action.Stop)
+      Action.Measure(true, false), Action.Measure(true, true), Action.MeasureBaseline, Action.Check, Action.Release,
+      Action.Stop)
     pure(order.find(TeacherSpace.allowed(s).contains).getOrElse(Action.Stop))
 
   val task: String =
@@ -179,4 +182,8 @@ object Sigma:
     else if TeacherSpace.best(s).isEmpty then
       "A release needs the best taught reader to beat the untaught one and the baseline: it does not yet — more " +
         "questions and training again may help."
+    else if s.checked.isEmpty then "A release needs first: the adapter checked on questions apart (L8)."
+    else if s.checked.exists(_.pairs.nonEmpty) && s.canMerge then
+      "A release is possible now; but the check found meanings the reader cannot split — merging them and training " +
+        "again (several seeds) raised a book chapter from 74 to 83 of 92."
     else "A release is possible now."
