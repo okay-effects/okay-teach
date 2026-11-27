@@ -115,7 +115,7 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 - **What**: the catalog's missing engine (theory §6): quantities with dimensions, equations as data, a solver that
   chains them to the unknown with exact arithmetic and checks dimensions; then a physics chapter (OpenStax,
-  CC BY) as its first theory, written by `Theorize` and judged by the chapter's worked examples.
+  CC BY-NC-SA 4.0: fetched, never committed) as its first theory, written by `Theorize` and judged by the chapter's worked examples.
 - **How**: the spec is written: `specs/equations.md` (quantities with dimensions and exact rationals, laws as data
   solved for a variable occurring once, forward chaining with a derivation, the theory written by choosing, the
   judge the chapter's worked examples, the engine's own laws). Build as a module `equations` (core JVM/JS), its

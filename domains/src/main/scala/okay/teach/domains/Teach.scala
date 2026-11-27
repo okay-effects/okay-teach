@@ -24,6 +24,7 @@ final case class Taught[D, T](domain: Domain[D, T], data: D, meanings: Vector[T]
  *    the sealed set measured by aggregates only, the gate, a released competence, the trace in `<out>/trace.jsonl`
  *  - `drive <domain> <sealed.tsv> [standard|model] [out]` — the lesson driven by a teacher choosing each operation
  *    among those the laws allow (theory §7): the fixed policy, or the teacher model (TEACHER_URL); Σ in `sigma.txt`
+ *  - `laws [rounds] [out]` — kinematics' laws written by choosing (OpenStax §2.5), judged, the held out measured
  *  - `all <domain> <n> <epochs> <held-out> [out]` — the whole line, written, trained and read (below)
  *  - `read <domain> <cases> <adapter|-> <plain|calibrated> [epsilon] [model]` — the reader on cases (a jsonl of
  *    `write`, or a tsv of meaning, language, text): right by language, and the bar epsilon allows
@@ -41,7 +42,8 @@ object Teach:
     else lines.map(Json.fromText).map(j => Case(j("language").string, j("text").string, t.read(j("meant").string)))
 
   def main(args: Array[String]): Unit =
-    if args(0) == "rules" then
+    if args(0) == "laws" then laws(args.lift(1).fold(4)(_.toInt), Path.of(args.lift(2).getOrElse("runs/kinematics")))
+    else if args(0) == "rules" then
       rules(args.lift(1).fold(10)(_.toInt), args.lift(2).fold(4)(_.toInt), Path.of(args(3)))
     else main1(args)
 
@@ -138,3 +140,27 @@ object Teach:
     for a <- Vector("-", adapter.resolve("reader.adapter.safetensors").toString); s <- Vector("plain", "calibrated") do
       println(s"== ${if a == "-" then "untaught" else "taught"}, $s")
       read(t, held, a, s, 0.05, model)
+
+  /**
+   * `laws [rounds] [out]` — the teacher writes kinematics' laws by choosing (`LawTeacher`), judged on four of OpenStax
+   * §2.5's worked examples; each round's variables, plan, laws and verdict written; the best measured on the four
+   * held out (`scripts/fetch-openstax.zsh` first)
+   */
+  def laws(rounds: Int, out: Path): Unit =
+    Files.createDirectories(out)
+    val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
+      env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
+    val t0 = System.nanoTime()
+    val done = run(Llm.on(teacher)(okay.teach.LawTeacher.teach[Llm](Kinematics.lesson, Kinematics.variables,
+      Kinematics.train, rounds)))
+    done.zipWithIndex.foreach { (r, i) =>
+      Files.writeString(out.resolve(s"round-${i + 1}.txt"), (Vector(s"passed ${r.passed} of ${r.of}", "", "plan:") ++
+        r.plan ++ Vector("", "laws:") ++ r.laws.map(_.toString) ++ Vector("", "not built:") ++ r.unread ++
+        Vector("", s"told: ${r.told}")).mkString("\n"))
+      println(s"  round ${i + 1}: ${r.plan.size} described, ${r.laws.size} built, passed ${r.passed} of ${r.of}") }
+    done.maxByOption(_.passed).foreach { r =>
+      val theory = okay.teach.equations.Theory(r.variables, r.laws)
+      Files.writeString(out.resolve("best.txt"), r.laws.mkString("\n"))
+      val v = okay.teach.LawTeacher.judge(theory, Kinematics.held)
+      println(s"the best on the held out: ${v.passed} of ${v.of}") }
+    println(f"${(System.nanoTime() - t0) / 1e9}%.0f s")

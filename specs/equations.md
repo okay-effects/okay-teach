@@ -61,7 +61,8 @@ extracted to a library of its own (as okay-datalog) once a second project uses i
 
 ## 6. The first theory
 
-A chapter of a physics textbook under an open licence (OpenStax College Physics, CC BY 4.0: kinematics in one
+A chapter of a physics textbook under an open licence (OpenStax College Physics 2e, CC BY-NC-SA 4.0 — fetched
+by `scripts/fetch-openstax.zsh` into `books/`, never committed: this repository is Apache-2.0; kinematics in one
 dimension) — its worked examples split into the judge's (training) and the measure's (held out), as Carroll's are.
 
 ## 7. Laws of the engine (its tests)
