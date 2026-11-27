@@ -157,11 +157,17 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **Done when**: a fresh agent given only the skill and a domain spec runs a lesson end to end (asks, trains,
   measures, releases or stops) without reading this repository's code.
 
-## T10 — the corpus repaired: the teacher's undersupply  `[ ]`
+## T10 — the corpus repaired: the teacher's undersupply  `[~]`
 
 - **What**: T1's diagnosis (F4/F7): 359 of 800 questions, 4 for some rules. Find why (the raw replies are now
   kept: `cases.jsonl.replies.txt`), then ask again so every rule has its share, retrain, measure; the gate decides.
-- **How**: one rule's `write` with replies kept (a truncated reply? lines not "<lang>: text"? one language only?);
-  repair `Teacher.task` / `parse` / the token budget accordingly; `Teach lesson` into `runs/tax-rules-2` (a new out
+- **Found** (T1's cases.jsonl, read): (a) many rules got ONE question a language, not 8 (4, 16, 28, 32 kept:
+  multiples of the four languages); (b) the questions QUOTE THE ANSWER — "the full rate starting at 5,652 zł
+  (including 1,926.76 zł …)" — the teacher was shown the rule's text (`say` = title — what it says) and wrote it
+  into the question: texts unlike a person's, who does not know the answer (F7 Teacher, F4 Corpus).
+- **How**: `Domain.about` (what the teacher is told of a meaning) apart from `space.say` (the canonical words);
+  TaxRules tells the title and, marked as for the teacher only, what the rule says; `Teacher.task` asks for the
+  questions of a person who does NOT know the answer (no quoting it), ONE language a call (n lines, numbering
+  stripped); `Teach lesson` into `runs/tax-rules-2` (a new out
   dir: the first lesson's files stay as they are). Baselines: taught 116, the search 134.
 - **Done when**: the second lesson's numbers in specs/teach.md §7.2 and its trace written, better or not.
