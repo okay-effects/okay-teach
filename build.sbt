@@ -32,6 +32,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Pure).
       "io.github.okay-effects" %%% "okay-datalog" % "0.1.0",
       "io.github.okay-effects" %%% "okay-llm-read" % "0.1.0", munit.value))
 
+/** THE EQUATIONS ENGINE (specs/equations.md): quantities, laws as data, the solver — no dependency; JVM and Scala.js */
+lazy val equations = crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Pure).in(file("equations"))
+  .settings(name := "okay-teach-equations", libraryDependencies += munit.value)
+
 /** ON APPLE'S GPU: the reading answered by okay-llm's Qwen3 on MLX (the page's numbers), a LoRA trained on the
  * examples (mlx-scala), the teacher over HTTP (okay-llm's `HttpBackend`) */
 val mlxNativeLib =
@@ -43,7 +47,8 @@ lazy val mlx = (project in file("mlx")).dependsOn(core.jvm)
     fork := true, run / baseDirectory := (ThisBuild / baseDirectory).value,
     javaOptions ++= Seq("--enable-native-access=ALL-UNNAMED", s"-Dokm.lib=$mlxNativeLib/libokm.dylib", "-Xss16m"))
 
-lazy val root = (project in file(".")).aggregate(core.jvm, core.js, mlx, domains).settings(publish / skip := true)
+lazy val root = (project in file(".")).aggregate(equations.jvm, equations.js, core.jvm, core.js, mlx, domains)
+  .settings(publish / skip := true)
 
 /** THE DOMAINS TAUGHT, and the command `teach` (write, train, read): okay-tax's rules first */
 lazy val domains = (project in file("domains")).dependsOn(mlx)
