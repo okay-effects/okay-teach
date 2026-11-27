@@ -29,7 +29,8 @@ object RuleTeacher:
        |
        |List the Datalog rules this lesson needs, each in plain words naming its predicates — what follows from
        |what. One rule a line, beginning "rule: ". No code.
-       |${feedback.fold("")(f => s"\nThe last theory failed the book's exercises: $f\nChange the rules so they pass.")}"""
+       |${feedback.fold("")(f => s"\nThe last theory failed the book's exercises: $f\nChange the rules so they " +
+         "pass.")}"""
       .stripMargin
 
   /** the described rules of a plan reply */

@@ -9,8 +9,8 @@ import okay.scala3.*
  * `Llm`, no access to its scores) reads a space hole by hole, each time asked to pick one of the numbered options —
  * the answer a number, parsed strictly. It cannot write what is not an option, so a big model that fails at writing
  * a formal text whole (Datalog rules: 0 of 16 for the local 35B, okay-study §4) is asked only what it can do —
- * choose. The chosen option scores 1, the others 0 (margin 1); an answer that is no option scores all 0 (the first taken
- * with margin 0: a doubt, never a silent answer).
+ * choose. The chosen option scores 1, the others 0 (margin 1); an answer that is no option scores all 0 (the first
+ * taken with margin 0: a doubt, never a silent answer).
  */
 object Choose:
   /** the question of one hole: the task, the text, the choices so far, the options numbered */

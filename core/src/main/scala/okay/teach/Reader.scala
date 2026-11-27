@@ -54,7 +54,8 @@ object Reader:
   /** the lines a meaning is written in: its path, each choice as the domain writes it */
   def lines[D, T](domain: Domain[D, T], data: D, text: String, meant: T): Vector[String] =
     val path = domain.space.path(data, meant)
-    path.indices.toVector.flatMap(i => domain.space.next(data, text, path.take(i)).map(h => domain.line(h, path(i).option)))
+    path.indices.toVector.flatMap(i =>
+      domain.space.next(data, text, path.take(i)).map(h => domain.line(h, path(i).option)))
 
   /** the choices of a reading, for a log */
   def said(chosen: Vector[Choice]): String = chosen.map(c => s"${c.hole}=${c.option}").mkString(", ")
