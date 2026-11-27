@@ -24,22 +24,19 @@ object Teacher:
     "de" -> "German", "fr" -> "French", "es" -> "Spanish")
 
   /**
-   * THE TEACHER'S TASK, ONE LANGUAGE (SPRINT T10): the domain, the meaning as the domain tells a teacher of it
-   * (`Domain.about`: may include the answer, marked as the teacher's only), and `n` questions in one language as a
-   * person who does NOT know the answer writes them — never quoting the answer's facts, numbers only where the person
-   * would write them. One a line, nothing else. (T1's questions quoted the rule's figures; asked for all languages at
-   * once, the teacher often wrote one a language.)
+   * THE TEACHER'S TASK, ONE LANGUAGE, ONE PASSAGE (SPRINT T10, T15): the domain, what the teacher is told of the
+   * meaning (`Domain.passages`: the answer or a passage of a book, marked as the teacher's only), and `n` questions in
+   * one language as the domain's askers write them (`Domain.asking`: people who do NOT know the answer, by default).
+   * One a line, nothing else. (T1's questions quoted the rule's figures; asked for all languages at once, the teacher
+   * often wrote one a language; shown a whole book section, it wrote generic ones.)
    */
-  def task[D, T](domain: Domain[D, T], data: D, meant: T, n: Int, about: String, language: String): String =
+  def task[D, T](domain: Domain[D, T], n: Int, about: String, passage: String, language: String): String =
     s"""$about
        |
-       |${domain.about(data, meant)}
+       |$passage
        |
-       |Write $n different messages in ${names.getOrElse(language, language)} that people who need exactly this would
-       |write — people who do NOT know the answer: they ask about their own situation, in everyday words, short or
-       |long, with or without detail, the way real people write to a forum or a chat. Do not quote the answer, its
-       |figures or its wording; write a number only where the person would (their own salary, age, dates). One message
-       |a line, nothing else: no numbering, no language labels, no quotes.""".stripMargin
+       |${domain.asking(n, names.getOrElse(language, language))}
+       |One a line, nothing else: no numbering, no language labels, no quotes.""".stripMargin
 
   /** the lines of a reply: numbering, bullets, quotes and a leading language label stripped, empty lines dropped */
   def parse(reply: String): Vector[String] =
@@ -50,10 +47,12 @@ object Teacher:
 
   def write[D, T, R[_]](domain: Domain[D, T], data: D, meant: T, n: Int, about: String, seed: Long = 0)(
       using In[Llm, R]): Written[T] ! R =
-    domain.languages.zipWithIndex.foldLeft(pure[Written[T], R](Written(meant, Vector.empty, Vector.empty))) {
-      case (acc, (lang, i)) => acc.flatMap { sofar =>
-        val ask = Ask(Vector(message("user", task(domain, data, meant, n, about, lang))), maxTokens = 120 * n + 600,
-          sampling = Sampling(temperature = Some(0.9), seed = Some(seed * 10 + i)))
+    val jobs = for (p, j) <- domain.passages(data, meant).zipWithIndex; (lang, i) <- domain.languages.zipWithIndex
+      yield (p, lang, j * 10 + i)
+    jobs.foldLeft(pure[Written[T], R](Written(meant, Vector.empty, Vector.empty))) {
+      case (acc, (passage, lang, k)) => acc.flatMap { sofar =>
+        val ask = Ask(Vector(message("user", task(domain, n, about, passage, lang))), maxTokens = 120 * n + 600,
+          sampling = Sampling(temperature = Some(0.9), seed = Some(seed * 100 + k)))
         Llm.complete[R](ask).map { done =>
           val asked = parse(done.reply.content).take(n)
           val judged = asked.map(text => (text, Laws.reach(domain.space)(data, text, meant)))

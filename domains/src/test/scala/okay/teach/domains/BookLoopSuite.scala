@@ -20,3 +20,13 @@ class BookLoopSuite extends munit.FunSuite:
     val rows = Teach.cases(t, sealedFile)
     assertEquals(rows.size, book.questions.size)
     for m <- t.meanings do assertEquals(t.read(t.show(m)), m)
+
+  test("each section cut into 1 to 8 passages, none holding a sealed question"):
+    assume(Files.exists(file), "books/openstax-cp2e-ch2.txt not fetched")
+    val (t, _) = BookLoop.load(file)
+    val d = t.domain.asInstanceOf[BookDomain]
+    val counts = t.meanings.map(m => d.passages(Map.empty, m))
+    println(s"  passages by section: ${counts.map(_.size).mkString(", ")}")
+    assert(counts.forall(p => p.nonEmpty && p.size <= 8))
+    val questions = d.book.questions.map(_._2.replaceAll("\\s+", " ").take(60)).filter(_.length > 30)
+    assert(!counts.flatten.exists(p => questions.exists(q => p.replaceAll("\\s+", " ").contains(q))))
