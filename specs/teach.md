@@ -160,19 +160,27 @@ Passages (T15: a section cut into ~2000-character pieces, questions as a student
 two epochs lift the reader from ~50 to 80 of 134; more questions at one epoch do not (880 → 58). The teacher's space
 was repaired from runs a and c: asking again after a failed gate, once an adapter; epochs 2 or 3.
 
-### 7.6 Overlapping meanings: two readings (T16; 2026-11-27)
+### 7.6 Two readings, and a broken sealed set found (T16; 2026-11-27)
 
-Run e's errors fall into one general section, 2.5 (Motion Equations), from its neighbours. The meanings overlap
-(theory §4, F1): 2.5 restates what 2.3, 2.4 and 2.8 teach. More questions do not separate them. So the reader now
-reads twice (`Reader.readTwo`). The first reading is the best one. The second takes the runner-up at the least sure
-choice, then reads the holes after it again. A measure counts both: right first, and right among the first two. The
-baseline counts its own first two (`Baseline.ranked`). Re-measured by `okay-teach measure` (12 s on the M-series GPU):
+Run e's errors seemed to fall into one general section, 2.5 (Motion Equations), from its neighbours, so the reader
+now reads twice (`Reader.readTwo`). The first reading is the best one. The second takes the runner-up at the least
+sure choice, then reads the holes after it again. A measure counts both: right first, and right among the first two;
+the baseline counts its own first two (`Baseline.ranked`). `okay-teach measure` re-measures an adapter already made
+(12 s) and writes each reading's margin, outcome and labels — no text — to `margins.<what>.tsv`.
 
-| reader on the book's 134 | right first | right among the first two |
+Those margins showed confident errors with equal margins (four at 0.3101). The cause was the SEALED SET, not the
+reader: the fetch script took a formula's MathML lines ("1", ".", "80 m /s") for new numbered questions, so 36 of the
+134 were fragments or duplicates, 20 of them under 2.5. Fixed (`scripts/fetch-openstax-chapter.zsh`: a number starts
+a question only when it is the next expected one; the formula glued back): the chapter has 98 whole questions.
+Run e's adapter on them:
+
+| reader on the book's 98 whole questions | right first | right among the first two |
 |---|---|---|
-| run e's adapter (taught, plain) | 96 (72%) | **118 (88%)** |
-| the word search (baseline) | 59 | 78 |
+| run e's adapter (taught, plain) | **74 (76%)** | **87 (89%)** |
+| the word search (baseline) | 57 | 72 |
 
-The first reading is exactly run e's 96: the measure is deterministic. Where one section cannot be named, a page shows
-the two likeliest, and the right one is among them 88 times in 100. No bar holds at ε 5% for one answer on this book.
-The next step (BACKLOG) is a bar for the pair: one answer above a margin, two below it.
+The most confused are now small and spread (2.3 read as 2.2 four times, as 2.5 three). The margins now separate:
+the 40 surest readings have 1 wrong. No bar holds at ε 5% only because that one error falls among the first 20, where
+the fixed sequence begins (`Bar.choose`; `Bar.pair` likewise); at ε 10% the bar holds. Runs a–e (§7.5) were measured
+on the 134; their order stands, their numbers are on that set. Lesson for the teacher (theory §4): when a measure
+surprises, diagnose the measuring set (F4 Corpus) before the reader.

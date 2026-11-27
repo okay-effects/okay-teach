@@ -35,6 +35,14 @@ class TeachSuite extends munit.FunSuite:
     assertEquals(one.bar, 21.0); assertEquals(one.wrong, 0)
     assertEquals(Bar.choose(Vector((1.0, false)), 0.05), None)
 
+  test("the pair bar: one answer where sure, two where the runner-up is close, a person below (T16)"):
+    // margins 40..1: the best right above 20, the meant among two for 20..6, missed below
+    val rs = (1 to 40).map(i => (i.toDouble, i > 20, i > 5))
+    val p = Bar.pair(rs, 0.05).get
+    assertEquals((p.one, p.answeredOne, p.wrong), (21.0, 20, 0))
+    assertEquals((p.two, p.answeredTwo), (6.0, 15))
+    assertEquals(Bar.pair(Vector((1.0, false, false)), 0.05), None)
+
   test("the teacher's lines: numbering, bullets, quotes and a language label stripped, one message a line"):
     val got = Teacher.parse("1. How much tax do I pay?\n2) \"Ile podatku?\"\n- en: Do I pay at all?\n\n• one more")
     assertEquals(got, Vector("How much tax do I pay?", "Ile podatku?", "Do I pay at all?", "one more"))

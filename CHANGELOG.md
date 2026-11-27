@@ -2,6 +2,9 @@
 
 Newest first.
 
+- 2026-11-27 — the book's sealed set repaired: 36 of 134 questions were formula fragments (the fetch script
+  read MathML lines as question numbers); 98 whole. Run e: 74 first, 87 in two (baseline 57, 72). `Bar.pair`; each
+  measure writes its margins (no text).
 - 2026-11-27 — T16: two readings (the runner-up at the least sure choice) and `okay-teach measure`; the book's
   134: right first 96, right among the first two 118 (baseline 59, 78). T13, T15: the 35B drove the book loop to 96,
   released.

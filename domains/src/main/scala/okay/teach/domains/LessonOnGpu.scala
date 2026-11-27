@@ -6,6 +6,7 @@ import okay.teach.{Asked, Bar, Lesson, Measured, Reader, Ref}
 import okay.teach.mlx.OnGpu
 
 import java.nio.file.{Files, Path, StandardCopyOption, StandardOpenOption}
+import scala.jdk.CollectionConverters.*
 
 /**
  * THE LESSON'S HANDLER ON THIS MAC (theory §2): `Ask` by the teacher over HTTP (`Teach.write`), `Train` and `Measure`
@@ -53,13 +54,18 @@ final class LessonOnGpu[D, T](t: Taught[D, T], name: String, out: Path, sealedFi
           if calibrated then Reader.Scoring.ContentFree() else Reader.Scoring.Plain) finally gpu.close()
         val what = (if adapter.isEmpty then "untaught" else "taught") + ", " +
           (if calibrated then "calibrated" else "plain")
+        // the readings' margins and outcomes, no text (L1): a bar is studied from them without the GPU
+        Files.write(out.resolve(s"margins.${what.replace(", ", "-")}.tsv"),
+          reads.map(r => f"${r.margin}%.4f\t${r.right}\t${r.inTwo}\t${t.show(r.c.meant)}\t" +
+            r.meaning.fold("nothing")(t.show) + "\t" + r.second.fold("nothing")(t.show)).asJava)
         Measured(what,
           reads.count(_.right), reads.size,
           reads.groupBy(_.c.language).map((l, rs) => l -> (rs.count(_.right), rs.size)),
           Bar.choose(reads.map(r => (r.margin, r.right)), epsilon),
           reads.filterNot(_.right).groupBy(r => (t.show(r.c.meant), r.meaning.fold("nothing")(t.show)))
             .map((k, rs) => k -> rs.size),
-          inTwo = Some(reads.count(_.inTwo)))
+          inTwo = Some(reads.count(_.inTwo)),
+          pair = Bar.pair(reads.map(r => (r.margin, r.right, r.inTwo)), epsilon))
       case Lesson.Baseline(on, cases) =>
         // the word search learned from the training cases alone, read on the sealed set: counts only (L1, L7)
         val file = sealedFiles.getOrElse(on.id, sys.error(s"no sealed set ${on.id}"))

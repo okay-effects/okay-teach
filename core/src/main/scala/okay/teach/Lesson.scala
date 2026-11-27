@@ -17,12 +17,14 @@ final case class Asked(cases: Ref, kept: Int, refused: Int)
 /** a measure as a lesson sees it: aggregates only — right of all, by language, the bar at the lesson's ε, and how often
  * one meaning was read as another (counts: which meanings the reader confuses, never a text) */
 final case class Measured(what: String, right: Int, of: Int, byLanguage: Map[String, (Int, Int)],
-    bar: Option[Bar.Chosen], confused: Map[(String, String), Int] = Map.empty, inTwo: Option[Int] = None):
+    bar: Option[Bar.Chosen], confused: Map[(String, String), Int] = Map.empty, inTwo: Option[Int] = None,
+    pair: Option[Bar.Pair] = None):
   def said: String =
     val langs = byLanguage.toVector.sortBy(_._1).map { case (l, (r, n)) => s"$l $r/$n" }.mkString(", ")
     val top = confused.toVector.sortBy(-_._2).take(3).map { case ((m, c), k) => s"$m read as $c $k" }
     s"$what: right $right of $of ($langs); " + inTwo.fold("")(k => s"right among the first two $k of $of; ") +
       s"${bar.fold("no bar holds")(_.said)}" +
+      pair.fold("")(p => s"; ${p.said}") +
       (if top.isEmpty then "" else s"; most confused: ${top.mkString(", ")}")
 
 /**

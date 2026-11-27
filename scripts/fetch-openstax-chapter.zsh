@@ -20,14 +20,18 @@ tmp=$(mktemp -d)
 out=books/openstax-cp2e-ch$ch.txt
 page() { curl -sL -m 60 -o $tmp/p.html $base/$1; textutil -convert txt -output $tmp/$2 $tmp/p.html; }
 # the questions of a chapter page, as "<section id><TAB><question>" lines: a section heading "2.3 Title", then
-# numbered questions ("12", ".", the text up to the next number or heading)
+# numbered questions ("12", ".", the text up to the next number or heading). A number starts a question only when it
+# is the next expected one: a formula's "1", ".", "80 m/s" lines (its MathML) are the question's text, glued back
 questions() {
-  awk 'BEGIN { sec = ""; q = ""; want = 0 }
+  awk 'BEGIN { sec = ""; q = ""; want = 0; expect = 1; glue = 0 }
     function flush() { if (sec != "" && q != "") { gsub(/[ \t]+/, " ", q); print sec "\t" q }; q = "" }
     /^[0-9]+\.[0-9]+ [A-Z]/ { flush(); split($0, a, " "); sec = a[1]; want = 0; next }
-    /^[0-9]+$/ { flush(); want = 1; next }
+    /^[0-9]+$/ && $0 == expect { flush(); want = 1; expect++; next }
     /^\.$/ && want == 1 { want = 2; next }
     /^(PreviousNext|Order a print copy|Citation\/Attribution)/ { flush(); sec = ""; next }
+    want == 2 && /^[0-9]+$/ { q = q " " $0; glue = 1; next }
+    want == 2 && /^\.$/ { q = q "."; glue = 1; next }
+    want == 2 && glue { q = q $0; glue = 0; next }
     want == 2 { q = q " " $0 }
     END { flush() }' $tmp/$1
 }
