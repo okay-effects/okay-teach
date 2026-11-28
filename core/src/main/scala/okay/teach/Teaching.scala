@@ -67,10 +67,12 @@ object TeacherSpace extends Space[Sigma, Action]:
     else
       // ask first; or ask MORE when the taught reader is measured and does not pass the gate (the corpus repaired)
       // (once an adapter: the questions asked since must be trained on before asking again — run c asked twice)
-      val failed = s.adapter.nonEmpty && s.measures.exists(_.what.startsWith("taught")) &&
-        s.measured(Teaching.baselineWhat).nonEmpty && best(s).isEmpty && s.asked.forall(_.kept == s.trainedOn)
+      // ask MORE once the adapter is measured, whether or not the gate passes (ch. 4, 2026-11-28: the 35B released at
+      // 160 questions; 320 gave 35, 640 gave 44 of 82 — asking more was allowed only after a failed gate)
+      val measuredAll = s.adapter.nonEmpty && s.measures.exists(_.what.startsWith("taught")) &&
+        s.measured(Teaching.baselineWhat).nonEmpty && s.asked.forall(_.kept == s.trainedOn)
       val ask = if s.asked.isEmpty then Vector(4, 8, 16).map(Action.Ask(_))
-        else if failed then Vector(8, 16).map(Action.Ask(_)) else Vector.empty
+        else if measuredAll then Vector(8, 16).map(Action.Ask(_)) else Vector.empty
       // train when there are questions the adapter was not trained on
       // 2 or 3 epochs: one under-trains (the book loop, 2026-11-27: 880 questions × 1 epoch → 58 of 134; 352 × 2 → 80)
       // several seeds voting (§7.8, §7.11: one adapter swings ±10 by seed) — also again on the same questions, once
@@ -154,7 +156,9 @@ object Teaching:
     val order = Vector(Action.Ask(8), Action.Train(2), Action.Measure(false, false), Action.Measure(false, true),
       Action.Measure(true, false), Action.Measure(true, true), Action.MeasureBaseline, Action.Check, Action.Release,
       Action.Stop)
-    pure(order.find(TeacherSpace.allowed(s).contains).getOrElse(Action.Stop))
+    // asking again only after a failed gate (the fixed policy as it was; a teacher model may ask more anyway)
+    def again(a: Action) = a.isInstanceOf[Action.Ask] && s.asked.nonEmpty && TeacherSpace.best(s).nonEmpty
+    pure(order.find(a => TeacherSpace.allowed(s).contains(a) && !again(a)).getOrElse(Action.Stop))
 
   val task: String =
     "You teach a small language model to read questions of a domain: you ask a teacher for training questions, " +
@@ -173,6 +177,8 @@ object Sigma:
   /** what a release still needs, in words: the measures the gate compares (L4, L7) and the taught reader beating them
    * (the 35B driving its first lesson stopped short of it: the state never said what release needed) */
   def toRelease(s: Sigma): String =
+    val more = " More questions may still help: on one chapter 160 gave 27, 320 gave 35, 640 gave 44 of 82 (the " +
+      "earlier adapters show when they stop helping)."
     val missing = Vector(
       Option.when(s.adapter.isEmpty)("an adapter trained"),
       Option.when(!s.measures.exists(_.what.startsWith("taught")))("a taught reader measured"),
@@ -188,5 +194,5 @@ object Sigma:
         "again (several seeds) raised a book chapter from 74 to 83 of 92."
     else if s.seeds == 1 then
       "A release is possible now; but one adapter swings by about 10 between seeds — three seeds voting raised a " +
-        "book chapter from 71.5 to 79 of 98 (train again with 3 seeds, then measure)."
-    else "A release is possible now."
+        "book chapter from 71.5 to 79 of 98 (train again with 3 seeds, then measure)." + more
+    else "A release is possible now." + more
