@@ -7,7 +7,7 @@ import okay.scala3.*
  * stopped by the laws, every allowed action reachable */
 class TeachingSuite extends munit.FunSuite:
   private def m(what: String, right: Int, wrong: Int) =
-    Measured(what, right, 100, Map.empty, Some(Bar.Chosen(1.0, right + wrong, wrong, 100)))
+    Measured(what, right, 200, Map.empty, Some(Bar.Chosen(1.0, right + wrong, wrong, 200)))
   private val start = Sigma("tax-rules", Sealed("held"))
 
   /** a lesson's operations answered by fakes: taught readers better than untaught */

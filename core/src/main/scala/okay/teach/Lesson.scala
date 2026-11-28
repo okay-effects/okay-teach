@@ -80,6 +80,18 @@ object Lesson:
     candidate.right > baseline.right && wrong(candidate) <= wrong(baseline)
 
   /**
+   * L7, CLEARLY: the candidate beats the baseline by more than chance — a one-sided two-proportion z-test on the same
+   * set, z ≥ 1.645 (5%). Chapter 4: a vote of 39 against the word search's 35 of 82 passed the bare gate (z ≈ 0.9),
+   * and the 35B released it rather than ask for more questions, which gave 50.
+   */
+  def clearly(candidate: Measured, baseline: Measured): Boolean =
+    val n = candidate.of.toDouble
+    val (p1, p2) = (candidate.right / n, baseline.right / n)
+    val p = (p1 + p2) / 2
+    val se = math.sqrt(2 * p * (1 - p) / n)
+    candidate.right > baseline.right && (se == 0 || (p1 - p2) / se >= 1.645)
+
+  /**
    * THE STANDARD LESSON (theory §2; `Teach all`): ask, train, measure the reader four ways — untaught and taught,
    * plain and calibrated — and the baseline; release the best taught one if it passes the gate against the best
    * untaught AND the baseline (L7)
@@ -96,7 +108,7 @@ object Lesson:
       words <- baseline(on, asked.cases)
       best = taught.maxBy(_.right)
       released <-
-        if passes(best, untaught.maxBy(_.right)) && passes(best, words) then release(adapter, best).map(Some(_))
+        if passes(best, untaught.maxBy(_.right)) && passes(best, words) && clearly(best, words) then release(adapter, best).map(Some(_))
         else pure[Option[Ref], R](None)
     yield Outcome(asked, untaught ++ taught :+ words, released)
 

@@ -99,7 +99,7 @@ object TeacherSpace extends Space[Sigma, Action]:
     val taught = s.measures.filter(_.what.startsWith("taught"))
     val untaught = s.measures.filter(_.what.startsWith("untaught"))
     for t <- taught.maxByOption(_.right); u <- untaught.maxByOption(_.right); b <- s.measured(Teaching.baselineWhat)
-      if Lesson.passes(t, u) && Lesson.passes(t, b) yield t
+      if Lesson.passes(t, u) && Lesson.passes(t, b) && Lesson.clearly(t, b) yield t
 
   def next(s: Sigma, text: String, chosen: Vector[Choice]): Option[Hole] =
     Option.when(chosen.isEmpty)(Hole("action", allowed(s).map(Action.said)))
@@ -186,8 +186,9 @@ object Sigma:
       Option.when(s.measured(Teaching.baselineWhat).isEmpty)("the baseline measured")).flatten
     if missing.nonEmpty then s"A release needs first: ${missing.mkString(", ")}."
     else if TeacherSpace.best(s).isEmpty then
-      "A release needs the best taught reader to beat the untaught one and the baseline: it does not yet — more " +
-        "questions and training again may help."
+      "A release needs the best taught reader to beat the untaught one, and the baseline clearly (by more than " +
+        "chance): it does not yet — more questions and training again may help (one chapter: 160 questions gave 27 " +
+        "of 82, 640 gave 44, three seeds on them 50)."
     else if s.checked.isEmpty then "A release needs first: the adapter checked on questions apart (L8)."
     else if s.checked.exists(_.pairs.nonEmpty) && s.canMerge then
       "A release is possible now; but the check found meanings the reader cannot split — merging them and training " +
