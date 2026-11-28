@@ -112,6 +112,13 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 ## T7 — the teacher taught  `[~]`
 
+- **Plan (2026-11-28)**: the teacher's choice IS a space (TeacherSpace: Σ.said → one allowed action), so a small
+  teacher is a reader taught by okay-teach itself. (1) every decision recorded — `decisions.jsonl` (state, allowed,
+  chosen, by) — done 3beea66; (2) decisions collected: the 35B on chapters 2–5 re-driven from cached files (an ask
+  reuses `cases.<k>-n<n>.jsonl`), plus residence / tax rules; (3) a TeacherDomain (DomainSpec-free: options = the
+  allowed actions' words) and Qwen3-0.6B + LoRA trained on the 35B's decisions, measured by agreement on a held-out
+  chapter's decisions; (4) a real lesson (a new chapter) driven by the small teacher vs the 35B.
+
 - **Step 1 done** (2026-11-27; data/traces/residence-driven.jsonl): the 35B's first drive stopped unreleased (the
   state never said a release needs the baseline); with Σ saying it, its second drive ran a whole lesson — measure
   untaught 19, ask 4 a language, train 1 epoch, taught 52 of 56, baseline 20, RELEASE, stop: better and cheaper than
