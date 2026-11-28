@@ -110,7 +110,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   domains), okay-invest (goal reader v1→v2), okay-tax (§6: search vs models), okay-study (Carroll, CUKR).
 - **Done when**: `data/traces/*.jsonl`, each step Σ → operation → measured outcome, with its source commit.
 
-## T7 — the teacher taught  `[~]`
+## T7 — the teacher taught  `[x]`
+
+- **Outcome** (specs/teach.md §7.14): `ChoiceDomain` + `SmallTeacher`; a 0.6B taught on 51 decisions agrees with
+  the 35B on 10 of 11 held out (untaught 1); trained on 62, it drove the new chapter 6 itself: the 35B's path, the
+  same release (46 of 74, baseline 36). The questions are still written by the 35B (T21).
 
 - **Plan (2026-11-28)**: the teacher's choice IS a space (TeacherSpace: Σ.said → one allowed action), so a small
   teacher is a reader taught by okay-teach itself. (1) every decision recorded — `decisions.jsonl` (state, allowed,
@@ -370,3 +374,13 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
   passages show it; try `Domain.asking` variants (problems with numbers vs conceptual, the book's end-of-chapter
   wording), measured on questions apart first; only then once on the sealed set. Also: more questions (ask 8).
 - **Done when**: ch. 4 released ≥ 50 of 82 on a vote, with the same change not lowering ch. 2/3/5.
+
+## T21 — a small question writer (the last part of the loop on the 35B)  `[ ]`
+
+- **Why** (§7.14): the small teacher drives a lesson, but every `Ask` (and the questions apart of `Check`) is written
+  by the 35B. A closed loop on small models needs the questions from a small model too.
+- **How**: the 35B's written questions per passage are data (`cases.*.jsonl` with the passages they came from):
+  train a small writer (Qwen3-1.7B or 4B + LoRA; generation, not choice — so its output is filtered by the space's
+  laws as the 35B's is, and measured by what the reader trained on it reaches on the sealed set). Compare per chapter:
+  reader taught on the small writer's questions vs on the 35B's.
+- **Done when**: a chapter's reader taught entirely from a small writer's questions passes the gate (L4, L7 clearly).

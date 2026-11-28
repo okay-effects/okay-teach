@@ -373,3 +373,17 @@ Qwen3-0.6B + LoRA, 3 epochs on chapters 2–4's 51 decisions (`okay-teach teache
 Its one miss on chapter 5 was "check" where the 35B chose "train with 3 seeds". Both are allowed, and both end in
 the same release. The next step is a real lesson on a new chapter (6) driven by the small teacher, against the 35B
 driving the same chapter with the same questions.
+
+The real lesson: the small teacher (`teacher-b`, trained on all 62 decisions of chapters 2–5) drove chapter 6, which
+was new (OpenStax 6, circular motion and gravitation: 6 sections, 74 questions; `okay-teach book … small:<adapter>`).
+Then the 35B drove the same chapter with the same questions. The questions are written by the 35B in both runs;
+only the driving differs.
+
+| driver | path | released | baseline |
+|---|---|---|---|
+| **small teacher (0.6B)** | measure → ask 4 → train → taught 34 → baseline 36 → 3 seeds → 46 → check: no pair → release | **46 of 74 (62%)**, in two 59 | 36 |
+| the 35B | the same, with two measures in the other order | 46 of 74 | 36 |
+
+A 0.6B model taught by okay-teach on the 35B's decisions ran a whole lesson on a chapter it never saw, and made the
+35B's choices. This is the recursion of theory §7: a model taught by the toolkit teaches another model through it.
+What still needs the 35B: writing the questions (`Ask`). The small teacher only drives.

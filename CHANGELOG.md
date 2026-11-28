@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-28 — T7: a small teacher. A 0.6B taught on the 35B's decisions (ChoiceDomain) agrees on 10 of 11 held out
+  and drove the new chapter 6 to the 35B's own release (46 of 74, baseline 36). T21 queued (a small question writer).
 - 2026-11-28 — T20: L7 clearly (beat the baseline by more than chance) and asking more after a pass; the 35B took
   ch. 4 from 39 to 48 of 82 by asking for 1440 questions itself.
 - 2026-11-28 — T19: the teacher checks on questions apart (L8), merges an inseparable pair, votes 3 seeds — the 35B
