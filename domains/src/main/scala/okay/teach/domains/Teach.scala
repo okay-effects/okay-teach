@@ -47,6 +47,8 @@ object Teach:
     """okay-teach <step> …  (bin/okay-teach; paths from the checkout's root; skills/teach-a-model says when)
       |  mcp                                                the model's door: these steps as MCP tools over stdio
       |  book <book.txt> [out] [model|standard]               the book loop: sections → a lesson the model drives
+      |  teacher-train <out> <epochs> <decisions.jsonl>…   a small teacher taught the 35B's decisions (T7)
+      |  teacher-measure <adapter|-> <decisions.jsonl>…   its agreement with the 35B
       |  merge <book.txt> <a> <b> <out.txt> [cases.jsonl out.jsonl]  two sections one meaning
       |  contrast <book.txt> <run> [pairs] [n]           confused pairs (on questions apart) taught by contrast
       |  measure <book.txt|domain|spec.json> <sealed.tsv|-> <adapter|a,b,…|-> <cases.jsonl> [out]  first + in two; several vote
@@ -63,6 +65,10 @@ object Teach:
   def main(args: Array[String]): Unit =
     if args.isEmpty || args.length < 2 && args(0) != "mcp" then println(usage)
     else if args(0) == "mcp" then McpDoor.serve()
+    else if args(0) == "teacher-train" then
+      SmallTeacher.train(Path.of(args(1)), args(2).toInt, args.drop(3).toSeq.map(Path.of(_)))
+    else if args(0) == "teacher-measure" then
+      SmallTeacher.measure(Option.when(args(1) != "-")(Path.of(args(1))), args.drop(2).toSeq.map(Path.of(_)))
     else if args(0) == "merge" then merge(Path.of(args(1)), args(2), args(3), Path.of(args(4)),
       Option.when(args.length > 6)(Path.of(args(5)) -> Path.of(args(6))))
     else if args(0) == "contrast" then
@@ -311,6 +317,11 @@ object Teach:
         env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
       run(Llm.on(teacher)(gpu.on(okay.teach.Teaching.drive[Lesson + Llm](start,
             okay.teach.Teaching.recorded(okay.teach.Teaching.byModel, decisions(dir, "35B"))))))
+    else if driver.startsWith("small:") then
+      // the small teacher drives (T7); the questions are still written by the 35B over HTTP (Ask)
+      val (choose, close) = SmallTeacher.chooser(Path.of(driver.stripPrefix("small:")))
+      try gpu.run(okay.teach.Teaching.drive[Lesson](start,
+          okay.teach.Teaching.recorded(choose, decisions(dir, "small")))) finally close()
     else gpu.run(okay.teach.Teaching.drive[Lesson](start,
           okay.teach.Teaching.recorded(okay.teach.Teaching.standard, decisions(dir, "standard"))))
     Files.writeString(dir.resolve("sigma.txt"), end.said + "\n\nhistory:\n" + end.history.mkString("\n"))

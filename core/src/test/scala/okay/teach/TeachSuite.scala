@@ -118,6 +118,13 @@ class TeachSuite extends munit.FunSuite:
     assertEquals(RuleSpace.say(v, rule("anc(A, B) :- parent(A, B)."), "en"), "anc(X, Y) :- parent(X, Y).")
     assert(Program(Vector(rule("anc(X, Y) :- parent(X, Y)."))).rules.nonEmpty)
 
+
+  test("a choice among given options is a domain: the teacher's decisions read like any question (T7)"):
+    val d = ChoiceDomain("choose")
+    val opts = Vector("ask more", "release", "stop")
+    assertEquals(Reader.lines(d, opts, "the state", "release"), Vector("action: release"))
+    assertEquals(d.space.parse(opts, "train", "en"), None)
+    assertEquals(okay.frames.Laws.reach(d.space)(opts, "the state", "stop"), None)
   test("a plan's lines: the rules described, the predicates it declares"):
     val reply = "predicate: chain/2 — a chain of premisses\n- predicate: `retinend/1` — kept\npredicate: Bad/2\n" +
       "rule: chain holds when a premiss links X to Y\nRule: a term is a retinend when …\nnoise"
