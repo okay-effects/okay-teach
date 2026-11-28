@@ -353,3 +353,23 @@ earlier release passes L7-clearly: chapter 5's 58 against 51 of 61 has z ≈ 2.0
 Re-run under the final rules (runs t20c, 2026-11-28 07:28–07:36), the 35B driving: chapter 2 → vote 79 of 98,
 chapter 3 → check, merge, vote 83 of 92, chapter 5 → vote 58 of 61. The paths and numbers are the same as before:
 the new laws cost the other chapters nothing.
+
+### 7.14 A small teacher (T7; 2026-11-28)
+
+The teacher's choice is a space: the state Σ in words, the actions the laws allow, one taken. `ChoiceDomain` writes it
+as a domain, so the small teacher is a reader taught by okay-teach itself. Every decision of a driven lesson is
+written to `decisions.jsonl` (state, allowed, chosen, by). The 35B re-drove chapters 2–5 from cached files (an ask
+reuses `cases.<k>-n<n>.jsonl`), the same paths and numbers as §7.12–7.13: 62 decisions.
+
+Qwen3-0.6B + LoRA, 3 epochs on chapters 2–4's 51 decisions (`okay-teach teacher-train`), then
+`teacher-measure` on chapter 5's 11, which were held out. Agreement with the 35B:
+
+| chooser | held-out ch. 5 | trained on (ch. 2–4) |
+|---|---|---|
+| untaught 0.6B | 1 of 11 | — |
+| the first allowed action | 2 of 11 | 7 of 51 |
+| **taught 0.6B** | **10 of 11** | 47 of 51 |
+
+Its one miss on chapter 5 was "check" where the 35B chose "train with 3 seeds". Both are allowed, and both end in
+the same release. The next step is a real lesson on a new chapter (6) driven by the small teacher, against the 35B
+driving the same chapter with the same questions.
