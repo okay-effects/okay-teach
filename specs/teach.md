@@ -349,3 +349,7 @@ move the 35B: with asking allowed and the numbers quoted, it still released 39 (
 
 The fixed policy's 640 questions voted 50. The spread over seeds is ±3, so 48 and 50 are the same result. Every
 earlier release passes L7-clearly: chapter 5's 58 against 51 of 61 has z ≈ 2.0; the others pass by far.
+
+Re-run under the final rules (runs t20c, 2026-11-28 07:28–07:36), the 35B driving: chapter 2 → vote 79 of 98,
+chapter 3 → check, merge, vote 83 of 92, chapter 5 → vote 58 of 61. The paths and numbers are the same as before:
+the new laws cost the other chapters nothing.
