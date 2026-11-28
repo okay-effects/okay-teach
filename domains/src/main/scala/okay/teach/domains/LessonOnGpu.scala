@@ -76,13 +76,16 @@ final class LessonOnGpu[D, T](t0: Taught[D, T], name: String, out: Path, sealedF
       case Lesson.Ask(n) =>
         // the first ask of a run that has questions resumes them; a later ask (the corpus repaired) writes MORE, with
         // other seeds, appended — the teacher does not repeat itself
+        // (an ask whose `cases.<k>-n<n>.jsonl` exists is not asked again: the same seed writes the same — a run re-driven
+        // from a copy of another's files costs no teacher time)
         asks += 1
+        val more = out.resolve(s"cases.$asks-n$n.jsonl")
         val refused =
-          if Files.exists(casesFile) && asks == 1 then 0
+          if Files.exists(casesFile) && asks == 1 && !Files.exists(more) then 0
           else
-            val more = out.resolve(s"cases.$asks.jsonl")
-            val (_, r) = Teach.write(t, n, more, seed = 1000L * asks + 100000L * seed)
-            Files.write(casesFile, Files.readAllLines(more), StandardOpenOption.CREATE, StandardOpenOption.APPEND)
+            val r = if Files.exists(more) then 0 else Teach.write(t, n, more, seed = 1000L * asks + 100000L * seed)._2
+            if asks == 1 then Files.write(casesFile, Files.readAllLines(more))
+            else Files.write(casesFile, Files.readAllLines(more), StandardOpenOption.CREATE, StandardOpenOption.APPEND)
             r
         Asked(Ref(casesFile.toString), Teach.cases(t, casesFile).size, refused)
       case Lesson.Train(cases, epochs, seeds) =>

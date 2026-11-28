@@ -117,8 +117,10 @@ object Teach:
         val end = if args.lift(3).contains("model") then
           val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
             env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
-          run(Llm.on(teacher)(gpu.on(okay.teach.Teaching.drive[Lesson + Llm](start, okay.teach.Teaching.byModel))))
-        else gpu.run(okay.teach.Teaching.drive[Lesson](start, okay.teach.Teaching.standard))
+          run(Llm.on(teacher)(gpu.on(okay.teach.Teaching.drive[Lesson + Llm](start,
+            okay.teach.Teaching.recorded(okay.teach.Teaching.byModel, decisions(out, "35B"))))))
+        else gpu.run(okay.teach.Teaching.drive[Lesson](start,
+          okay.teach.Teaching.recorded(okay.teach.Teaching.standard, decisions(out, "standard"))))
         Files.writeString(out.resolve("sigma.txt"), end.said + "\n\nhistory:\n" + end.history.mkString("\n"))
         println(end.said)
       case "calibrate" =>
@@ -128,6 +130,17 @@ object Teach:
       case other => sys.error(s"no step $other")
 
   private val model = "mlx-community/Qwen3-0.6B-4bit"
+
+  /** each decision of a teacher as a line of `<out>/decisions.jsonl`: the state as the teacher read it, the actions
+   * allowed, the one chosen, and by whom (SPRINT T7: a small teacher is taught on these) */
+  def decisions(out: Path, by: String): (okay.teach.Sigma, okay.teach.Action) => Unit = (s, a) =>
+    import okay.teach.{Action, TeacherSpace}
+    val line = Json.obj("by" -> Json.Str(by), "state" -> Json.Str(s.said),
+      "allowed" -> Json.Arr(TeacherSpace.allowed(s).map(x => Json.Str(Action.said(x)))),
+      "chosen" -> Json.Str(Action.said(a))).render + "\n"
+    Files.createDirectories(out)
+    Files.writeString(out.resolve("decisions.jsonl"), line, java.nio.file.StandardOpenOption.CREATE,
+      java.nio.file.StandardOpenOption.APPEND)
 
   def write[D, T](t: Taught[D, T], n: Int, out: Path, seed: Long = 0): (Int, Int) =
     val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
@@ -296,8 +309,10 @@ object Teach:
     val end = if driver == "model" then
       val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
         env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
-      run(Llm.on(teacher)(gpu.on(okay.teach.Teaching.drive[Lesson + Llm](start, okay.teach.Teaching.byModel))))
-    else gpu.run(okay.teach.Teaching.drive[Lesson](start, okay.teach.Teaching.standard))
+      run(Llm.on(teacher)(gpu.on(okay.teach.Teaching.drive[Lesson + Llm](start,
+            okay.teach.Teaching.recorded(okay.teach.Teaching.byModel, decisions(dir, "35B"))))))
+    else gpu.run(okay.teach.Teaching.drive[Lesson](start,
+          okay.teach.Teaching.recorded(okay.teach.Teaching.standard, decisions(dir, "standard"))))
     Files.writeString(dir.resolve("sigma.txt"), end.said + "\n\nhistory:\n" + end.history.mkString("\n"))
     println(end.said)
 

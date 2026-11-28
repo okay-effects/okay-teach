@@ -169,6 +169,10 @@ object Teaching:
       "again; several seeds voting are steadier than one. " +
       "Here is the state of the lesson. Choose the next operation."
 
+  /** a chooser whose every decision is also handed to `write` (the state, the action): a teacher model's data (T7) */
+  def recorded[R[_]](choose: Chooser[R], write: (Sigma, Action) => Unit): Chooser[R] = s =>
+    choose(s).map { a => write(s, a); a }
+
   /** a model chooses (any `Llm`, by numbered choices — `Choose`); an answer that is no option stops the lesson */
   def byModel[R[_]](using In[okay.llm.Llm, R]): Chooser[R] = s =>
     Choose.read[Sigma, Action, R](TeacherSpace, s, s.said, task).map(_.meaning.getOrElse(Action.Stop))
