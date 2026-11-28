@@ -346,7 +346,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **Done when**: `okay-teach book` on ch. 3 with the 35B driving ends merged and voted, ≥ 80 of 92; on ch. 2 the
   teacher's choice measured too (§7.12).
 
-## T20 — chapter 4: the teacher's questions are not like the book's  `[ ]`
+## T20 — chapter 4: more questions kept helping, the teacher stopped early  `[~]`
+
+- **Found** (§7.12): not the questions' kind — their number. Fixed policy, ask 8: 160 → 27, 320 → 35, 640 → 44 of
+  82; three seeds voting on 640: 50 of 82. Asking more is now allowed after a passing gate (commit after f5d3720);
+  the 35B re-run on ch. 4 with that freedom is runs/t20-ch4-model in ../okay-teach-run3.
 
 - **Why** (§7.12): ch. 4 (Newton's laws) — questions apart read 52 of 80, the book's own 39 of 82; one adapter 27,
   below the word search (35); the book mixes the laws (4.3 read as 4.4 eleven times), the teacher's questions keep

@@ -323,10 +323,12 @@ the book's own questions):
 The teacher repaired the space only where the check found a pair (chapter 3) and asked for a vote everywhere.
 Chapter 3 meets T19's mark (≥ 80 of 92) with no person in the loop.
 
-Chapter 4 (Newton's laws) is the weak one. One adapter was below the word search (27 against 35), and the vote clears
-it by only 4. The questions apart are read far better (52 of 80) than the book's own (39 of 82). The teacher's
-questions on the three laws are easier to separate than the book's, which mix them (4.3 read as 4.4 eleven times):
-the teacher's questions are not yet like the book's there (F4; SPRINT T20).
+Chapter 4 (Newton's laws) was the weak one. One adapter was below the word search (27 against 35), and the vote
+cleared it by only 4. The cause was the corpus size (F4), not the questions' kind. With the fixed policy asking 8 a
+passage, more questions kept helping: 160 gave 27, 320 gave 35, 640 gave 44 of 82 (47 calibrated). Three seeds on
+the 640 voted **50 of 82** (in two 65). On chapters 2 and 3 more questions had stopped helping. The 35B had released at
+160 because asking more was allowed only after a failed gate. Now it is allowed once an adapter is measured, and the
+state quotes these numbers (SPRINT T20).
 
 A bug was found on the way: a merge relabelled the questions apart in place, so a run that copied them checked
 merged labels against an unmerged space and found no pair. Fixed: `valid.m<k>.jsonl`.
