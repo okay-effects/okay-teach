@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-28 — T21 first: no 35B at all — a 4B writes, the 0.6B teacher drives; readers near the 35B's (ch. 6 49 vs
+  46) but the gate refuses most (the word search learns the small writers' questions too); the teacher stops early.
 - 2026-11-28 — T7: a small teacher. A 0.6B taught on the 35B's decisions (ChoiceDomain) agrees on 10 of 11 held out
   and drove the new chapter 6 to the 35B's own release (46 of 74, baseline 36). T21 queued (a small question writer).
 - 2026-11-28 — T20: L7 clearly (beat the baseline by more than chance) and asking more after a pass; the 35B took

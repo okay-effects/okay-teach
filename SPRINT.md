@@ -377,8 +377,10 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 
 ## T21 — a small question writer (the last part of the loop on the 35B)  `[~]`
 
-- **Running** (2026-11-28): first without training — Qwen3-4B, then 1.7B, write the questions (TEACHER_MODEL on
-  okay-mlx :8090), the small teacher-b drives; ch. 3, 5, 6 (`runs/t21.zsh`, logs runs/t21.log in the checkout).
+- **Untrained small writers** (§7.15): 4B's questions teach a reader nearly as well as the 35B's (ch. 3/5/6 votes
+  71/54/49 vs 74/58/46) but teach the word search too, so L7-clearly refuses 5 of 6; the small teacher then stops
+  (its data has only 2 "ask more" steps). Next: lessons that fail first, driven by the 35B, into the teacher's data;
+  then a writer taught on the 35B's questions.
 
 - **Why** (§7.14): the small teacher drives a lesson, but every `Ask` (and the questions apart of `Check`) is written
   by the 35B. A closed loop on small models needs the questions from a small model too.

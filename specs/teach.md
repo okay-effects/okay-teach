@@ -387,3 +387,28 @@ only the driving differs.
 A 0.6B model taught by okay-teach on the 35B's decisions ran a whole lesson on a chapter it never saw, and made the
 35B's choices. This is the recursion of theory §7: a model taught by the toolkit teaches another model through it.
 What still needs the 35B: writing the questions (`Ask`). The small teacher only drives.
+
+### 7.15 Small question writers, untrained (T21; 2026-11-28)
+
+No 35B anywhere: Qwen3-4B or Qwen3-1.7B, untrained, writes the questions (`TEACHER_MODEL` on okay-mlx :8090), and the
+small teacher-b drives (`runs/t21.zsh`). Right first of the book's own questions, three seeds voting; the 35B-written
+runs of §7.12–7.14 for comparison:
+
+| chapter | 35B writes (vote) | 4B writes (vote) | 1.7B writes (vote) | baselines (35B / 4B / 1.7B) |
+|---|---|---|---|---|
+| 3 (92) | 74 unmerged, 83 merged | 71 | 56 | 60 / 65 / 51 |
+| 5 (61) | 58 | 54 | 52 | 51 / 50 / 49 |
+| 6 (74) | 46 | 49 | **49, released** | 36 / 45 / 36 |
+
+1. **A 4B writer teaches a reader nearly as well as the 35B** (71 vs 74, 54 vs 58, 49 vs 46). The 1.7B does so on
+   chapter 6 but falls behind on chapter 3.
+2. **The small writers' questions also teach the word search.** They are closer to the book's words (4B's baseline
+   on chapter 3 is 65 against the 35B's 60). So the reader's lead over the baseline shrinks, and L7-clearly refuses
+   five of the six. Only 1.7B on chapter 6 was released (49 vs 36). Refusing them is right by L7: what such a reader
+   learned, a word count mostly has too.
+3. **The small teacher then stopped instead of asking for more questions.** Its 62 training decisions hold only two
+   "ask more" steps (chapter 4), and it never checked before stopping. Its policy is the 35B's typical path; the
+   rarer branch was not learned.
+
+Next: more "ask more" decisions in the teacher's data (lessons that fail the gate first: the small writers' own runs
+driven by the 35B), and a writer taught on the 35B's questions (T21 as planned).
