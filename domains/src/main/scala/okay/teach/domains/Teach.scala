@@ -312,7 +312,9 @@ object Teach:
       val title = merged.section(s"$ia+$ib").get.title
       (t2, sealed2, (w: String) => if w == a || w == b then s"topic: $title" else w)
     val gpu = LessonOnGpu(t, name, dir, Map("held" -> sealedFile), merging = Some(merging))
-    val start = okay.teach.Sigma(name, Sealed("held"), canMerge = true, budget = 20)
+    // 30 operations: a lesson that asks more twice and votes needs ~22 (ch. 6 with a 4B writer stopped at 20 one
+    // step short of a release that passed)
+    val start = okay.teach.Sigma(name, Sealed("held"), canMerge = true, budget = 30)
     val end = if driver == "model" then
       val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
         env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
