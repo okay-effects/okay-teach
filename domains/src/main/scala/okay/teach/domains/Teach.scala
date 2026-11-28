@@ -150,7 +150,8 @@ object Teach:
 
   def write[D, T](t: Taught[D, T], n: Int, out: Path, seed: Long = 0): (Int, Int) =
     val teacher = HttpBackend(env("TEACHER_URL", "http://127.0.0.1:8090/v1"),
-      env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit"))
+      // WRITER_MODEL: who writes the questions, apart from who drives (TEACHER_MODEL) — T21
+      sys.env.get("WRITER_MODEL").getOrElse(env("TEACHER_MODEL", "mlx-community/Qwen3.6-35B-A3B-4bit")))
     val written = t.meanings.zipWithIndex.map { (m, i) =>
       // (isolated: `write` runs inside a lesson's handler too, a run of its own — okay-scala's NestedRun otherwise)
       val w = runIsolated(Llm.on(teacher)(Teacher.write[D, T, Llm](t.domain, t.data, m, n, t.about, seed + i.toLong)))
