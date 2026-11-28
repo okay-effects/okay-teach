@@ -332,3 +332,20 @@ state quotes these numbers (SPRINT T20).
 
 A bug was found on the way: a merge relabelled the questions apart in place, so a run that copied them checked
 merged labels against an unmerged space and found no pair. Fixed: `valid.m<k>.jsonl`.
+
+### 7.13 Asking more, and L7 clearly (T20; 2026-11-28)
+
+Two changes. Asking more is allowed once an adapter is measured, even when the gate passes. L7 now says *clearly*: a
+release must beat the baseline by more than chance (`Lesson.clearly`, a one-sided two-proportion z-test, z ≥ 1.645).
+Chapter 4's first vote, 39 against the word search's 35 of 82, passed the bare gate (z ≈ 0.9). The hint alone did not
+move the 35B: with asking allowed and the numbers quoted, it still released 39 (run t20-ch4-model). Under L7-clearly
+(run t20b-ch4) it chose, by itself:
+
+| questions | three seeds voting | baseline | questions apart (check) |
+|---|---|---|---|
+| 160 | 39 | 35 | 51 of 80 |
+| 800 (ask 16) | 40 | 32 | 62 of 80 |
+| 1440 (ask 16) | **48 (59%)**, in two 62 | 36 | 70 of 80 → **released** (z ≈ 1.9) |
+
+The fixed policy's 640 questions voted 50. The spread over seeds is ±3, so 48 and 50 are the same result. Every
+earlier release passes L7-clearly: chapter 5's 58 against 51 of 61 has z ≈ 2.0; the others pass by far.

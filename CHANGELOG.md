@@ -2,6 +2,8 @@
 
 Newest first.
 
+- 2026-11-28 — T20: L7 clearly (beat the baseline by more than chance) and asking more after a pass; the 35B took
+  ch. 4 from 39 to 48 of 82 by asking for 1440 questions itself.
 - 2026-11-28 — T19: the teacher checks on questions apart (L8), merges an inseparable pair, votes 3 seeds — the 35B
   alone: ch. 2 79/98, ch. 3 83/92 (merged), ch. 4 39/82, ch. 5 58/61. T20 queued (ch. 4's questions).
 - 2026-11-27 — T18 the pair merged: ch. 3 three seeds voting 83 of 92 first (unmerged 74), all agreeing 55

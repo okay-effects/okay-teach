@@ -346,7 +346,11 @@ The queue, in order. `[~]` in progress, `[x]` done (with its outcome), `[ ]` nex
 - **Done when**: `okay-teach book` on ch. 3 with the 35B driving ends merged and voted, ≥ 80 of 92; on ch. 2 the
   teacher's choice measured too (§7.12).
 
-## T20 — chapter 4: more questions kept helping, the teacher stopped early  `[~]`
+## T20 — chapter 4: more questions kept helping, the teacher stopped early  `[x]`
+
+- **Outcome** (§7.13): asking more allowed after a passing gate; L7 clearly (z ≥ 1.645). The 35B alone: 160 → 800 →
+  1440 questions, votes 39 → 40 → 48 of 82 (baseline 36), released. (Fixed policy, 640: 50.) Re-runs of ch. 2/3/5
+  under the new rules: runs/t20c-ch{2,3,5} in ../okay-teach-run3 (queued behind another session's GPU job).
 
 - **Found** (§7.12): not the questions' kind — their number. Fixed policy, ask 8: 160 → 27, 320 → 35, 640 → 44 of
   82; three seeds voting on 640: 50 of 82. Asking more is now allowed after a passing gate (commit after f5d3720);
